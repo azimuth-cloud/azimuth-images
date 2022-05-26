@@ -1,0 +1,61 @@
+#ps1
+
+$ErrorActionPreference = "Stop"
+
+# Read Zenith configuration items from metadata
+Write-Output "Reading Zenith properties from metadata service..."
+$MetaData = Invoke-RestMethod -URI http://169.254.169.254/openstack/latest/meta_data.json
+
+if ( $MetaData.meta.azimuth_web_console_enabled -ne '1' )
+{
+    Write-Output "Web console not enabled - exiting"
+    Exit
+}
+
+# Start/enable TightVNC service
+Write-Output "Starting TightVNC service..."
+Set-Service -Name tvnserver -StartupType Automatic -Status Running
+
+# Start/enable the noVNC service
+Write-Output "Starting noVNC service..."
+Set-Service -Name novnc -StartupType Automatic -Status Running
+
+$SSHIdentityPath = "C:\ProgramData\Zenith\id_zenith"
+
+# Write the Zenith configuration file
+Write-Output "Writing Zenith configuration file..."
+$ZenithConfig = @"
+ssh_identity_path: $SSHIdentityPath
+
+# Init options
+registrar_url: $($MetaData.meta.azimuth_apps_registrar_url)
+token: $($MetaData.meta.azimuth_apps_registrar_token)
+verify_ssl: no
+
+# Connect options
+server_address: $($MetaData.meta.azimuth_apps_sshd_host)
+server_port: $($MetaData.meta.azimuth_apps_sshd_port)
+forward_to_host: 127.0.0.1
+forward_to_port: 5901
+
+# Authentication parameters
+auth_params:
+  cloud-name: $($MetaData.meta.azimuth_cloud_name)
+  tenancy-id: $($MetaData.project_id)
+"@
+New-Item -Path "C:\ProgramData\Zenith\" -Name "client.yaml" -ItemType "file" -Value $ZenithConfig -Force
+
+# Initialise the Zenith client (if required)
+if ( Test-Path -Path $SSHIdentityPath -PathType Leaf )
+{
+    Write-Output "Zenith client already initialised"
+}
+else
+{
+    Write-Output "Initialising Zenith client..."
+    zenith-client init --config "C:\ProgramData\Zenith\client.yaml"
+}
+
+# Start/enable the Zenith client service
+Write-Output "Starting ZenithClient service..."
+Set-Service -Name ZenithClient -StartupType Automatic -Status Running

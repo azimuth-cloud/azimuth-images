@@ -1,0 +1,9 @@
+collections:
+  - name: ansible.windows
+    version: 1.10.0
+  - name: chocolatey.chocolatey
+    version: 1.2.0
+  - name: community.windows
+    version: 1.10.0
+  - name: containers.podman
+    version: 1.9.3

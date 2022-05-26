@@ -1,0 +1,66 @@
+---
+
+# Include the variables for the OS distribution we are running on
+# Note that we don't use first_found across the whole list of files because
+# we want to include all the ones that apply, in the order in which they are defined
+# However we do use first_found to handle the case where the file doesn't exist at all
+- name: Include OS-specific variables
+  include_vars: "{{ vars_file }}"
+  vars:
+    vars_file: "{{ lookup('first_found', lookup_params) }}"
+    lookup_params:
+      files: ["{{ item }}"]
+      skip: true
+  when: vars_file
+  loop:
+    - "{{ role_path }}/vars/{{ ansible_os_family }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+
+# We run the command manually as the update_cache argument to the apt module is unreliable
+- name: Update apt cache
+  apt:
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Ensure up-to-date CA certificates
+  package:
+    name: ca-certificates
+    state: latest
+
+# Required for become to an unprivileged user to work
+- name: Install ACL package
+  package:
+    name: acl
+    state: present
+
+- block:
+    - include_tasks: desktop.yml
+    - include_tasks: vnc_server.yml
+  when: desktop_enabled is defined and desktop_enabled
+
+- include_tasks: podman/install.yml
+
+- include_tasks: guacamole.yml
+
+- include_tasks: zenith_client.yml
+
+- name: Write webconsole-init script
+  template:
+    src: webconsole-init.py.j2
+    dest: /usr/bin/webconsole-init
+    mode: +x
+
+- name: Install systemd unit for webconsole-init
+  template:
+    src: webconsole-init.service.j2
+    dest: /etc/systemd/system/webconsole-init.service
+
+- name: Ensure webconsole-init is enabled
+  systemd:
+    daemon_reload: yes
+    name: webconsole-init.service
+    enabled: yes
+
+- name: Run cloud-init cleanup
+  command: cloud-init clean --logs --seed

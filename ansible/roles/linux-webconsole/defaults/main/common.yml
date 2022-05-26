@@ -1,0 +1,4 @@
+---
+
+# By default, the desktop is not enabled
+desktop_enabled: no

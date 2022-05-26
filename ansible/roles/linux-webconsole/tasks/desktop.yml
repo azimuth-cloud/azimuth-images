@@ -1,0 +1,74 @@
+---
+
+#####
+## These tasks set up a graphical environment for use with a VNC server
+##
+## Mostly borrowed from the exosphere project
+## https://github.com/exosphere-project/exosphere/
+#####
+
+- name: Install graphical environment
+  package:
+    name: "{{ desktop_environment_package }}"
+    state: present
+
+- name: Enable graphical environment
+  systemd:
+    name: graphical.target
+    enabled: yes
+
+- name: Set graphical environment as default systemd target
+  command: systemctl set-default graphical.target
+
+- name: Set current systemd runlevel to graphical environment
+  command: systemctl isolate graphical.target
+
+- name: Create user dconf profile
+  lineinfile:
+    line: "{{ item }}"
+    path: /etc/dconf/profile/user
+    create: yes
+  loop:
+    - user-db:user
+    - system-db:local
+
+- name: Ensure dconf db directory exists
+  file:
+    path: /etc/dconf/db/local.d/locks
+    state: directory
+
+- name: Disable screen lock
+  copy:
+    dest: /etc/dconf/db/local.d/00-screenlock
+    content: |
+      [org/gnome/desktop/lockdown]
+      disable-lock-screen=true
+
+      [org/gnome/desktop/screensaver]
+      lock-enabled=false
+
+      [org/gnome/desktop/session]
+      idle-delay=uint32 0
+
+- name: Override user preferences for screen lock
+  copy:
+    dest: /etc/dconf/db/local.d/locks/screensaver
+    content: |
+      /org/gnome/desktop/lockdown/disable-lock-screen
+      /org/gnome/desktop/screensaver/lock-enabled
+      /org/gnome/desktop/session/idle-delay
+
+- name: Update dconf database
+  command: dconf update
+
+# See https://c-nergy.be/blog/?p=14051
+- name: Prevent authentication prompts for updating system repos
+  copy:
+    dest: /etc/polkit-1/localauthority/50-local.d/46-allow-update-repo.pkla
+    content: |
+      [Allow Package Management all Users]
+      Identity=unix-user:*
+      Action=org.freedesktop.packagekit.system-sources-refresh
+      ResultAny=yes
+      ResultInactive=yes
+      ResultActive=yes

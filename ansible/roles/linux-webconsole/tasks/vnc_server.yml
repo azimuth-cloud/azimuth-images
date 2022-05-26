@@ -1,0 +1,44 @@
+---
+
+#####
+## These tasks install TigerVNC server and perform global configuration
+#####
+
+- name: Install VNC server
+  package:
+    name: "{{ tigervnc_server_packages }}"
+    state: present
+
+# CentOS includes a systemd unit and default startup script that work
+# Ubuntu does not
+- name: Configure VNC server
+  block:
+    - name: Ensure VNC config directory exists
+      file:
+        path: /etc/vnc
+        state: directory
+
+    - name: Install VNC startup script
+      copy:
+        src: xstartup
+        dest: /etc/vnc/xstartup
+        mode: +x
+
+    - name: Install vncserver systemd unit file
+      copy:
+        src: vncserver@.service
+        dest: /etc/systemd/system/
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Ensure systemd override directory exists
+  file:
+    path: /etc/systemd/system/vncserver@.service.d
+    state: directory
+
+- name: Install systemd overrides
+  copy:
+    src: "{{ item }}"
+    dest: /etc/systemd/system/vncserver@.service.d/
+  loop:
+    - start_order.conf
+    - restart.conf

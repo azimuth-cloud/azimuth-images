@@ -1,0 +1,19 @@
+---
+
+# For Ubuntu 20.04, we need to use podman packages from the Kubic project
+# https://podman.io/getting-started/installation
+
+- name: Add Kubic repository signing key
+  apt_key:
+    url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ ansible_distribution_version }}/Release.key"
+    state: present
+
+- name: Install Kubic repository
+  apt_repository:
+    repo: "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ ansible_distribution_version }}/ /"
+    state: present
+    filename: devel:kubic:libcontainers:stable.list
+
+- name: Update apt cache
+  apt:
+    update_cache: yes

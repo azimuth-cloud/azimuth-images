@@ -1,0 +1,91 @@
+---
+
+- name: Configure VNC server
+  block:
+    - name: Get guacamole user info
+      user:
+        name: "{{ guacamole_user }}"
+        state: present
+      register: guacamole_user_info
+
+    - name: Set VNC server user facts for guacamole user
+      set_fact:
+        guacamole_user_vnc_config_dir: "{{ guacamole_user_info.home }}/.vnc"
+
+    - name: Ensure systemd overrides directory exists
+      file:
+        path: /etc/systemd/system/vncserver@:1.service.d
+        state: directory
+
+    - name: Configure user for systemd unit
+      copy:
+        dest: /etc/systemd/system/vncserver@:1.service.d/user.conf
+        content: |
+          [Service]
+          Environment=VNCSERVER_PASSWD_FILE={{ guacamole_user_vnc_config_dir }}/passwd
+          User={{ guacamole_user }}
+  when: desktop_enabled | bool
+
+- name: Install systemd unit for guacamole pod
+  include_tasks: podman/systemd-unit.yml
+  vars:
+    podman_service_name: guacamole
+    podman_service_type: pod
+
+- name: Pull image for guacamole server
+  containers.podman.podman_image:
+    name: "{{ guacamole_server_image }}"
+  become: yes
+  become_user: "{{ podman_service_user }}"
+
+- name: Install systemd unit for guacamole server
+  include_tasks: podman/systemd-unit.yml
+  vars:
+    podman_service_name: guacamole-server
+    podman_service_type: container
+    podman_service_image: "{{ guacamole_server_image }}"
+    podman_service_pod: guacamole
+
+- name: Ensure guacamole config directory exists
+  file:
+    path: /etc/guacamole
+    state: directory
+
+- name: Pull image for guacamole client
+  containers.podman.podman_image:
+    name: "{{ guacamole_client_image }}"
+  become: yes
+  become_user: "{{ podman_service_user }}"
+
+- name: Install systemd unit for guacamole client
+  include_tasks: podman/systemd-unit.yml
+  vars:
+    podman_service_name: guacamole-client
+    podman_service_type: container
+    podman_service_image: "{{ guacamole_client_image }}"
+    podman_service_pod: guacamole
+    # Add a soft dependency on the server
+    podman_service_wants:
+      - guacamole-server
+    podman_service_env:
+      GUACAMOLE_HOME: /config
+      GUACD_HOSTNAME: localhost
+    podman_service_volumes:
+      - /etc/guacamole:/config:ro
+
+- name: Pull image for guacamole MITM
+  containers.podman.podman_image:
+    name: "{{ guacamole_mitm_image }}"
+  become: yes
+  become_user: "{{ podman_service_user }}"
+
+- name: Install systemd unit for guacamole MITM
+  include_tasks: podman/systemd-unit.yml
+  vars:
+    podman_service_name: guacamole-mitm
+    podman_service_type: container
+    podman_service_image: "{{ guacamole_mitm_image }}"
+    podman_service_pod: guacamole
+    # Add a soft dependency on the client
+    podman_service_wants:
+      - guacamole-client

@@ -1,0 +1,162 @@
+#!/usr/bin/env python3
+
+import pathlib
+import subprocess
+import socket
+import sys
+
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives.serialization import (
+    Encoding,
+    NoEncryption,
+    PrivateFormat,
+    PublicFormat,
+)
+import dbus
+import jinja2
+import requests
+
+
+print("Reading Zenith properties from metadata service...")
+response = requests.get("http://169.254.169.254/openstack/latest/meta_data.json")
+response.raise_for_status()
+metadata = response.json()
+user_metadata = metadata.get("meta", {})
+
+if user_metadata.get("azimuth_web_console_enabled", "0") != "1":
+    print("Web console not enabled - exiting")
+    sys.exit()
+
+print("Generating SSH keypair for Guacamole...")
+# Generate an RSA keypair for guacamole to use to authenticate with the host
+private_key = rsa.generate_private_key(
+    public_exponent = 65537,
+    key_size = 3072,
+    backend = default_backend()
+)
+# At the time of writing, Guacamole does not support new-style OpenSSH keys
+#   See: https://issues.apache.org/jira/browse/GUACAMOLE-745
+private_key_formatted_bytes = private_key.private_bytes(
+    encoding = Encoding.PEM,
+    format = PrivateFormat.TraditionalOpenSSL,
+    encryption_algorithm = NoEncryption()
+)
+private_key_formatted = private_key_formatted_bytes.decode()
+public_key_formatted_bytes = private_key.public_key().public_bytes(
+    encoding = Encoding.OpenSSH,
+    format = PublicFormat.OpenSSH
+)
+public_key_formatted = public_key_formatted_bytes.decode()
+
+print("Writing generated public key to authorized_keys...")
+authorized_keys_file = pathlib.Path("~{{ guacamole_user }}/.ssh/authorized_keys").expanduser()
+with authorized_keys_file.open("a") as fh:
+    fh.write(public_key_formatted)
+
+print("Writing Guacamole user mapping file...")
+guacamole_config_dir = pathlib.Path("/etc/guacamole")
+guacamole_config_dir.mkdir(mode = 0x755, exist_ok = True)
+user_mapping_file = guacamole_config_dir / "user-mapping.xml"
+# We render the file using Jinja2, since it is already available as part of cloud-init
+template = jinja2.Environment().from_string(
+"""
+<user-mapping>
+    <authorize username="portal" password="portal">
+        <connection name="shell">
+            <protocol>ssh</protocol>
+            <param name="hostname">{{ "{{" }} guacamole_host_address }}</param>
+            <param name="port">22</param>
+            <param name="username">{{ guacamole_user }}</param>
+            <param name="private-key">{{ "{{" }} guacamole_ssh_private_key }}</param>
+            <param name="enable-sftp">true</param>
+        </connection>
+    </authorize>
+</user-mapping>
+"""
+)
+with user_mapping_file.open("w") as fh:
+    fh.write(
+        template.render(
+            guacamole_host_address = socket.gethostbyname(socket.gethostname()),
+            guacamole_ssh_private_key = private_key_formatted
+        )
+    )
+
+print("Writing Zenith configuration...")
+zenith_config_dir = pathlib.Path("/etc/zenith/{{ zenith_client_name }}")
+zenith_config_dir.mkdir(mode = 0x755, exist_ok = True)
+zenith_client_config = zenith_config_dir / "client.yaml"
+# Render the file using Jinja2
+template = jinja2.Environment().from_string(
+"""
+ssh_identity_path: /home/zenith/.ssh/id_zenith
+
+# Init options
+registrar_url: {{ "{{" }} zenith_client_registrar_url }}
+token: {{ "{{" }} zenith_client_registrar_token }}
+verify_ssl: {{ "{{" }} 'yes' if zenith_client_registrar_verify_ssl else 'no' }}
+
+# Connect options
+server_address: {{ "{{" }} zenith_client_sshd_host }}
+server_port: {{ "{{" }} zenith_client_sshd_port }}
+forward_to_host: 127.0.0.1
+forward_to_port: 8081
+
+auth_params:
+  cloud-name: {{ "{{" }} cloud_name }}
+  tenancy-id: {{ "{{" }} project_id }}
+
+"""
+)
+with zenith_client_config.open("w") as fh:
+    fh.write(
+        template.render(
+            zenith_client_registrar_url = user_metadata["azimuth_apps_registrar_url"],
+            zenith_client_registrar_token = user_metadata["azimuth_apps_registrar_token"],
+            zenith_client_registrar_verify_ssl = False,
+            zenith_client_sshd_host = user_metadata["azimuth_apps_sshd_host"],
+            zenith_client_sshd_port = user_metadata["azimuth_apps_sshd_port"],
+            cloud_name = user_metadata["azimuth_cloud_name"],
+            project_id = metadata["project_id"]
+        )
+    )
+
+print("Initialising Zenith client...")
+subprocess.run(
+    [
+        "sudo",
+        "-i",
+        "-u", "podman",
+        "podman",
+        "run",
+        "--cgroups=no-conmon",
+        "--restart=no",
+        "--name", "{{ zenith_client_name }}-init",
+        "--volume", f"{zenith_config_dir}:/etc/zenith:ro",
+        "--volume", "{{ zenith_client_name }}-ssh:/home/zenith/.ssh",
+        "{{ zenith_client_image }}",
+        "zenith-client",
+        "init",
+    ],
+    check = True
+)
+
+# Start and enable the services
+services = [
+    "guacamole.service",
+    "guacamole-server.service",
+    "guacamole-client.service",
+    "guacamole-mitm.service",
+    "{{ zenith_client_name }}.service",
+]
+
+system_bus = dbus.SystemBus()
+systemd1 = system_bus.get_object("org.freedesktop.systemd1", "/org/freedesktop/systemd1")
+manager = dbus.Interface(systemd1, "org.freedesktop.systemd1.Manager")
+print("Enabling Guacamole services...")
+manager.EnableUnitFiles(services, False, True)
+manager.Reload()
+for service in services:
+    print(f"Starting service '{service}'...")
+    manager.RestartUnit(service, "fail")

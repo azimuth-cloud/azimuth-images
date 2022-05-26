@@ -1,0 +1,29 @@
+[Unit]
+Description=Podman container-{{ podman_service_name }}.service
+Documentation=man:podman-generate-systemd(1)
+Wants=network.target
+After=network-online.target
+{% for service in podman_service_wants %}
+Wants={{ service }}.service
+After={{ service }}.service
+{% endfor %}
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Type=simple
+Restart=always
+User={{ podman_service_user }}
+Group={{ podman_service_group }}
+ExecStartPre=/usr/bin/podman pod create \
+    --replace \
+{% for port in podman_service_ports %}
+    --publish {{ port }} \
+{% endfor %}
+    --name {{ podman_service_name }}
+ExecStartPre=/usr/bin/podman pod start {{ podman_service_name }}
+ExecStart=/usr/bin/podman-pod-infra-attach.sh {{ podman_service_name }}
+ExecStop=/usr/bin/podman pod stop --ignore -t 10 {{ podman_service_name }}
+ExecStopPost=/usr/bin/podman pod rm --ignore -f {{ podman_service_name }}
+
+[Install]
+WantedBy=multi-user.target default.target

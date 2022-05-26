@@ -1,0 +1,20 @@
+---
+
+guacamole_image_prefix: ghcr.io/stackhpc
+
+guacamole_version: 1.3.0
+
+guacamole_server_image_name: guacd
+guacamole_server_image_tag: "{{ guacamole_version }}"
+guacamole_server_image: "{{ guacamole_image_prefix }}/{{ guacamole_server_image_name }}:{{ guacamole_server_image_tag }}"
+
+guacamole_client_image_name: guacamole
+guacamole_client_image_tag: "{{ guacamole_version }}"
+guacamole_client_image: "{{ guacamole_image_prefix }}/{{ guacamole_client_image_name }}:{{ guacamole_client_image_tag }}"
+
+guacamole_mitm_image_name: azimuth-guacamole-mitm
+guacamole_mitm_image_tag: main
+guacamole_mitm_image: "{{ guacamole_image_prefix }}/{{ guacamole_mitm_image_name }}:{{ guacamole_mitm_image_tag }}"
+
+# By default, use the connecting user to run the guacamole services
+guacamole_user: "{{ ansible_user }}"

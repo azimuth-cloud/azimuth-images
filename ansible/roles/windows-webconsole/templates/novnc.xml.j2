@@ -1,0 +1,9 @@
+<service>
+  <id>novnc</id>
+  <name>noVNC</name>
+  <description>Runs the noVNC web interface.</description>
+  <executable>websockify.exe</executable>
+  <arguments>127.0.0.1:5901 127.0.0.1:5900 --web C:\ProgramData\noVNC</arguments>
+  <onfailure action="restart" />
+  <log mode="roll"></log>
+</service>

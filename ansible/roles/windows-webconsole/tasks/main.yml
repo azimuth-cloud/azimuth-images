@@ -1,0 +1,166 @@
+---
+
+- name: Install TightVNC
+  chocolatey.chocolatey.win_chocolatey:
+    name: tightvnc
+    install_args: >-
+      ADDLOCAL=Server
+      SERVER_ADD_FIREWALL_EXCEPTION=0
+      SET_ACCEPTHTTPCONNECTIONS=1
+      VALUE_OF_ACCEPTHTTPCONNECTIONS=0
+      SET_USECONTROLAUTHENTICATION=1
+      VALUE_OF_USECONTROLAUTHENTICATION=0
+      SET_USEVNCAUTHENTICATION=1
+      VALUE_OF_USEVNCAUTHENTICATION=0
+      SET_ALLOWLOOPBACK=1
+      VALUE_OF_ALLOWLOOPBACK=1
+      SET_LOOPBACKONLY=1
+      VALUE_OF_LOOPBACKONLY=1
+      SET_REMOVEWALLPAPER=1
+      VALUE_OF_REMOVEWALLPAPER=0
+
+# The VNC server is only started if the web console metadata is set
+- name: Stop TightVNC service
+  ansible.windows.win_service:
+    name: tvnserver
+    state: stopped
+    start_mode: manual
+
+- name: Install Python
+  chocolatey.chocolatey.win_chocolatey:
+    name: python
+
+- name: Install websockify
+  ansible.windows.win_command: >-
+    pip install websockify
+
+- name: Download noVNC archive
+  ansible.windows.win_get_url:
+    url: "{{ novnc_archive_url }}"
+    dest: .\noVNC.zip
+
+- name: Unpack noVNC archive
+  community.windows.win_unzip:
+    src: .\noVNC.zip
+    dest: .\noVNC
+    delete_archive: yes
+
+- name: Make noVNC data directory
+  ansible.windows.win_file:
+    path: C:\ProgramData\noVNC
+    state: directory
+
+- name: Copy required noVNC files to data directory
+  ansible.windows.win_copy:
+    remote_src: yes
+    src: .\noVNC\noVNC-{{ novnc_version }}\{{ item }}
+    dest: C:\ProgramData\noVNC\
+  loop:
+    - vnc.html
+    - app
+    - core
+    - vendor
+
+- name: Remove noVNC unpack directory
+  ansible.windows.win_file:
+    path: .\noVNC
+    state: absent
+
+- name: Install noVNC index file
+  ansible.windows.win_template:
+    src: novnc-index.html.j2
+    dest: C:\ProgramData\noVNC\index.html
+
+- name: Make noVNC program directory
+  ansible.windows.win_file:
+    path: C:\Program Files\noVNC
+    state: directory
+
+- name: Install Windows service wrapper for noVNC
+  ansible.windows.win_get_url:
+    url: "{{ winsw_exe_url }}"
+    dest: C:\Program Files\noVNC\novnc.exe
+
+- name: Install service config for noVNC
+  ansible.windows.win_template:
+    src: novnc.xml.j2
+    dest: C:\Program Files\noVNC\novnc.xml
+
+- name: Install noVNC service
+  ansible.windows.win_command: >-
+    novnc.exe install
+  args:
+    chdir: C:\Program Files\noVNC
+  register: novnc_service_install
+  changed_when: novnc_service_install.rc == 0
+  failed_when: >-
+    novnc_service_install.rc != 0 and
+    'already exists' not in novnc_service_install.stdout
+
+- name: Install Git
+  chocolatey.chocolatey.win_chocolatey:
+    name: git.install
+    package_params: >-
+      /GitOnlyOnPath
+      /NoShellIntegration
+      /NoGuiHereIntegration
+      /NoShellHereIntegration
+      /NoOpenSSH
+
+- name: Add Git commands to PATH
+  ansible.windows.win_path:
+    elements:
+      - C:\Program Files\Git\cmd
+
+- name: Clone Zenith codebase
+  ansible.windows.win_command: >-
+    git.exe clone {{ zenith_repo_url }} "C:\Program Files\Zenith"
+  register: zenith_clone
+  changed_when: zenith_clone.rc == 0
+  failed_when: zenith_clone.rc != 0 and 'already exists' not in zenith_clone.stderr
+
+- name: Checkout specified version of Zenith
+  ansible.windows.win_command: >-
+    git.exe -C "C:\Program Files\Zenith" checkout {{ zenith_version }}
+  register: zenith_checkout
+  changed_when: "'already on' not in zenith_checkout.stderr.lower()"
+
+- name: Pull changes for Zenith
+  ansible.windows.win_command: >-
+    git.exe -C "C:\Program Files\Zenith" pull
+  register: zenith_pull
+  changed_when: "'already up to date' not in zenith_pull.stdout.lower()"
+
+- name: Install Zenith client requirements
+  ansible.windows.win_command: >-
+    pip.exe install -r "C:\Program Files\Zenith\client\requirements.txt"
+
+- name: Install Zenith client
+  ansible.windows.win_command: >-
+    pip.exe install --no-deps -e "C:\Program Files\Zenith\client"
+
+- name: Install Windows service wrapper for Zenith client
+  ansible.windows.win_get_url:
+    url: "{{ winsw_exe_url }}"
+    dest: C:\Program Files\Zenith\ZenithClient.exe
+
+- name: Install service config for Zenith client
+  ansible.windows.win_template:
+    src: zenithclient.xml.j2
+    dest: C:\Program Files\Zenith\ZenithClient.xml
+
+- name: Install Zenith client service
+  ansible.windows.win_command: >-
+    ZenithClient.exe install
+  args:
+    chdir: C:\Program Files\Zenith
+  register: zenith_client_service_install
+  changed_when: zenith_client_service_install.rc == 0
+  failed_when: >-
+    zenith_client_service_install.rc != 0 and
+    'already exists' not in zenith_client_service_install.stdout
+
+- name: Install cloudbase-init script
+  ansible.windows.win_template:
+    src: init.ps1.j2
+    dest: C:\Program Files\Cloudbase Solutions\Cloudbase-Init\LocalScripts\webconsole-init.ps1
