@@ -7,7 +7,7 @@ winsw_version: v2.11.0
 winsw_exe_url: https://github.com/winsw/winsw/releases/download/{{ winsw_version }}/WinSW-x86.exe
 
 zenith_repo_url: https://github.com/stackhpc/zenith.git
-zenith_version: feature/windows-client
+zenith_version: main
 
 novnc_redirect_params: autoconnect=1&reconnect=1&show_dot=1
 novnc_redirect_url: "./vnc.html?{{ novnc_redirect_params }}"
