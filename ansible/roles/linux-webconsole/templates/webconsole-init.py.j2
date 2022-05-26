@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 import pathlib
-import subprocess
+import secrets
 import socket
+import subprocess
 import sys
 
 from cryptography.hazmat.backends import default_backend
@@ -52,7 +53,25 @@ public_key_formatted = public_key_formatted_bytes.decode()
 print("Writing generated public key to authorized_keys...")
 authorized_keys_file = pathlib.Path("~{{ guacamole_user }}/.ssh/authorized_keys").expanduser()
 with authorized_keys_file.open("a") as fh:
-    fh.write(public_key_formatted)
+    fh.write(public_key_formatted + "\n")
+
+{% if desktop_enabled %}
+print("Generating VNC password for Guacamole...")
+vnc_password = secrets.token_hex(32)
+print("Writing VNC password file...")
+subprocess.run(
+    [
+        "sudo",
+        "-i",
+        "-u", "{{ guacamole_user }}",
+        "vncpasswd",
+    ],
+    # vncpasswd expects a verification, so send the password twice
+    input = "\n".join([vnc_password, vnc_password]),
+    text = True,
+    check = True
+)
+{% endif %}
 
 print("Writing Guacamole user mapping file...")
 guacamole_config_dir = pathlib.Path("/etc/guacamole")
@@ -71,6 +90,16 @@ template = jinja2.Environment().from_string(
             <param name="private-key">{{ "{{" }} guacamole_ssh_private_key }}</param>
             <param name="enable-sftp">true</param>
         </connection>
+{% if desktop_enabled %}
+        <connection name="desktop">
+            <protocol>vnc</protocol>
+            <param name="hostname">{{ "{{" }} guacamole_host_address }}</param>
+            <param name="port">5901</param>
+            <param name="autoretry">3</param>
+            <param name="username">{{ guacamole_user }}</param>
+            <param name="password">{{ "{{" }} guacamole_user_vnc_password }}</param>
+        </connection>
+{% endif %}
     </authorize>
 </user-mapping>
 """
@@ -79,7 +108,10 @@ with user_mapping_file.open("w") as fh:
     fh.write(
         template.render(
             guacamole_host_address = socket.gethostbyname(socket.gethostname()),
-            guacamole_ssh_private_key = private_key_formatted
+            guacamole_ssh_private_key = private_key_formatted,
+{% if desktop_enabled %}
+            guacamole_user_vnc_password = vnc_password
+{% endif %}
         )
     )
 
@@ -144,6 +176,9 @@ subprocess.run(
 
 # Start and enable the services
 services = [
+{% if desktop_enabled %}
+    "vncserver@:1.service",
+{% endif %}
     "guacamole.service",
     "guacamole-server.service",
     "guacamole-client.service",

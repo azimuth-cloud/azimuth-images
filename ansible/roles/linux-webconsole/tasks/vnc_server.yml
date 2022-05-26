@@ -20,13 +20,13 @@
 
     - name: Install VNC startup script
       copy:
-        src: xstartup
+        src: vnc_server/xstartup
         dest: /etc/vnc/xstartup
         mode: +x
 
     - name: Install vncserver systemd unit file
       copy:
-        src: vncserver@.service
+        src: vnc_server/vncserver@.service
         dest: /etc/systemd/system/
   when: ansible_distribution == 'Ubuntu'
 
@@ -37,7 +37,7 @@
 
 - name: Install systemd overrides
   copy:
-    src: "{{ item }}"
+    src: "vnc_server/{{ item }}"
     dest: /etc/systemd/system/vncserver@.service.d/
   loop:
     - start_order.conf
