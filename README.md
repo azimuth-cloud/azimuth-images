@@ -12,6 +12,20 @@ converting to an image. The result is a private image in the OpenStack project.
 
 ## Building an image
 
+Before building an image, you must configure OpenStack authentication, using
+either an RC file or `clouds.yaml`, e.g.:
+
+```sh
+export OS_CLOUD=openstack
+```
+
+Ansible must be installed on the machine that executes Packer, and the required
+collections must be installed:
+
+```sh
+ansible-galaxy install -f -r ./requirements.yml
+```
+
 The Packer templates are in the [packer](./packer) directory of this repository.
 To build an image, just run the following `packer` command:
 
