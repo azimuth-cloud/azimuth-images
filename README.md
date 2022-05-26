@@ -19,8 +19,8 @@ either an RC file or `clouds.yaml`, e.g.:
 export OS_CLOUD=openstack
 ```
 
-Ansible must be installed on the machine that executes Packer, and the required
-collections must be installed:
+Ansible must be installed on the machine that executes Packer, and the
+[required collections](./requirements.yml) must be installed:
 
 ```sh
 ansible-galaxy install -f -r ./requirements.yml
