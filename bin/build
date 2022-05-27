@@ -4,14 +4,23 @@ set -e
 
 REPO_ROOT="$(dirname $(dirname $(realpath ${BASH_SOURCE[0]:-${(%):-%x}})))"
 
-echo "$PACKER_ENVIRONMENT"
-echo "$PACKER_TEMPLATE"
-echo "$PACKER_VARS_FILES"
+# Build the list of vars files
+PACKER_VAR_FILE_ARGS=
+IFS="," read -ra PACKER_VAR_FILES_ARR <<< "$PACKER_VAR_FILES"
+for FILE in "${PACKER_VAR_FILES_ARR[@]}"; do
+    COMMON_FILE="$REPO_ROOT/vars/$FILE.pkvars.hcl"
+    if [ -f "$COMMON_FILE" ]; then
+        PACKER_VAR_FILE_ARGS="$PACKER_VAR_FILE_ARGS --var-file=$COMMON_FILE"
+    fi
+done
+for FILE in "${PACKER_VAR_FILES_ARR[@]}"; do
+    ENVIRONMENT_FILE="$REPO_ROOT/vars/$PACKER_ENVIRONMENT/$FILE.pkvars.hcl"
+    if [ -f "$ENVIRONMENT_FILE" ]; then
+        PACKER_VAR_FILE_ARGS="$PACKER_VAR_FILE_ARGS --var-file=$ENVIRONMENT_FILE"
+    fi
+done
 
-while IFS="," read -r FILE; do
-  echo "$FILE";
-done <<< "$PACKER_VARS_FILES"
-
-exit 1
-
-# PACKER_LOG=1 packer build --on-error=cleanup "$REPO_ROOT/packer/$PACKER_TEMPLATE.pkr.hcl"
+PACKER_LOG=1 packer build \
+  --on-error=cleanup \
+  $PACKER_VAR_FILE_ARGS \
+  "$REPO_ROOT/packer/$PACKER_TEMPLATE.pkr.hcl"

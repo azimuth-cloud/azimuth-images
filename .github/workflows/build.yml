@@ -11,7 +11,7 @@ jobs:
           # - template: linux-desktop
           - name: ubuntu-webconsole
             template: linux-webconsole
-            vars-files: common,linux,ubuntu
+            var-files: common,linux,ubuntu
           # - template: windows-webconsole
     name: ${{ matrix.name }}
     steps:
@@ -32,7 +32,7 @@ jobs:
           OS_CLOUD: openstack
           PACKER_ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
           PACKER_TEMPLATE: ${{ matrix.template }}
-          PACKER_VARS_FILES: ${{ matrix.vars-files }}
+          PACKER_VAR_FILES: ${{ matrix.var-files }}
 
       # - name: Get created image name from manifest
       #   id: manifest
