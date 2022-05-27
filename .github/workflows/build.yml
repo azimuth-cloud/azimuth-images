@@ -11,13 +11,7 @@ jobs:
           # - template: linux-desktop
           - name: ubuntu-webconsole
             template: linux-webconsole
-            vars-files: |
-              common
-              linux
-              ubuntu
-              ${{ secrets.ENVIRONMENT }}/common
-              ${{ secrets.ENVIRONMENT }}/linux
-              ${{ secrets.ENVIRONMENT }}/ubuntu
+            vars-files: common,linux,ubuntu
           # - template: windows-webconsole
     name: ${{ matrix.name }}
     steps:
@@ -36,6 +30,7 @@ jobs:
         run: ./bin/build
         env:
           OS_CLOUD: openstack
+          PACKER_ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
           PACKER_TEMPLATE: ${{ matrix.template }}
           PACKER_VARS_FILES: ${{ matrix.vars-files }}
 
