@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -e
+
+REPO_ROOT="$(dirname $(dirname $(realpath ${BASH_SOURCE[0]:-${(%):-%x}})))"
+
+# Add the packer repo
+curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+
+# Install system packages
+sudo apt-get update -y
+sudo apt-get install -y packer python3-pip
+
+# Install the Python requirements
+pip install -r "$REPO_ROOT/requirements.txt"
+
+# Install the Galaxy requirements
+ansible-galaxy install -f -r "$REPO_ROOT/requirements.yml"

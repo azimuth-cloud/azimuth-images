@@ -1,0 +1,59 @@
+name: Build images
+on:
+  push:
+    branches: [main]
+jobs:
+  build_images:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          # - template: linux-desktop
+          - template: linux-webconsole
+          # - template: windows-webconsole
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Set up Packer environment
+        run: ./bin/setup
+
+      - name: Write OpenStack credentials
+        run: echo "$CLOUDS_YAML_B64" | base64 -d > ./clouds.yaml
+        env:
+          CLOUDS_YAML_B64: ${{ secrets.CLOUDS_YAML_B64 }}
+
+      - name: Build image
+        run: packer build --on-error=cleanup ./packer/${{ matrix.template }}.pkr.hcl
+        env:
+          OS_CLOUD: openstack
+          PACKER_TEMPLATE: ${{ matrix.template }}
+
+      # - name: Get created image name from manifest
+      #   id: manifest
+      #   run: |
+      #     . venv/bin/activate
+      #     IMAGE_ID=$(jq --raw-output '.builds[-1].artifact_id' packer-manifest.json)
+      #     while ! openstack image show -f value -c name $IMAGE_ID; do
+      #       sleep 30
+      #     done
+      #     IMAGE_NAME=$(openstack image show -f value -c name $IMAGE_ID)
+      #     echo "::set-output name=IMAGE_ID::$IMAGE_ID"
+      #     echo "::set-output name=IMAGE_NAME::$IMAGE_NAME"
+      #   env:
+      #     OS_CLOUD: openstack
+
+      # - name: Download image to runner
+      #   run: |
+      #     . venv/bin/activate
+      #     openstack image save --file ${{ steps.manifest.outputs.IMAGE_NAME }} ${{ steps.manifest.outputs.IMAGE_ID }}
+      #   env:
+      #     OS_CLOUD: openstack
+
+      # - name: Upload image to S3 prerelease bucket
+      #   run: |
+      #     echo "$S3_CFG" >  ~/.s3cfg
+      #     sudo apt-get install s3cmd
+      #     s3cmd put ${{ steps.manifest.outputs.IMAGE_NAME }} s3://openhpc-images-prerelease
+      #   env:
+      #     S3_CFG: ${{ secrets.ARCUS_S3_CFG }}
