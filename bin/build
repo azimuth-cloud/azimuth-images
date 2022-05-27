@@ -20,11 +20,20 @@ if [ -n "$SOURCE_IMAGE_URL" ]; then
       "$PKR_VAR_source_image_name"
 fi
 
+# Now the temporary image has been uploaded, we want to clean it up
+# whether the build is successful or not, but use the exit code from packer
+set +e
+
 echo "Building image..."
 PACKER_LOG=1 packer build --on-error=cleanup "$REPO_ROOT/packer/$PACKER_TEMPLATE.pkr.hcl"
+EXIT_CODE="$?"
+
+set -e
 
 if [ -f "$PKR_VAR_source_image_name.download" ]; then
     echo "Removing temporary image '$PKR_VAR_source_image_name'..."
     openstack image delete "$PKR_VAR_source_image_name"
     rm "$PKR_VAR_source_image_name.download"
 fi
+
+exit $EXIT_CODE
