@@ -9,12 +9,14 @@ jobs:
       matrix:
         include:
           # - template: linux-desktop
-          - template: linux-webconsole
+          - name: ubuntu-webconsole
+            template: linux-webconsole
             variables:
               image_url: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
               distro_name: ubuntu
               ssh_username: ubuntu
           # - template: windows-webconsole
+    name: ${{ matrix.name }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v2
@@ -32,7 +34,7 @@ jobs:
         env:
           OS_CLOUD: openstack
           PACKER_TEMPLATE: ${{ matrix.template }}
-          PACKER_VARIABLES: ${{ matrix.variables }}
+          PACKER_VARIABLES: ${{ toJSON(matrix.variables) }}
 
       # - name: Get created image name from manifest
       #   id: manifest
