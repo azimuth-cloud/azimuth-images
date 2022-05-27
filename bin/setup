@@ -10,7 +10,7 @@ sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(l
 
 # Install system packages
 sudo apt-get update -y
-sudo apt-get install -y packer python3-pip
+sudo apt-get install -y jq packer python3-pip s3cmd
 
 # Install the Python requirements
 pip install -r "$REPO_ROOT/requirements.txt"

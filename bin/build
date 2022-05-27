@@ -3,25 +3,7 @@
 set -eo pipefail
 
 REPO_ROOT="$(dirname $(dirname $(realpath ${BASH_SOURCE[0]:-${(%):-%x}})))"
-
-echo "Importing environment variables..."
-IFS="," read -ra PACKER_VAR_FILES_ARR <<< "$PACKER_VAR_FILES"
-for FILE in "${PACKER_VAR_FILES_ARR[@]}"; do
-    BASE_FILE="$REPO_ROOT/env/base/$FILE.env"
-    if [ -f "$BASE_FILE" ]; then
-        set -a
-        source "$BASE_FILE"
-        set +a
-    fi
-done
-for FILE in "${PACKER_VAR_FILES_ARR[@]}"; do
-    ENVIRONMENT_FILE="$REPO_ROOT/env/$PACKER_ENVIRONMENT/$FILE.env"
-    if [ -f "$ENVIRONMENT_FILE" ]; then
-        set -a
-        source "$ENVIRONMENT_FILE"
-        set +a
-    fi
-done
+source "$REPO_ROOT/bin/env-vars"
 
 # If an image URL is set, download it and upload it as a temporary image
 if [ -n "$SOURCE_IMAGE_URL" ]; then
@@ -31,6 +13,7 @@ if [ -n "$SOURCE_IMAGE_URL" ]; then
     echo "Uploading temporary image '$PKR_VAR_source_image_name' to OpenStack..."
     openstack image create \
       --progress \
+      --private \
       --container-format "${SOURCE_IMAGE_CONTAINER_FORMAT:-bare}" \
       --disk-format "${SOURCE_IMAGE_DISK_FORMAT:-qcow2}" \
       --file "$PKR_VAR_source_image_name.download" \
@@ -40,7 +23,7 @@ fi
 echo "Building image..."
 PACKER_LOG=1 packer build --on-error=cleanup "$REPO_ROOT/packer/$PACKER_TEMPLATE.pkr.hcl"
 
-if [ -f "$PKR_VAR_source_image_name.download"]; then
+if [ -f "$PKR_VAR_source_image_name.download" ]; then
     echo "Removing temporary image '$PKR_VAR_source_image_name'..."
     openstack image delete "$PKR_VAR_source_image_name"
     rm "$PKR_VAR_source_image_name.download"

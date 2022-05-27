@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+echo "Importing environment variables..."
+IFS="," read -ra ENV_VAR_FILES_ARR <<< "$ENV_VAR_FILES"
+for FILE in "${ENV_VAR_FILES_ARR[@]}"; do
+    BASE_FILE="$REPO_ROOT/env/base/$FILE.env"
+    if [ -f "$BASE_FILE" ]; then
+        set -a
+        source "$BASE_FILE"
+        set +a
+    fi
+done
+for FILE in "${ENV_VAR_FILES_ARR[@]}"; do
+    ENVIRONMENT_FILE="$REPO_ROOT/env/$ENVIRONMENT/$FILE.env"
+    if [ -f "$ENVIRONMENT_FILE" ]; then
+        set -a
+        source "$ENVIRONMENT_FILE"
+        set +a
+    fi
+done

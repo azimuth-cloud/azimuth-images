@@ -30,9 +30,16 @@ jobs:
         run: ./bin/build
         env:
           OS_CLOUD: openstack
-          PACKER_ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
+          ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
           PACKER_TEMPLATE: ${{ matrix.template }}
-          PACKER_VAR_FILES: ${{ matrix.var-files }}
+          ENV_VAR_FILES: ${{ matrix.var-files }}
+
+      - name: Publish image
+        run: ./bin/publish
+        env:
+          OS_CLOUD: openstack
+          ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
+          ENV_VAR_FILES: ${{ matrix.var-files }}
 
       # - name: Get created image name from manifest
       #   id: manifest
