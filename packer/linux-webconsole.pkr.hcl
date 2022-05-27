@@ -31,7 +31,6 @@ variable "volume_size" {
 
 variable "disk_format" {
   type = string
-  default = "qcow2"
 }
 
 variable "distro_name" {

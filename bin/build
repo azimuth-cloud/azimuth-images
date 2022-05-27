@@ -5,7 +5,11 @@ set -e
 REPO_ROOT="$(dirname $(dirname $(realpath ${BASH_SOURCE[0]:-${(%):-%x}})))"
 
 echo "$PACKER_TEMPLATE"
-echo "$PACKER_VARIABLES"
+echo "$PACKER_VARS_FILES"
+
+while IFS= read -r FILE; do
+  echo "$FILE";
+done <<< "$PACKER_VARS_FILES"
 
 exit 1
 
