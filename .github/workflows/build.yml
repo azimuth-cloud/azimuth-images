@@ -10,6 +10,10 @@ jobs:
         include:
           # - template: linux-desktop
           - template: linux-webconsole
+            variables:
+              image_url: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
+              distro_name: ubuntu
+              ssh_username: ubuntu
           # - template: windows-webconsole
     steps:
       - name: Check out the repository
@@ -24,10 +28,11 @@ jobs:
           CLOUDS_YAML_B64: ${{ secrets.CLOUDS_YAML_B64 }}
 
       - name: Build image
-        run: packer build --on-error=cleanup ./packer/${{ matrix.template }}.pkr.hcl
+        run: ./bin/build
         env:
           OS_CLOUD: openstack
           PACKER_TEMPLATE: ${{ matrix.template }}
+          PACKER_VARIABLES: ${{ matrix.variables }}
 
       # - name: Get created image name from manifest
       #   id: manifest
