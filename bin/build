@@ -1,26 +1,42 @@
 #!/usr/bin/env bash
 
-set -e
+set -exo pipefail
 
-REPO_ROOT="$(dirname $(dirname $(realpath ${BASH_SOURCE[0]:-${(%):-%x}})))"
-
-# Build the list of vars files
-PACKER_VAR_FILE_ARGS=
+#REPO_ROOT="$(dirname $(dirname $(realpath ${BASH_SOURCE[0]:-${(%):-%x}})))"
+REPO_ROOT="."
+# Import any environment variables
 IFS="," read -ra PACKER_VAR_FILES_ARR <<< "$PACKER_VAR_FILES"
 for FILE in "${PACKER_VAR_FILES_ARR[@]}"; do
-    COMMON_FILE="$REPO_ROOT/vars/$FILE.pkvars.hcl"
-    if [ -f "$COMMON_FILE" ]; then
-        PACKER_VAR_FILE_ARGS="$PACKER_VAR_FILE_ARGS --var-file=$COMMON_FILE"
+    BASE_FILE="$REPO_ROOT/env/base/$FILE.env"
+    if [ -f "$BASE_FILE" ]; then
+        set -a
+        source "$BASE_FILE"
+        set +a
     fi
 done
 for FILE in "${PACKER_VAR_FILES_ARR[@]}"; do
-    ENVIRONMENT_FILE="$REPO_ROOT/vars/$PACKER_ENVIRONMENT/$FILE.pkvars.hcl"
+    ENVIRONMENT_FILE="$REPO_ROOT/env/$PACKER_ENVIRONMENT/$FILE.env"
     if [ -f "$ENVIRONMENT_FILE" ]; then
-        PACKER_VAR_FILE_ARGS="$PACKER_VAR_FILE_ARGS --var-file=$ENVIRONMENT_FILE"
+        set -a
+        source "$ENVIRONMENT_FILE"
+        set +a
     fi
 done
 
-PACKER_LOG=1 packer build \
-  --on-error=cleanup \
-  $PACKER_VAR_FILE_ARGS \
-  "$REPO_ROOT/packer/$PACKER_TEMPLATE.pkr.hcl"
+# If an image URL is set, download it and upload it as a temporary image
+if [ -n "$SOURCE_IMAGE_URL" ]; then
+    export PKR_VAR_source_image_name="packer-$(uuidgen | tr '[:upper:]' '[:lower:]')"
+    curl -#Lo "$PKR_VAR_source_image_name.download" "$SOURCE_IMAGE_URL"
+    openstack image create \
+      --container-format "${SOURCE_IMAGE_CONTAINER_FORMAT:-bare}" \
+      --disk-format "${SOURCE_IMAGE_DISK_FORMAT:-qcow2}" \
+      --file "$PKR_VAR_source_image_name.download" \
+      "$PKR_VAR_source_image_name"
+fi
+
+PACKER_LOG=1 packer build --on-error=cleanup "$REPO_ROOT/packer/$PACKER_TEMPLATE.pkr.hcl"
+
+if [ -f "$PKR_VAR_source_image_name.download"]; then
+    rm "$PKR_VAR_source_image_name.download"
+    openstack image delete "$PKR_VAR_source_image_name"
+fi

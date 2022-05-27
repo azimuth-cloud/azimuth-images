@@ -4,7 +4,7 @@
 # "timestamp" template function replacement:s
 locals { timestamp = formatdate("YYMMDD-hhmm", timestamp())}
 
-variable "external_source_image_url" {
+variable "source_image_name" {
   type = string
 }
 
@@ -48,7 +48,7 @@ source "openstack" "linux-webconsole" {
   image_min_disk = "${var.volume_size}"
   image_tags = ["azimuth_web_console_supported"]
 
-  external_source_image_url = "${var.external_source_image_url}"
+  source_image_name = "${var.source_image_name}"
   flavor = "${var.flavor}"
   networks = ["${var.network}"]
   security_groups = "${var.security_groups}"
