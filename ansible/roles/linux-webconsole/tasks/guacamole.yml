@@ -27,7 +27,9 @@
   when: desktop_enabled | bool
 
 - name: Install systemd unit for guacamole pod
-  include_tasks: podman/systemd-unit.yml
+  include_role: 
+    name: podman
+    tasks_from: systemd-unit.yml
   vars:
     podman_service_name: guacamole
     podman_service_type: pod
@@ -39,7 +41,9 @@
   become_user: "{{ podman_service_user }}"
 
 - name: Install systemd unit for guacamole server
-  include_tasks: podman/systemd-unit.yml
+  include_role: 
+    name: podman
+    tasks_from: systemd-unit.yml
   vars:
     podman_service_name: guacamole-server
     podman_service_type: container
@@ -58,7 +62,9 @@
   become_user: "{{ podman_service_user }}"
 
 - name: Install systemd unit for guacamole client
-  include_tasks: podman/systemd-unit.yml
+  include_role: 
+    name: podman
+    tasks_from: systemd-unit.yml
   vars:
     podman_service_name: guacamole-client
     podman_service_type: container
@@ -80,7 +86,9 @@
   become_user: "{{ podman_service_user }}"
 
 - name: Install systemd unit for guacamole MITM
-  include_tasks: podman/systemd-unit.yml
+  include_role: 
+    name: podman
+    tasks_from: systemd-unit.yml
   vars:
     podman_service_name: guacamole-mitm
     podman_service_type: container
