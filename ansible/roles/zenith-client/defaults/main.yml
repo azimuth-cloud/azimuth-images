@@ -5,3 +5,4 @@ zenith_client_image_name: zenith-client
 zenith_client_image_tag: main
 zenith_client_image: "{{ zenith_client_image_prefix }}/{{ zenith_client_image_name }}:{{ zenith_client_image_tag }}"
 
+zenith_client_wants: []
