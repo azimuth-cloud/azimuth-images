@@ -1,0 +1,46 @@
+---
+# Include the variables for the OS distribution we are running on
+# Note that we don't use first_found across the whole list of files because
+# we want to include all the ones that apply, in the order in which they are defined
+# However we do use first_found to handle the case where the file doesn't exist at all
+- name: Include OS-specific variables
+  include_vars: "{{ vars_file }}"
+  vars:
+    vars_file: "{{ lookup('first_found', lookup_params) }}"
+    lookup_params:
+      files: ["{{ item }}"]
+      skip: true
+  when: vars_file
+  loop:
+    - "{{ role_path }}/vars/{{ ansible_os_family }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+
+- name: OS-specific pre-installation tasks
+  include_tasks: "{{ preinstall_tasks }}"
+  vars:
+    preinstall_tasks: "{{ lookup('first_found', lookup_params) }}"
+    lookup_params:
+      files:
+        - "{{ role_path }}/tasks/preinstall/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+        - "{{ role_path }}/tasks/preinstall/{{ ansible_distribution }}.yml"
+        - "{{ role_path }}/tasks/preinstall/{{ ansible_os_family }}.yml"
+      # If none of those exist for the current OS, that is fine
+      skip: true
+  when: preinstall_tasks
+
+- name: Install podman packages
+  package:
+    name: "{{ podman_packages }}"
+    state: latest
+
+- name: Install script for attaching to pod infra containers
+  copy:
+    src: podman-pod-infra-attach.sh
+    dest: /usr/bin/
+    mode: +x
+
+- name: Create podman user
+  user:
+    name: podman
+    home: /var/lib/podman

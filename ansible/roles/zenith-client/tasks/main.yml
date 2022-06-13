@@ -1,5 +1,13 @@
 ---
 
+- name: Run prechecks for Zenith-client variables
+  assert:
+    that: "{{ item }} is defined"
+    fail_msg: "{{ item }} must be defined"
+  loop:
+    - zenith_client_name
+    - zenith_client_pod
+
 - name: Ensure Zenith config directory exists
   file:
     path: /etc/zenith/{{ zenith_client_name }}
@@ -18,7 +26,9 @@
   become_user: "{{ podman_service_user }}"
 
 - name: Install systemd unit for Zenith client
-  include_tasks: podman/systemd-unit.yml
+  include_role:
+    name: podman
+    tasks_from: systemd-unit.yml
   vars:
     podman_service_name: "{{ zenith_client_name }}"
     podman_service_type: container
@@ -29,3 +39,4 @@
     podman_service_volumes:
       - /etc/zenith/{{ zenith_client_name }}:/etc/zenith:ro
       - "{{ zenith_client_name }}-ssh:/home/zenith/.ssh:ro"
+
