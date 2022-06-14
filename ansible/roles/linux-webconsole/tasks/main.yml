@@ -18,9 +18,7 @@
     - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
 
 - name: Update apt cache
-  apt:
-    update_cache: yes
-    cache_valid_time: 0
+  command: apt update
   when: ansible_os_family == "Debian"
 
 - name: Ensure up-to-date CA certificates
