@@ -19,9 +19,7 @@
 
 # We run the command manually as the update_cache argument to the apt module is unreliable
 - name: Update apt cache
-  apt:
-    update_cache: yes
-    cache_valid_time: 0
+  command: apt update
   when: ansible_os_family == "Debian"
 
 - name: Ensure up-to-date CA certificates
@@ -31,9 +29,10 @@
 
 # Required for become to an unprivileged user to work
 - name: Install ACL package
-  package:
+  apt:
     name: acl
     state: present
+  when: ansible_os_family == "Debian"
 
 - block:
     - include_tasks: desktop.yml
