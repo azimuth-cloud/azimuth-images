@@ -1,0 +1,37 @@
+---
+
+# We run the command manually as the update_cache argument to the apt module is unreliable
+- name: Update apt cache
+  command: apt update
+  when: ansible_os_family == "Debian"
+  retries: 5
+  delay: 5
+  register: result
+  until: result is not failed
+
+- name: Ensure up-to-date CA certificates
+  package:
+    name: ca-certificates
+    state: latest
+
+# Required for become to an unprivileged user to work
+# Update apt cache again for fun
+- name: Install ACL package
+  apt:
+    name: acl
+    state: present
+    update_cache: true
+  when: ansible_os_family == "Debian"
+
+- include_role:
+    name: podman
+    tasks_from: install.yml
+
+- include_tasks: repo2docker.yml
+
+- import_role:
+    name: zenith-client
+    tasks_from: main.yml
+
+- name: Run cloud-init cleanup
+  command: cloud-init clean --logs --seed

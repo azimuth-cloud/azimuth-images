@@ -1,0 +1,5 @@
+---
+zenith_client_name: repo2docker-zenith-client
+
+# Join the repo2docker pod to access the notebook on localhost
+zenith_client_pod: repo2docker
