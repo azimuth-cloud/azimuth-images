@@ -9,7 +9,7 @@ source "$REPO_ROOT/bin/env-vars"
 if [ -n "$SOURCE_IMAGE_URL" ]; then
     export PKR_VAR_source_image_name="packer-$(uuidgen | tr '[:upper:]' '[:lower:]')"
     echo "Downloading source image from '$SOURCE_IMAGE_URL'..."
-    curl -#Lo "$PKR_VAR_source_image_name.download" "$SOURCE_IMAGE_URL"
+    curl -Lo "$PKR_VAR_source_image_name.download" "$SOURCE_IMAGE_URL"
     echo "Uploading temporary image '$PKR_VAR_source_image_name' to OpenStack..."
     openstack image create \
       --progress \
