@@ -7,3 +7,6 @@ podman_service_env: {}
 podman_service_volumes: []
 podman_service_user: podman
 podman_service_group: "{{ podman_service_user }}"
+podman_unqualified_search_registries:
+  - "docker.io"
+  - "quay.io"
