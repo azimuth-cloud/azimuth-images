@@ -1,0 +1,74 @@
+---
+
+- name: Install python-pip and python-venv
+  package:
+    name: 
+      - python3-pip
+      - python3-venv
+
+- name: Create repo2docker virtual environment and upgrade pip
+  pip:
+    name: pip
+    state: latest
+    virtualenv: "{{ repo2docker_venv }}"
+    virtualenv_command: "python3 -m venv"
+
+- name: Create data directory
+  file:
+    state: directory
+    path: "{{ item }}"
+    mode: 0777
+    owner: "{{ podman_service_user }}"
+    group: "{{ podman_service_user }}"
+  loop: "{{ repo2docker_service_data_volumes }}"
+
+- name: Install repo2docker in virtual environment
+  pip:
+    name: 
+      - jupyter-repo2docker
+      - repo2podman
+    virtualenv: "{{ repo2docker_venv }}"
+    virtualenv_command: "python3 -m venv"
+
+- name: Install systemd unit for repo2docker pod
+  include_role: 
+    name: podman
+    tasks_from: systemd-unit.yml
+  vars:
+    podman_service_name: repo2docker
+    podman_service_type: pod
+
+- name: Install systemd unit for repo2docker notebook
+  include_role: 
+    name: podman
+    tasks_from: systemd-unit.yml
+  vars:
+    podman_service_name: "{{ repo2docker_service_name }}"
+    podman_service_type: container
+    podman_service_image: "{{ repo2docker_service_image }}"
+    podman_service_pod: repo2docker
+    podman_service_command: "{{ repo2docker_service_command }}"
+    podman_service_volumes: "{{ repo2docker_service_data_volumes | zip(repo2docker_service_data_volumes) | map('join', ':') }}"
+
+- name: Write repo2docker-init script
+  template:
+    src: repo2docker-init.py.j2
+    dest: /usr/local/bin/repo2docker-init
+    mode: +x
+
+- name: Write mount-additional-block-device script
+  copy:
+    src: mount-additional-block-devices.py
+    dest: /usr/local/bin/mount-additional-block-devices
+    mode: +x
+
+- name: Install systemd unit for repo2docker-init
+  template:
+    src: repo2docker-init.service.j2
+    dest: /etc/systemd/system/repo2docker-init.service
+
+- name: Ensure webconsole-init is enabled
+  systemd:
+    daemon_reload: yes
+    name: repo2docker-init.service
+    enabled: yes
