@@ -8,7 +8,7 @@ repo2docker_service_name: repo2docker-notebook-server
 repo2docker_service_image: repo2docker-notebook-server
 repo2docker_service_command: >
   repo2docker-entrypoint
-  jupyter notebook --ip 0.0.0.0
+  jupyter notebook --ip 127.0.0.1
   --NotebookApp.token=''
   --no-browser
 repo2docker_service_data_volumes: 
