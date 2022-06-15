@@ -15,16 +15,17 @@ openstack image save --file "$IMAGE_NAME.$PKR_VAR_disk_format" "$IMAGE_ID"
 echo "Deleting image '$IMAGE_NAME' from OpenStack..."
 openstack image delete "$IMAGE_ID"
 
+echo "Writing s3cmd config file..."
+cat <<EOF > ~/.s3cfg
+host_base = ${S3_HOST}
+host_bucket = ${S3_HOST_BUCKET:-"$S3_HOST"}
+access_key = ${S3_ACCESS_KEY}
+secret_key = ${S3_SECRET_KEY}
+use_https = True
+EOF
+
 echo "Ensuring bucket '$PRERELEASE_BUCKET' exists..."
-s3cmd mb "s3://$PRERELEASE_BUCKET" \
-  --host="$S3_HOST" \
-  --host-bucket="${S3_HOST_BUCKET:-"$S3_HOST"}" \
-  --access_key="$S3_ACCESS_KEY" \
-  --secret_key="$S3_SECRET_KEY"
+s3cmd mb "s3://$PRERELEASE_BUCKET"
 
 echo "Uploading image '$IMAGE_NAME' to bucket '$PRERELEASE_BUCKET'..."
-s3cmd put "$IMAGE_NAME.$PKR_VAR_disk_format" "s3://$PRERELEASE_BUCKET" \
-  --host="$S3_HOST" \
-  --host-bucket="${S3_HOST_BUCKET:-"$S3_HOST"}" \
-  --access_key="$S3_ACCESS_KEY" \
-  --secret_key="$S3_SECRET_KEY"
+s3cmd put "$IMAGE_NAME.$PKR_VAR_disk_format" "s3://$PRERELEASE_BUCKET"
