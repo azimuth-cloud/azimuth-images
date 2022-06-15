@@ -44,3 +44,14 @@
   user:
     name: podman
     home: /var/lib/podman
+
+- name: Enable linger for podman user
+  command: "loginctl enable-linger podman"
+
+- name: Add unqualified search registries config file
+  template:
+    src: "unqualified.conf.j2"
+    dest: "/etc/containers/registries.conf.d/unqualified.conf"
+    owner: root
+    group: root
+    mode: 0644
