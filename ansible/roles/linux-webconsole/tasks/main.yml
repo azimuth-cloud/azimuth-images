@@ -17,7 +17,6 @@
     - "{{ role_path }}/vars/{{ ansible_distribution }}.yml"
     - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
 
-# We run the command manually as the update_cache argument to the apt module is unreliable
 - name: Update apt cache
   apt:
     update_cache: yes
@@ -30,10 +29,12 @@
     state: latest
 
 # Required for become to an unprivileged user to work
+# Using the apt module seems to work more reliably than package :-/
 - name: Install ACL package
-  package:
+  apt:
     name: acl
     state: present
+  when: ansible_os_family == "Debian"
 
 - block:
     - include_tasks: desktop.yml
