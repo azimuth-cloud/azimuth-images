@@ -8,11 +8,12 @@ jobs:
     strategy:
       matrix:
         include:
-          # - template: linux-desktop
+          - name: ubuntu-desktop
+            template: linux-desktop
+            var-files: common,linux,ubuntu
           - name: ubuntu-webconsole
             template: linux-webconsole
             var-files: common,linux,ubuntu
-          # - template: windows-webconsole
     name: ${{ matrix.name }}
     steps:
       - name: Check out the repository
