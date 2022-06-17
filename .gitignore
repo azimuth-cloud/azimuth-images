@@ -1,0 +1,5 @@
+.python-version
+clouds.yaml*
+/*.pkvars.hcl
+packer-manifest.json
+s3cfg
