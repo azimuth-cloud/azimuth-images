@@ -18,8 +18,19 @@ user_metadata = metadata.get("meta", {})
 
 print("Creating filesystem and mounting extra data volumes...")
 
-block_dev_cmd = shlex.split("/usr/local/bin/mount-additional-block-devices {{ repo2docker_service_data_volumes | join(",")}}")
+block_dev_cmd = shlex.split("/usr/local/bin/mount-additional-block-devices {{ repo2docker_service_data_volumes | join(",") }}")
 subprocess.run(block_dev_cmd, check=True)
+
+{% for mountpoint in repo2docker_service_data_volumes %}
+subprocess.run(
+        [
+            "chown",
+            "-R",
+            "{{ podman_service_user }}:{{ podman_service_user }}",
+            "{{ mountpoint }}"
+        ], check=True
+)
+{% endfor %}
 
 print("Building repository notebook with repo2docker...")
 subprocess.run(
