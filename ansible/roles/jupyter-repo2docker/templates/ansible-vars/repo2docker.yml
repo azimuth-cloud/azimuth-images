@@ -1,0 +1,38 @@
+---
+
+partition_setup:
+  - mountpoint: "/etc/zenith/ssh"
+    fs_type: ext4
+    opts: "defaults,nofail"
+    part_start: "0%"
+    part_end: "1GiB"
+    owner: podman
+    group: podman
+    mode: "0600"
+    disk_index: 0
+  - mountpoint: "/data"
+    fs_type: btrfs
+    opts: "defaults,nofail"
+    part_start: "1GiB"
+    part_end: "100%"
+    owner: podman
+    group: podman
+    mode: "0755"
+    disk_index: 0
+
+repo2docker_venv: /var/lib/repo2docker/venv
+repo2docker_service_image: repo2docker-notebook-server
+repo2docker_service_name: repo2docker-notebook-server
+repo2docker_forward_to_host: "127.0.0.1"
+repo2docker_forward_to_port: "8888"
+zenith_client_name: repo2docker-zenith-client
+zenith_config_dir: /etc/zenith/{{ zenith_client_name }}
+zenith_client_image_prefix: ghcr.io/stackhpc
+zenith_client_image_name: zenith-client
+zenith_client_image_tag: main
+zenith_client_image: "{{ zenith_client_image_prefix }}/{{ zenith_client_image_name }}:{{ zenith_client_image_tag }}"
+
+systemd_services:
+  - "repo2docker.service"
+  - "{{ repo2docker_service_name }}.service"
+  - "{{ zenith_client_name }}.service"

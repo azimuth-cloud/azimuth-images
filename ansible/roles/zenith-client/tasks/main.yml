@@ -38,5 +38,5 @@
     podman_service_command: "zenith-client connect"
     podman_service_volumes:
       - /etc/zenith/{{ zenith_client_name }}:/etc/zenith:ro
-      - "{{ zenith_client_name }}-ssh:/home/zenith/.ssh:ro"
+      - /etc/zenith/ssh/{{ zenith_client_name }}:/home/zenith/.ssh:ro
 

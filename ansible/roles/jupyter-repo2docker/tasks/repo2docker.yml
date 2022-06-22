@@ -52,22 +52,26 @@
 
 - name: Write repo2docker-init script
   template:
-    src: repo2docker-init.py.j2
+    src: repo2docker-init.sh.j2
     dest: /usr/local/bin/repo2docker-init
     mode: +x
 
-- name: Write mount-additional-block-device script
+- name: Write repo2docker playbook
   copy:
-    src: mount-additional-block-devices.py
-    dest: /usr/local/bin/mount-additional-block-devices
-    mode: +x
+    src: repo2docker-playbook.yml
+    dest: /var/lib/ansible/playbooks/repo2docker-playbook.yml
+
+- name: Write repo2docker vars files
+  copy:
+    src: repo2docker-playbook.yml
+    dest: /var/lib/ansible/vars-files/repo2docker-playbook.yml
 
 - name: Install systemd unit for repo2docker-init
   template:
     src: repo2docker-init.service.j2
     dest: /etc/systemd/system/repo2docker-init.service
 
-- name: Ensure webconsole-init is enabled
+- name: Ensure repo2docker-init is enabled
   systemd:
     daemon_reload: yes
     name: repo2docker-init.service

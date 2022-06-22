@@ -27,6 +27,9 @@
     name: podman
     tasks_from: install.yml
 
+- include_role:
+    name: ansible
+
 - include_tasks: repo2docker.yml
 
 - import_role:
