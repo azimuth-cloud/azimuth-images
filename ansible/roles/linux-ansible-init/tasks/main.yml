@@ -1,0 +1,35 @@
+---
+
+- name: Install pip
+  package:
+    name: python3-pip
+    state: latest
+
+- name: Upgrade pip
+  pip:
+    name: pip
+    state: latest
+
+- name: Install Ansible
+  pip:
+    name:
+      - ansible
+      - jmespath
+    state: latest
+
+- name: Install ansible-init script
+  copy:
+    src: ansible-init.sh
+    dest: /usr/bin/ansible-init
+    mode: +x
+
+- name: Install systemd unit for ansible-init
+  copy:
+    src: ansible-init.service
+    dest: /etc/systemd/system/ansible-init.service
+
+- name: Ensure ansible-init service is enabled
+  systemd:
+    daemon_reload: yes
+    name: ansible-init.service
+    enabled: yes

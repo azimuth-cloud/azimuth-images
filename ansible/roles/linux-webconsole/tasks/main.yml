@@ -20,7 +20,6 @@
 - name: Update apt cache
   apt:
     update_cache: yes
-    cache_valid_time: 0
   when: ansible_os_family == "Debian"
 
 - name: Ensure up-to-date CA certificates
@@ -32,6 +31,7 @@
 # Using the apt module seems to work more reliably than package :-/
 - name: Install ACL package
   apt:
+    update_cache: yes
     name: acl
     state: present
   when: ansible_os_family == "Debian"
@@ -41,28 +41,37 @@
     - include_tasks: vnc_server.yml
   when: desktop_enabled is defined and desktop_enabled
 
-- include_tasks: podman/install.yml
+- include_role:
+    name: linux-ansible-init
+
+- include_role: 
+    name: linux-podman
+    tasks_from: install.yml
+
+- include_role:
+    name: linux-data-volumes
+  vars:
+    data_volumes:
+      - metadata_var: zenith_volume_id
+        mountpoint: /etc/zenith/ssh
+        opts: "defaults,nofail"
+        owner: podman
+        group: podman
+      - metadata_var: data_volume_id
+        mountpoint: /data
+        opts: "defaults,nofail"
+        owner: ubuntu
+        group: ubuntu
 
 - include_tasks: guacamole.yml
 
-- include_tasks: zenith_client.yml
-
-- name: Write webconsole-init script
-  template:
-    src: webconsole-init.py.j2
-    dest: /usr/bin/webconsole-init
-    mode: +x
-
-- name: Install systemd unit for webconsole-init
-  template:
-    src: webconsole-init.service.j2
-    dest: /etc/systemd/system/webconsole-init.service
-
-- name: Ensure webconsole-init is enabled
-  systemd:
-    daemon_reload: yes
-    name: webconsole-init.service
-    enabled: yes
+- import_role:
+    name: linux-zenith-client
+  vars:
+    zenith_client_name: guacamole-zenith-client
+    zenith_client_pod: guacamole
+    zenith_client_wants: [guacamole-mitm]
+    zenith_forward_to_port: 8081
 
 - name: Run cloud-init cleanup
   command: cloud-init clean --logs --seed

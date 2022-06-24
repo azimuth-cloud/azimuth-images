@@ -1,0 +1,59 @@
+---
+
+- name: Install pip
+  package:
+    name: python3-pip
+    state: latest
+
+- name: Upgrade pip
+  pip:
+    name: pip
+    state: latest
+
+- name: Install repo2docker
+  pip:
+    name: 
+      - jupyter-repo2docker
+      - repo2podman
+
+- name: Install systemd unit for repo2docker pod
+  include_role: 
+    name: linux-podman
+    tasks_from: systemd-unit.yml
+  vars:
+    podman_service_name: repo2docker
+    podman_service_type: pod
+
+- name: Install systemd unit for repo2docker notebook
+  include_role: 
+    name: linux-podman
+    tasks_from: systemd-unit.yml
+  vars:
+    podman_service_name: repo2docker-notebook-server
+    podman_service_type: container
+    podman_service_image: repo2docker-notebook-server
+    podman_service_pod: repo2docker
+    podman_service_command: |
+      repo2docker-entrypoint \
+        jupyter notebook \
+          --ip 127.0.0.1 \
+          --NotebookApp.token='' \
+          --NotebookApp.allow_remote_access=true \
+          --NotebookApp.default_url='/lab' \
+          --no-browser
+    # Mount the data volume into our pod
+    podman_service_volumes:
+      - /data:/data
+
+- name: Write repo2docker ansible-init vars file
+  copy:
+    content: "{{ repo2docker_init_vars | to_nice_yaml }}"
+    dest: /etc/ansible-init/vars/repo2docker.yml
+  vars:
+    repo2docker_init_vars: {}
+
+- name: Install repo2docker ansible-init playbook
+  copy:
+    src: repo2docker-playbook.yml
+    # Execute between data volumes and zenith client
+    dest: /etc/ansible-init/playbooks/50-repo2docker.yml

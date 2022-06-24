@@ -27,7 +27,9 @@
   when: desktop_enabled | bool
 
 - name: Install systemd unit for guacamole pod
-  include_tasks: podman/systemd-unit.yml
+  include_role: 
+    name: linux-podman
+    tasks_from: systemd-unit.yml
   vars:
     podman_service_name: guacamole
     podman_service_type: pod
@@ -39,7 +41,9 @@
   become_user: "{{ podman_service_user }}"
 
 - name: Install systemd unit for guacamole server
-  include_tasks: podman/systemd-unit.yml
+  include_role: 
+    name: linux-podman
+    tasks_from: systemd-unit.yml
   vars:
     podman_service_name: guacamole-server
     podman_service_type: container
@@ -58,7 +62,9 @@
   become_user: "{{ podman_service_user }}"
 
 - name: Install systemd unit for guacamole client
-  include_tasks: podman/systemd-unit.yml
+  include_role: 
+    name: linux-podman
+    tasks_from: systemd-unit.yml
   vars:
     podman_service_name: guacamole-client
     podman_service_type: container
@@ -80,7 +86,9 @@
   become_user: "{{ podman_service_user }}"
 
 - name: Install systemd unit for guacamole MITM
-  include_tasks: podman/systemd-unit.yml
+  include_role: 
+    name: linux-podman
+    tasks_from: systemd-unit.yml
   vars:
     podman_service_name: guacamole-mitm
     podman_service_type: container
@@ -89,3 +97,18 @@
     # Add a soft dependency on the client
     podman_service_wants:
       - guacamole-client
+
+- name: Write Guacamole ansible-init vars file
+  copy:
+    content: "{{ guacamole_init_vars | to_nice_yaml }}"
+    dest: /etc/ansible-init/vars/guacamole.yml
+  vars:
+    guacamole_init_vars:
+      desktop_enabled: "{{ desktop_enabled }}"
+      guacamole_user: "{{ guacamole_user }}"
+
+- name: Install Guacamole ansible-init playbook
+  copy:
+    src: guacamole-playbook.yml
+    # Execute between data volumes and zenith client
+    dest: /etc/ansible-init/playbooks/50-guacamole.yml

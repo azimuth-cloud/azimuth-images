@@ -1,9 +1,3 @@
 ---
 
-podman_service_type: container
-podman_service_wants: []
-podman_service_ports: []
-podman_service_env: {}
-podman_service_volumes: []
 podman_service_user: podman
-podman_service_group: "{{ podman_service_user }}"

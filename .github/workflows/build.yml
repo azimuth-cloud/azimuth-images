@@ -8,11 +8,14 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: ubuntu-desktop
-            template: linux-desktop
-            var-files: common,linux,ubuntu
+          # - name: ubuntu-desktop
+          #   template: linux-desktop
+          #   var-files: common,linux,ubuntu
           - name: ubuntu-webconsole
             template: linux-webconsole
+            var-files: common,linux,ubuntu
+          - name: jupyter-repo2docker
+            template: jupyter-repo2docker
             var-files: common,linux,ubuntu
     name: ${{ matrix.name }}
     steps:

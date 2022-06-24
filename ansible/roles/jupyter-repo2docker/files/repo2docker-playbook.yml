@@ -1,0 +1,30 @@
+---
+
+- hosts: localhost
+  gather_facts: true
+  become: true
+  vars_files:
+    - /etc/ansible-init/vars/repo2docker.yml
+  vars:
+    os_metadata: "{{ lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json }}"
+    os_user_metadata: "{{ os_metadata.get('meta', {}) }}"
+    os_project_id: "{{ os_metadata.project_id }}"
+  tasks:
+    - name: Build repo2docker image
+      command: >-
+        jupyter-repo2docker
+          --image-name repo2docker-notebook-server
+          --engine podman
+          --no-run
+          {{ os_user_metadata.repo2docker_repository }}
+      become: true
+      become_user: podman
+
+    - name: Start and enable repo2docker services
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - repo2docker
+        - repo2docker-notebook-server

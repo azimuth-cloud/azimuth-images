@@ -5,10 +5,6 @@ zenith_client_image_name: zenith-client
 zenith_client_image_tag: main
 zenith_client_image: "{{ zenith_client_image_prefix }}/{{ zenith_client_image_name }}:{{ zenith_client_image_tag }}"
 
-zenith_client_name: guacamole-zenith-client
+zenith_client_wants: []
 
-# Join the guacamole pod to access the guacamole client on localhost
-zenith_client_pod: guacamole
-
-# Use a soft dependency on the mitm
-zenith_client_wants: [guacamole-mitm]
+zenith_forward_to_host: 127.0.0.1

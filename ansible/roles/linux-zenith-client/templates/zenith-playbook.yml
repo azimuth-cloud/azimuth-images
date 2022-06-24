@@ -1,0 +1,72 @@
+---
+
+- hosts: localhost
+  gather_facts: true
+  become: true
+  vars_files:
+    - /etc/ansible-init/vars/{{ zenith_client_name }}.yml
+{% raw %}
+  vars:
+    os_metadata: "{{ lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json }}"
+    os_user_metadata: "{{ os_metadata.get('meta', {}) }}"
+    os_project_id: "{{ os_metadata.project_id }}"
+  tasks:
+    - name: Ensure Zenith SSH directory exists
+      file:
+        path: /etc/zenith/ssh/{{ zenith_client_name }}
+        state: directory
+        owner: podman
+        group: podman
+
+    - name: Set Zenith facts
+      set_fact:
+        zenith_client_registrar_url: "{{ os_user_metadata.zenith_registrar_url }}"
+        zenith_client_registrar_token: "{{ os_user_metadata.zenith_registrar_token }}"
+        zenith_client_registrar_verify_ssl: false
+        zenith_client_sshd_host: "{{ os_user_metadata.zenith_sshd_host }}"
+        zenith_client_sshd_port: "{{ os_user_metadata.zenith_sshd_port }}"
+        azimuth_cloud_name: "{{ os_user_metadata.get('azimuth_cloud_name', '') }}"
+
+    - name: Write the Zenith client configuration
+      copy:
+        content: |
+          ssh_identity_path: /home/zenith/.ssh/id_zenith
+
+          # Init options
+          registrar_url: {{ zenith_client_registrar_url }}
+          token: {{ zenith_client_registrar_token }}
+          verify_ssl: {{ 'yes' if zenith_client_registrar_verify_ssl else 'no' }}
+
+          # Connect options
+          server_address: {{ zenith_client_sshd_host }}
+          server_port: {{ zenith_client_sshd_port }}
+          forward_to_host: {{ zenith_forward_to_host }}
+          forward_to_port: {{ zenith_forward_to_port }}
+
+          auth_params:
+            cloud-name: {{ azimuth_cloud_name }}
+            tenancy-id: {{ os_project_id }}
+        dest: /etc/zenith/{{ zenith_client_name }}/client.yaml
+
+    - name: Initialise Zenith client
+      containers.podman.podman_container:
+        name: "{{ zenith_client_name }}-init"
+        image: "{{ zenith_client_image }}"
+        command: [zenith-client, init]
+        detach: no
+        restart_policy: "no"
+        volumes:
+          - /etc/zenith/{{ zenith_client_name }}:/etc/zenith:ro
+          - /etc/zenith/ssh/{{ zenith_client_name }}:/home/zenith/.ssh
+      register: zenith_client_init
+      changed_when: zenith_client_init.container.State.ExitCode == 0
+      failed_when: zenith_client_init.container.State.ExitCode != 0
+      become: yes
+      become_user: podman
+
+    - name: Enable Zenith client service
+      service:
+        name: "{{ zenith_client_name }}"
+        state: started
+        enabled: yes
+{% endraw %}

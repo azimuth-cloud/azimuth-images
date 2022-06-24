@@ -41,8 +41,8 @@ variable "ssh_username" {
   type = string
 }
 
-source "openstack" "linux-webconsole" {
-  image_name = "${var.distro_name}-webconsole-${local.timestamp}"
+source "openstack" "jupyter-repo2docker" {
+  image_name = "${var.distro_name}-jupyter-repo2docker-${local.timestamp}"
   image_visibility = "private"
   image_disk_format = "${var.disk_format}"
   image_min_disk = "${var.volume_size}"
@@ -63,11 +63,11 @@ source "openstack" "linux-webconsole" {
 }
 
 build {
-  source "source.openstack.linux-webconsole" { }
+  source "source.openstack.jupyter-repo2docker" { }
 
   provisioner "ansible" {
     galaxy_file = "${path.root}/../requirements.yml"
-    playbook_file = "${path.root}/../ansible/linux-webconsole.yml"
+    playbook_file = "${path.root}/../ansible/jupyter-repo2docker.yml"
     use_proxy = false
     extra_arguments = ["-v"]
   }
