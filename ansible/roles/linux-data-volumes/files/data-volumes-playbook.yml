@@ -1,0 +1,52 @@
+---
+
+- hosts: localhost
+  gather_facts: true
+  become: true
+  vars:
+    openstack_metadata: "{{ (lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json).get('meta', {}) }}"
+  vars_files:
+    - /etc/ansible-init/vars/data-volumes.yml
+  tasks:
+    - name: Get block device for root filesystem
+      set_fact:
+        root_device: >-
+          {{-
+            ansible_mounts |
+              json_query("[?mount=='/'].device") |
+              first |
+              regex_replace("(\/dev\/|\d+$)", "")
+          }}
+
+    - name: Get candidate block devices for data volumes
+      set_fact:
+        candidate_devices: >-
+          {{-
+            ansible_devices.keys() |
+              select("ne", root_device) |
+              reject("match", "loop") |
+              sort
+          }}
+
+    - name: Get serial numbers for candidate block devices
+      slurp:
+        src: /sys/block/{{ item }}/serial
+      loop: "{{ candidate_devices }}"
+      register: slurp_sys_block_serial
+
+    - name: Zip serial numbers with the corresponding device name
+      set_fact:
+        candidate_devices_with_serial_numbers: >-
+          {{-
+            slurp_sys_block_serial.results |
+              map(attribute = "content") |
+              map("b64decode") |
+              zip(candidate_devices) |
+              list
+          }}
+
+    - include_tasks: /etc/ansible-init/includes/data-volumes-configure-volume.yml
+      loop: "{{ data_volumes }}"
+      loop_control:
+        loop_var: data_volume
+        label: "{{ data_volume.mountpoint }}"

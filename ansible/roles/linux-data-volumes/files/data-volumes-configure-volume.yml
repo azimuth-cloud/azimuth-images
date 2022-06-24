@@ -1,0 +1,50 @@
+---
+
+- name: Fail if volume ID is not in metadata
+  fail:
+    msg: "Metadata item '{{ data_volume.metadata_var }}' is not present."
+  when: data_volume.metadata_var not in openstack_metadata
+
+- name: Get volume ID for volume
+  set_fact:
+    data_volume_id: "{{ openstack_metadata[data_volume.metadata_var] }}"
+
+- name: Get block device for volume
+  set_fact:
+    data_volume_device: "{{ item.1 }}"
+  loop: "{{ candidate_devices_with_serial_numbers }}"
+  when: data_volume_id is match(item.0)
+
+- name: Fail if block device was not found
+  fail:
+    msg: "Could not locate block device for volume {{ data_volume_id }}."
+  when: data_volume_device is not defined
+
+- name: Create filesystem on device
+  community.general.filesystem:
+    fstype: "{{ data_volume.get('fs_type', 'ext4') }}"
+    dev: "/dev/{{ data_volume_device }}"
+  register: data_volume_fs
+
+- name: Update ansible_devices to populate filesystem UUID
+  setup:
+    filter:
+      - ansible_devices
+  when: data_volume_fs is changed
+
+- name: Mount up filesystem using UUID
+  ansible.posix.mount:
+    # Get the UUID from ansible_devices
+    src: "UUID={{ ansible_devices[data_volume_device].links.uuids[0] }}"
+    path: "{{ data_volume.mountpoint }}"
+    state: mounted
+    fstype: "{{ data_volume.get('fs_type', 'ext4') }}"
+    opts: "{{ data_volume.get('opts', omit) }}"
+
+- name: Ensure mountpoint permissions
+  ansible.builtin.file:
+    state: directory
+    owner: "{{ data_volume.owner }}"
+    group: "{{ data_volume.group }}"
+    path: "{{ data_volume.mountpoint }}"
+    mode: "{{ data_volume.get('mode', '0755') }}"

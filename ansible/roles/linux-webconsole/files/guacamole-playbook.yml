@@ -1,0 +1,97 @@
+---
+
+- hosts: localhost
+  gather_facts: true
+  become: true
+  vars_files:
+    - /etc/ansible-init/vars/guacamole.yml
+  tasks:
+    - name: Generate SSH keypair for Guacamole
+      # Guacamole requires that the key is PEM-formatted
+      # See https://issues.apache.org/jira/browse/GUACAMOLE-745
+      # This means that we cannot use community.crypto.openssh_keypair :-(
+      command: >-
+        ssh-keygen
+          -m PEM
+          -t rsa
+          -b 3072
+          -q
+          -N ""
+          -f /etc/guacamole/id_rsa
+          -C "Generated-for-Guacamole"
+
+    - name: Set SSH keypair facts
+      set_fact:
+        guacamole_ssh_public_key: "{{ lookup('file', '/etc/guacamole/id_rsa.pub') }}"
+        guacamole_ssh_private_key: "{{ lookup('file', '/etc/guacamole/id_rsa') }}"
+    
+    - name: Remove SSH keypair files
+      file:
+        path: "/etc/guacamole/{{ item }}"
+        state: absent
+      loop:
+        - id_rsa
+        - id_rsa.pub
+
+    - name: Add public key to Guacamole user
+      ansible.posix.authorized_key:
+        user: "{{ guacamole_user }}"
+        state: present
+        key: "{{ guacamole_ssh_public_key }}"
+
+    - block:
+        - name: Generate VNC password for Guacamole
+          set_fact:
+            guacamole_vnc_password: "{{ lookup('random_string', length = 16) }}"
+
+        - name: Write VNC password file
+          command: vncpasswd
+          args:
+            stdin: "{{ guacamole_vnc_password }}"
+          become: yes
+          become_user: "{{ guacamole_user }}"
+
+        - name: Start and enable VNC server
+          service:
+            name: vncserver@:1.service
+            state: started
+            enabled: yes
+      when: desktop_enabled
+
+    - name: Write Guacamole user mapping file
+      copy:
+        content: |
+          <user-mapping>
+              <authorize username="portal" password="portal">
+                  <connection name="shell">
+                      <protocol>ssh</protocol>
+                      <param name="hostname">{{ ansible_default_ipv4.address }}</param>
+                      <param name="port">22</param>
+                      <param name="username">{{ guacamole_user }}</param>
+                      <param name="private-key">{{ guacamole_ssh_private_key }}</param>
+                      <param name="enable-sftp">true</param>
+                  </connection>
+          {% if desktop_enabled %}
+                  <connection name="desktop">
+                      <protocol>vnc</protocol>
+                      <param name="hostname">{{ ansible_default_ipv4.address }}</param>
+                      <param name="port">5901</param>
+                      <param name="autoretry">3</param>
+                      <param name="username">{{ guacamole_user }}</param>
+                      <param name="password">{{ guacamole_vnc_password }}</param>
+                  </connection>
+          {% endif %}
+              </authorize>
+          </user-mapping>
+        dest: /etc/guacamole/user-mapping.xml
+
+    - name: Start and enable Guacamole services
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - guacamole
+        - guacamole-server
+        - guacamole-client
+        - guacamole-mitm

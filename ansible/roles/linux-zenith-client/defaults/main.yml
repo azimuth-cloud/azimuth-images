@@ -6,3 +6,5 @@ zenith_client_image_tag: main
 zenith_client_image: "{{ zenith_client_image_prefix }}/{{ zenith_client_image_name }}:{{ zenith_client_image_tag }}"
 
 zenith_client_wants: []
+
+zenith_forward_to_host: 127.0.0.1

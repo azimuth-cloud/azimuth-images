@@ -1,8 +1,0 @@
----
-zenith_client_name: guacamole-zenith-client
-
-# Join the guacamole pod to access the guacamole client on localhost
-zenith_client_pod: guacamole
-
-# Use a soft dependency on the mitm
-zenith_client_wants: [guacamole-mitm]

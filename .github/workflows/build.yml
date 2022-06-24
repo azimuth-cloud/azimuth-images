@@ -8,17 +8,16 @@ jobs:
     strategy:
       matrix:
         include:
-          - os-vers: ['20.04', '22.04']
-          - name: ubuntu-desktop
-            template: linux-desktop
-            var-files: common,linux,ubuntu
+          # - name: ubuntu-desktop
+          #   template: linux-desktop
+          #   var-files: common,linux,ubuntu
           - name: ubuntu-webconsole
             template: linux-webconsole
             var-files: common,linux,ubuntu
           - name: jupyter-repo2docker
             template: jupyter-repo2docker
-            var-files: common,linux,ubuntu-${OS_VERS}
-    name: ${{ matrix.name }}-${{ matrix-os-vers }}
+            var-files: common,linux,ubuntu
+    name: ${{ matrix.name }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v2
@@ -38,7 +37,6 @@ jobs:
           ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
           PACKER_TEMPLATE: ${{ matrix.template }}
           ENV_VAR_FILES: ${{ matrix.var-files }}
-          OS_VERS: ${{ matrix.os-vers }}
 
       - name: Publish image to prerelease bucket
         run: ./bin/publish

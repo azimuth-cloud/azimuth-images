@@ -46,7 +46,6 @@ source "openstack" "linux-webconsole" {
   image_visibility = "private"
   image_disk_format = "${var.disk_format}"
   image_min_disk = "${var.volume_size}"
-  image_tags = ["azimuth_web_console_supported"]
 
   source_image_name = "${var.source_image_name}"
   flavor = "${var.flavor}"

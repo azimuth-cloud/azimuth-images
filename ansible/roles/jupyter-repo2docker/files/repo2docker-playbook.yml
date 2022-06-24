@@ -3,172 +3,28 @@
 - hosts: localhost
   gather_facts: true
   become: true
+  vars_files:
+    - /etc/ansible-init/vars/repo2docker.yml
+  vars:
+    os_metadata: "{{ lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json }}"
+    os_user_metadata: "{{ os_metadata.get('meta', {}) }}"
+    os_project_id: "{{ os_metadata.project_id }}"
   tasks:
-    - name: Set fact about the name of the block device for the root filesystem
-      ansible.builtin.set_fact:
-        root_device: "{{ ansible_mounts | json_query(\"[?mount=='/'].device\") | first | regex_replace('(\/dev\/|\\d+$)', '') }}"
-
-    - name: Set fact about candidate additional block devices for data partitions
-      ansible.builtin.set_fact:
-        devices: "{{ devices | default([]) + [item.key] }}"
-      loop: "{{ ansible_devices | dict2items | sort(attribute='key') }}"
-      loop_control:
-        index_var: loop_idx
-      when:
-        - "'loop' not in item.key"
-        - "item.key != root_device"
-
-    - name: Fail when more disks are requested than are available
-      ansible.builtin.fail:
-        msg: "{{ partition_setup | map(attribute='disk_index') | max + 1 }} disks were requested, but only {{ devices | length }} found!"
-      when: ( devices | length ) < ( partition_setup | map(attribute='disk_index') | max + 1 )
-   
-    - name: Set fact about disks
-      ansible.builtin.set_fact:
-        disks: "{{ disks | default([]) + 
-        [
-          partition_setup[loop_idx] | combine(
-            { 
-              'device': devices[partition_setup[loop_idx]['disk_index']] 
-            } 
-          )
-        ] }}"
-      loop: "{{ partition_setup }}"
-      loop_control:
-         index_var: loop_idx
-
-    - name: Create partitions
-      community.general.parted:
-        device: "/dev/{{ item.device }}"
-        state: present
-        label: gpt
-        number: "{{ loop_idx + 1}}"
-        part_start: "{{ item.part_start }}"
-        part_end: "{{ item.part_end }}"
-      loop: "{{ disks }}"
-      loop_control:
-       index_var: loop_idx
-
-    - name: Gather ansible_devices facts after updating partition table
-      ansible.builtin.setup:
-        filter:
-          - ansible_devices
-
-    - name: Set fact about new partitions
-      ansible.builtin.set_fact:
-        partitions: "{{ partitions | default([]) + 
-        ( 
-          ansible_devices[item]['partitions'] | list | sort 
-        ) }}"
-      loop: "{{ devices }}"
-
-    - name: Set fact about mountpoints
-      ansible.builtin.set_fact:
-        mountpoints: "{{ mountpoints | default([]) + 
-        [
-          disks[loop_idx] | combine(
-            {
-              'partition': partitions[loop_idx]
-            }
-          )
-        ] }}"
-      loop: "{{ disks }}"
-      loop_control:
-        index_var: loop_idx
-
-    - name: Create filesystems on partitions
-      community.general.filesystem:
-        fstype: "{{ item.fs_type }}"
-        dev: "/dev/{{ item.partition }}"
-      loop: "{{ mountpoints }}"
-      register: filesystem
-
-    - name: Set fact about partition UUIDs
-      ansible.builtin.set_fact:
-        fs_uuids: "{{ fs_uuids | default([]) + 
-        [ 
-          mountpoints[loop_idx] | combine( 
-            {
-              'uuid': ansible_devices[item.device]['partitions'][item.partition]['uuid'] 
-            } 
-          ) 
-        ] }}"
-      loop: "{{ mountpoints }}"
-      loop_control:
-        index_var: loop_idx
-
-    - name: Mount up device by UUID
-      ansible.posix.mount:
-        path: "{{ item.mountpoint }}"
-        src: "UUID={{ item.uuid }}"
-        state: mounted
-        fstype: "{{ item.fs_type }}"
-        opts: "{{ item.opts }}"
-      loop: "{{ fs_uuids }}"
-
-    - name: Ensure mountpoint permissions
-      ansible.builtin.file:
-        state: directory
-        owner: "{{ item.owner }}"
-        group: "{{ item.group }}"
-        path: "{{ item.mountpoint }}"
-        mode: "{{ item.mode }}"
-      loop: "{{ fs_uuids }}"
- 
-    - name: Reading Zenith properties from metadata service
-      ansible.builtin.uri:
-        url: http://169.254.169.254/openstack/latest/meta_data.json
-        method: GET
-        return_content: yes
-        body_format: json
-      register: metadata
-
-    - name: Write Zenith configuration file
-      ansible.builtin.copy:
-        dest: "{{ zenith_config_dir }}/client.yaml"
-        mode: 0755
-        owner: root
-        group: root
-        content: "{{ zenith_configuration | to_nice_yaml }}"
-      vars:
-        zenith_configuration:
-          ssh_identity_path: /home/zenith/.ssh/id_zenith
-          registrar_url: "{{ metadata.json.meta.azimuth_apps_registrar_url }}"
-          token: "{{ metadata.json.meta.azimuth_apps_registrar_token }}"
-          verify_ssl: "{{ 'yes' if metadata.json.meta.azimuth_apps_registrar_verify_ssl is defined and metadata.json.meta.azimuth_apps_registrar_verify_ssl else 'no' }}"
-          server_address: "{{ metadata.json.meta.azimuth_apps_sshd_host }}"
-          server_port: "{{ metadata.json.meta.azimuth_apps_sshd_port }}"
-          forward_to_host: "{{ repo2docker_forward_to_host }}"
-          forward_to_port: "{{ repo2docker_forward_to_port }}"
-          auth_params:
-            tenancy-id: "{{ metadata.json.meta.azimuth_project_id }}"
-
     - name: Build repo2docker image
-      ansible.builtin.command: > 
-        {{ repo2docker_venv }}/bin/jupyter-repo2docker 
-        --image-name {{ repo2docker_service_image  }} 
-        --engine podman --no-run 
-        {{ metadata.json.meta.repo2docker_repository}}
+      command: >-
+        jupyter-repo2docker
+          --image-name repo2docker-notebook-server
+          --engine podman
+          --no-run
+          {{ os_user_metadata.repo2docker_repository }}
       become: true
       become_user: podman
 
-    - name: Initialize the Zenith client
-      ansible.builtin.command: >
-       podman run
-       --cgroups=no-conmon
-       --restart=no
-       --name {{ zenith_client_name }}-init
-       --volume {{ zenith_config_dir }}:/etc/zenith:ro
-       --volume {{ zenith_config_dir }}/ssh/{{ zenith_client_name }}:/home/zenith/.ssh
-       {{ zenith_client_image }}
-       zenith-client init
-      become: yes
-      become_user: podman
-      
-    - name: Start systemd services
-      ansible.builtin.systemd:
+    - name: Start and enable repo2docker services
+      service:
         name: "{{ item }}"
-        enabled: yes
         state: started
-        daemon_reload: true
-      loop: "{{ systemd_services }}"
+        enabled: yes
+      loop:
+        - repo2docker
+        - repo2docker-notebook-server
