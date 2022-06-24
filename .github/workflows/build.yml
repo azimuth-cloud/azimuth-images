@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      # The jobs share a FIP, so only one can run at once
+      max-parallel: 1
       matrix:
         include:
           # - name: ubuntu-desktop
