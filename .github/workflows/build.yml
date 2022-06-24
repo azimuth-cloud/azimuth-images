@@ -6,8 +6,8 @@ jobs:
   build_images:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        fail-fast: false
         include:
           # - name: ubuntu-desktop
           #   template: linux-desktop
