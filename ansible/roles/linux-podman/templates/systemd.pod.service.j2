@@ -16,6 +16,9 @@ User={{ podman_service_user }}
 Group={{ podman_service_group }}
 ExecStartPre=/usr/bin/podman pod create \
     --replace \
+{% if podman_service_userns is defined %}
+    --userns={{ podman_service_userns }} \
+{% endif %}
 {% for port in podman_service_ports %}
     --publish {{ port }} \
 {% endfor %}
