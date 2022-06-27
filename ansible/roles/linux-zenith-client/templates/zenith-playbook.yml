@@ -48,19 +48,23 @@
             tenancy-id: {{ os_project_id }}
         dest: /etc/zenith/{{ zenith_client_name }}/client.yaml
 
+    # The podman_container module doesn't re-run the container every time
     - name: Initialise Zenith client
-      containers.podman.podman_container:
-        name: "{{ zenith_client_name }}-init"
-        image: "{{ zenith_client_image }}"
-        command: [zenith-client, init]
-        detach: no
-        restart_policy: "no"
-        volumes:
-          - /etc/zenith/{{ zenith_client_name }}:/etc/zenith:ro
-          - /etc/zenith/ssh/{{ zenith_client_name }}:/home/zenith/.ssh
+      command: >-
+        /usr/bin/podman run
+          --cgroups=no-conmon
+          --replace
+          --restart=no
+          --name {{ zenith_client_name }}-init
+          --volume /etc/zenith/{{ zenith_client_name }}:/etc/zenith:ro
+          --volume /etc/zenith/ssh/{{ zenith_client_name }}:/home/zenith/.ssh
+          {{ zenith_client_image }}
+          zenith-client init
       register: zenith_client_init
-      changed_when: zenith_client_init.container.State.ExitCode == 0
-      failed_when: zenith_client_init.container.State.ExitCode != 0
+      changed_when: zenith_client_init.rc == 0
+      failed_when:
+        - zenith_client_init.rc != 0
+        - '"token has already been used" not in zenith_client_init.stderr'
       become: yes
       become_user: podman
 
