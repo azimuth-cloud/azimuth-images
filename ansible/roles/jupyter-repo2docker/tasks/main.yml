@@ -43,6 +43,11 @@
 
 - include_tasks: repo2docker.yml
 
+- include_role:
+    name: linux-monitoring
+  vars:
+    prometheus_data_directory: /data/prometheus/database
+
 - import_role:
     name: linux-zenith-client
   vars:
@@ -50,6 +55,8 @@
     zenith_client_pod: repo2docker
     zenith_client_wants: [repo2docker-notebook-server]
     zenith_forward_to_port: 8888
+    zenith_registrar_token_metadata_key: zenith_registrar_token_repo2docker
+    zenith_client_playbook_priority: "51"
 
 - name: Run cloud-init cleanup
   command: cloud-init clean --logs --seed

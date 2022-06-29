@@ -1,0 +1,83 @@
+- hosts: localhost
+  gather_facts: true
+  become: true
+  vars:
+    os_metadata: "{{ lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json }}"
+    os_user_metadata: "{{ os_metadata.get('meta', {}) }}"
+    os_project_id: "{{ os_metadata.project_id }}"
+  vars_files:
+    - /etc/ansible-init/vars/monitoring.yml
+  tasks:
+  - name: Populate /etc/hosts with hostname
+    # Node exporter will get hostname instead of IP address
+    lineinfile:
+      path: /etc/hosts
+      regexp: "{{ ansible_hostname }}"
+      line: "{{ ansible_default_ipv4.address }} {{ ansible_hostname }}"
+
+  - name: Ensure Prometheus data directory exists
+    file:
+      path: "{{ prometheus_data }}"
+      state: directory
+      owner: "{{ prometheus_podman_user }}"
+      group: "{{ prometheus_podman_user }}"
+
+  - name: Write Prometheus configuration file
+    copy:
+      content: "{{ prometheus_config | to_nice_yaml() }}"
+      dest: /etc/prometheus/prometheus.yml
+    vars:
+      prometheus_config:
+        scrape_configs:
+          - job_name: "prometheus"
+            metrics_path: "/metrics"
+            static_configs:
+            - targets:
+              - "127.0.0.1:9090"
+          - job_name: "grafana"
+            static_configs:
+            - targets:
+              - "127.0.0.1:3000"
+          - job_name: node
+            static_configs:
+              - targets: ['{{ ansible_hostname }}:9100']
+            relabel_configs:
+              # strip off port
+              - source_labels: ['__address__']
+                separator:     ':'
+                regex:         '(.*):.*'
+                target_label:  'instance'
+                replacement:   '${1}'
+            scrape_interval: 30s
+            scrape_timeout: 20s
+
+  - name: Write Grafana configuration file
+    copy:
+      dest: /etc/grafana/grafana.ini
+      content: |
+        [server]
+        protocol = http
+        http_addr = 127.0.0.1
+        http_port = 3000
+        enable_gzip = true
+        domain = {{ os_user_metadata.zenith_fqdn_monitoring }}
+
+        [auth]
+        disable_login_form = true
+
+        [auth.anonymous]
+        enabled = true
+        org_role = Viewer
+
+        [dashboards]
+        default_home_dashboard_path = /etc/grafana/dashboards/home.json
+
+  - name: Start and enable monitoring services
+    service:
+      name: "{{ item }}"
+      state: started
+      enabled: yes
+    loop:
+      - grafana
+      - prometheus
+      - monitoring

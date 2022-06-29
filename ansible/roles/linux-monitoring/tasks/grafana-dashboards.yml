@@ -1,0 +1,34 @@
+# https://github.com/cloudalchemy/ansible-grafana/blob/master/tasks/dashboards.yml
+
+- name: download grafana dashboard from grafana.net to local directory
+  # Use curl not get_url because https://github.com/cloudalchemy/ansible-grafana/issues/77
+  command: >
+    curl --fail --compressed
+    https://grafana.com/api/dashboards/{{ item.dashboard_id }}/revisions/{{ item.revision_id }}/download
+    -o /etc/grafana/dashboards/{{ item.name }}.json
+  args:
+    creates: "/etc/grafana/dashboards/{{ item.name }}.json"
+    warn: false
+  register: _download_dashboards
+  until: _download_dashboards is succeeded
+  retries: 5
+  delay: 2
+  with_items: "{{ grafana_dashboards }}"
+  when: grafana_dashboards | length > 0
+
+- name: Set the correct data source name in the dashboard
+  replace:
+    dest: "/etc/grafana/dashboards/{{ item.name }}.json"
+    regexp: '"(?:\${)?DS_[A-Z0-9_-]+(?:})?"'
+    replace: '"{{ item.datasource }}"'
+  changed_when: false
+  with_items: "{{ grafana_dashboards }}"
+  when: grafana_dashboards | length > 0
+
+- name: Symlink home dashboard
+  file:
+    state: link
+    src: /etc/grafana/dashboards/{{ item.name }}.json
+    dest: /etc/grafana/dashboards/home.json
+  loop: "{{ grafana_dashboards }}"
+  when: "item.home is defined and item.home"
