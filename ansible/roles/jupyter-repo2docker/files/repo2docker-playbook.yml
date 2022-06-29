@@ -10,6 +10,15 @@
     os_user_metadata: "{{ os_metadata.get('meta', {}) }}"
     os_project_id: "{{ os_metadata.project_id }}"
   tasks:
+    - name: Make Jupyter data directory
+      # Have to make this here not in the base image
+      # because the data volume has to be mounted first
+      file:
+        state: directory
+        path: "{{ jupyter_data_volume }}"
+        owner: "{{ podman_service_user }}"
+        group: "{{ podman_service_user }}"
+
     - name: Build repo2docker image
       command: >-
         jupyter-repo2docker
