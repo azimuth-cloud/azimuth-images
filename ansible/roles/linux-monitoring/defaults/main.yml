@@ -1,0 +1,14 @@
+---
+grafana_container_image: "grafana/grafana-oss"
+grafana_version: "9.0.1"
+grafana_dashboards:
+  - name: node-exporter
+    dashboard_id: 1860
+    revision_id: 27
+    datasource: Prometheus
+    home: true
+
+prometheus_container_image: "prom/prometheus"
+prometheus_version:  "v2.36.2"
+
+podman_service_user: "podman"

@@ -23,7 +23,6 @@
   vars:
     podman_service_name: repo2docker
     podman_service_type: pod
-    podman_service_userns: keep-id
 
 - name: Install systemd unit for repo2docker notebook
   include_role: 
@@ -41,16 +40,18 @@
         --NotebookApp.allow_remote_access=true \
         --NotebookApp.default_url='/lab' \
         --no-browser
-    # Mount the data volume into our pod
+    # Mount the data volume into our pod and own it
     podman_service_volumes:
-      - /data:/data
+      - "{{ jupyter_data_volume }}:/data:U"
 
 - name: Write repo2docker ansible-init vars file
   copy:
     content: "{{ repo2docker_init_vars | to_nice_yaml }}"
     dest: /etc/ansible-init/vars/repo2docker.yml
   vars:
-    repo2docker_init_vars: {}
+    repo2docker_init_vars:
+      podman_service_user: "{{ podman_service_user }}"
+      jupyter_data_volume: "{{ jupyter_data_volume }}"
 
 - name: Install repo2docker ansible-init playbook
   copy:

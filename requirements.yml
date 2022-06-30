@@ -3,7 +3,15 @@ collections:
     version: 1.10.0
   - name: chocolatey.chocolatey
     version: 1.2.0
+  - name: community.general
+    version: 5.0.2
   - name: community.windows
     version: 1.10.0
   - name: containers.podman
     version: 1.9.3
+
+roles:
+- name: cloudalchemy.node_exporter
+  src: https://github.com/stackhpc/ansible-node-exporter.git
+  version: "2.0.0"
+    

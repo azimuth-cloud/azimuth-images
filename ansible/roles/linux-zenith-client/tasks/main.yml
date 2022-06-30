@@ -7,6 +7,8 @@
   loop:
     - zenith_client_name
     - zenith_client_pod
+    - zenith_registrar_token_metadata_key
+    - zenith_client_playbook_priority
 
 - name: Ensure Zenith config directory exists
   file:
@@ -34,6 +36,15 @@
       - /etc/zenith/{{ zenith_client_name }}:/etc/zenith:ro
       - /etc/zenith/ssh/{{ zenith_client_name }}:/home/zenith/.ssh:ro
 
+- name: Ensure ansible-init directories exist
+  file:
+    state: directory
+    path: "/etc/ansible-init/{{ item }}"
+  loop:
+    - vars
+    - playbooks
+    - includes
+
 - name: Write ansible-init vars file for Zenith client
   copy:
     content: "{{ zenith_client_init_vars | to_nice_yaml }}"
@@ -44,9 +55,11 @@
       zenith_client_image: "{{ zenith_client_image }}"
       zenith_forward_to_host: "{{ zenith_forward_to_host }}"
       zenith_forward_to_port: "{{ zenith_forward_to_port }}"
+      zenith_registrar_token_metadata_key: "{{ zenith_registrar_token_metadata_key }}"
+      
 
 - name: Install ansible-init playbook for Zenith client
   template:
     src: zenith-playbook.yml
     # Execute between data volumes and zenith client
-    dest: /etc/ansible-init/playbooks/99-{{ zenith_client_name }}.yml
+    dest: /etc/ansible-init/playbooks/{{ zenith_client_playbook_priority }}-{{ zenith_client_name }}.yml

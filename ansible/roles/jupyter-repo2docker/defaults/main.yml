@@ -1,3 +1,4 @@
 ---
 
 podman_service_user: "podman"
+jupyter_data_volume: "/data/jupyter"

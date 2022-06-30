@@ -1,0 +1,49 @@
+---
+
+- name: Ensure Grafana config directories exists
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - /etc/grafana/
+    - /etc/grafana/dashboards
+    - /etc/grafana/provisioning
+    - /etc/grafana/provisioning/datasources
+    - /etc/grafana/provisioning/dashboards
+
+- name: Write Grafana datasources provisioning configuration 
+  template:
+    src: "{{ item }}"
+    dest: /etc/grafana/provisioning/datasources/{{ item | basename | regex_replace("\.j2$", "") }}
+  with_fileglob: "{{ role_path }}/templates/grafana/datasources/*.yml.j2"
+
+- name: Write Grafana dashboards provisioning configuration 
+  template:
+    src: "{{ item }}"
+    dest: /etc/grafana/provisioning/dashboards/{{ item | basename | regex_replace("\.j2$", "") }}
+  with_fileglob: "{{ role_path }}/templates/grafana/dashboards/*.yml.j2"
+
+- name: Write grafana dashboards
+  include_tasks: grafana-dashboards.yml
+
+- name: Pull image for Grafana
+  containers.podman.podman_image:
+    name: "{{ grafana_container_image }}:{{ grafana_version }}"
+  become: yes
+  become_user: "{{ podman_service_user }}"
+
+- name: Install systemd unit for Grafana
+  include_role:
+    name: linux-podman
+    tasks_from: systemd-unit.yml
+  vars:
+    podman_service_name: "grafana"
+    podman_service_type: container
+    podman_service_pod: "monitoring"
+    podman_service_wants: ["prometheus"]
+    podman_service_image: "{{ grafana_container_image }}"
+    podman_service_volumes:
+      - /etc/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+      - /etc/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - /etc/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - /etc/grafana/dashboards:/etc/grafana/dashboards:ro

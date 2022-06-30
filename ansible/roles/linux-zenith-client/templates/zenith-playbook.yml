@@ -21,7 +21,7 @@
     - name: Set Zenith facts
       set_fact:
         zenith_client_registrar_url: "{{ os_user_metadata.zenith_registrar_url }}"
-        zenith_client_registrar_token: "{{ os_user_metadata.zenith_registrar_token }}"
+        zenith_client_registrar_token: "{{ os_user_metadata[zenith_registrar_token_metadata_key] }}"
         zenith_client_registrar_verify_ssl: false
         zenith_client_sshd_host: "{{ os_user_metadata.zenith_sshd_host }}"
         zenith_client_sshd_port: "{{ os_user_metadata.zenith_sshd_port }}"
