@@ -42,12 +42,39 @@
     - block:
         - name: Generate VNC password for Guacamole
           set_fact:
-            guacamole_vnc_password: "{{ lookup('random_string', length = 16) }}"
+            guacamole_vnc_password: "{{ lookup('community.general.random_string', length = 16) }}"
+        
+        - block:
+          - name: Get Guacamole user info
+            getent:
+              database: passwd
+              key: "{{ guacamole_user }}"
 
-        - name: Write VNC password file
-          command: vncpasswd
-          args:
-            stdin: "{{ guacamole_vnc_password }}"
+          - name: Set Guacamole user home directory
+            set_fact:
+              guacamole_user_home: "{{ ansible_facts.getent_passwd[guacamole_user][4] }}"
+
+          - name: Generate VNC password
+            command: vncpasswd -f
+            args:
+              stdin: "{{ guacamole_vnc_password }}"
+            register: vncpassword
+
+          - name: Create VNC directory
+            file:
+              state: directory
+              path: "{{ guacamole_user_home }}/.vnc"
+              owner: "{{ guacamole_user }}"
+              group: "{{ guacamole_user }}"
+              mode: "0775"
+
+          - name: Create VNC password file
+            copy:
+              content: "{{ vncpassword.stdout }}"
+              dest: "{{ guacamole_user_home }}/.vnc/passwd"
+              owner: "{{ guacamole_user }}"
+              group: "{{ guacamole_user }}"
+              mode: "0600"
           become: yes
           become_user: "{{ guacamole_user }}"
 
