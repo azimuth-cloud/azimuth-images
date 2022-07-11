@@ -47,7 +47,7 @@
             # Even though this string is within a CDATA tag, there's very small chance of
             # generating ]]>, which will still break XML. Therefore remove ">" from special
             # characters.
-            special_chars: '!"#$%&'()*+,-./:;<=?@[\]^_`{|}~'
+            special_chars: '!"#$%&()*+,-./:;<=?@[\]^_`{|}~'
         
         - block:
           - name: Get Guacamole user info
