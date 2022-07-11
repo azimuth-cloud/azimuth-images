@@ -42,7 +42,12 @@
     - block:
         - name: Generate VNC password for Guacamole
           set_fact:
-            guacamole_vnc_password: "{{ lookup('community.general.random_string', length = 16) }}"
+            guacamole_vnc_password: "{{ lookup('community.general.random_string', length = 16, override_special = special_chars) }}"
+          vars:
+            # Even though this string is within a CDATA tag, there's very small chance of
+            # generating ]]>, which will still break XML. Therefore remove ">" from special
+            # characters.
+            special_chars: '!"#$%&'()*+,-./:;<=?@[\]^_`{|}~'
         
         - block:
           - name: Get Guacamole user info
@@ -105,7 +110,7 @@
                       <param name="port">5901</param>
                       <param name="autoretry">3</param>
                       <param name="username">{{ guacamole_user }}</param>
-                      <param name="password">{{ guacamole_vnc_password }}</param>
+                      <param name="password"><![CDATA[{{ guacamole_vnc_password }}]]></param>
                   </connection>
           {% endif %}
               </authorize>
