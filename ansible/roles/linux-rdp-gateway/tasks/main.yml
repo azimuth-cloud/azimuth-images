@@ -39,11 +39,6 @@
 - include_role:
     name: linux-guacamole
 
-- name: Write Guacamole ansible-init vars file
-  copy:
-    content: "{{ guacamole_init_vars | to_nice_yaml }}"
-    dest: /etc/ansible-init/vars/guacamole.yml
-
 - name: Install Guacamole ansible-init playbook
   copy:
     src: guacamole-playbook.yml
