@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       # Each job consumes a FIP, so limit the number that can run concurrently
-      max-parallel: 2
+      max-parallel: 1
       matrix:
         include:
           - name: ubuntu-desktop
