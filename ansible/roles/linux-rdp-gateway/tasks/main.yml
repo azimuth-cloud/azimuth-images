@@ -1,22 +1,5 @@
 ---
 
-# Include the variables for the OS distribution we are running on
-# Note that we don't use first_found across the whole list of files because
-# we want to include all the ones that apply, in the order in which they are defined
-# However we do use first_found to handle the case where the file doesn't exist at all
-- name: Include OS-specific variables
-  include_vars: "{{ vars_file }}"
-  vars:
-    vars_file: "{{ lookup('first_found', lookup_params) }}"
-    lookup_params:
-      files: ["{{ item }}"]
-      skip: true
-  when: vars_file
-  loop:
-    - "{{ role_path }}/vars/{{ ansible_os_family }}.yml"
-    - "{{ role_path }}/vars/{{ ansible_distribution }}.yml"
-    - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
-
 - name: Update apt cache
   apt:
     update_cache: yes
@@ -36,11 +19,6 @@
     state: present
   when: ansible_os_family == "Debian"
 
-- block:
-    - include_tasks: desktop.yml
-    - include_tasks: vnc_server.yml
-  when: desktop_enabled is defined and desktop_enabled
-
 - include_role:
     name: linux-ansible-init
 
@@ -57,11 +35,6 @@
         opts: "defaults,nofail"
         owner: podman
         group: podman
-      - metadata_var: data_volume_id
-        mountpoint: /data
-        opts: "defaults,nofail"
-        owner: ubuntu
-        group: ubuntu
 
 - include_role:
     name: linux-guacamole
@@ -70,21 +43,12 @@
   copy:
     content: "{{ guacamole_init_vars | to_nice_yaml }}"
     dest: /etc/ansible-init/vars/guacamole.yml
-  vars:
-    guacamole_init_vars:
-      desktop_enabled: "{{ desktop_enabled }}"
-      guacamole_user: "{{ guacamole_user }}"
 
 - name: Install Guacamole ansible-init playbook
   copy:
     src: guacamole-playbook.yml
     # Execute between data volumes and zenith client
     dest: /etc/ansible-init/playbooks/50-guacamole.yml
-
-- include_role:
-    name: linux-monitoring
-  vars:
-    prometheus_data_directory: /data/prometheus/database
 
 - import_role:
     name: linux-zenith-client

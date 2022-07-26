@@ -7,13 +7,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      # The jobs share a FIP, so only one can run at once
-      max-parallel: 1
+      # Each job consumes a FIP, so limit the number that can run concurrently
+      max-parallel: 2
       matrix:
         include:
-          # - name: ubuntu-desktop
-          #   template: linux-desktop
-          #   var-files: common,linux,ubuntu
+          - name: ubuntu-desktop
+            template: linux-desktop
+            var-files: common,linux,ubuntu
+          - name: ubuntu-rdp-gateway
+            template: linux-rdp-gateway
+            var-files: common,linux,ubuntu
           - name: ubuntu-webconsole
             template: linux-webconsole
             var-files: common,linux,ubuntu

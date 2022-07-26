@@ -16,5 +16,4 @@ guacamole_mitm_image_name: azimuth-guacamole-mitm
 guacamole_mitm_image_tag: main
 guacamole_mitm_image: "{{ guacamole_image_prefix }}/{{ guacamole_mitm_image_name }}:{{ guacamole_mitm_image_tag }}"
 
-# By default, use the connecting user to run the guacamole services
-guacamole_user: "{{ ansible_user }}"
+podman_service_user: podman

@@ -8,3 +8,5 @@ zenith_client_image: "{{ zenith_client_image_prefix }}/{{ zenith_client_image_na
 zenith_client_wants: []
 
 zenith_forward_to_host: 127.0.0.1
+
+podman_service_user: podman

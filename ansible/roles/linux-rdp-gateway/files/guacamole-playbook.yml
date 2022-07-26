@@ -1,0 +1,38 @@
+---
+
+- hosts: localhost
+  gather_facts: true
+  become: true
+  vars:
+    openstack_metadata: "{{ (lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json).get('meta', {}) }}"
+  vars_files:
+    - /etc/ansible-init/vars/guacamole.yml
+  tasks:
+    - name: Write Guacamole user mapping file
+      copy:
+        content: |
+          <user-mapping>
+              <authorize username="portal" password="portal">
+                  <connection name="desktop">
+                      <protocol>rdp</protocol>
+                      <param name="hostname">{{ openstack_metadata.rdp_host }}</param>
+                      <param name="port">3389</param>
+                      <param name="username">{{ openstack_metadata.rdp_username }}</param>
+                      <param name="password">{{ openstack_metadata.rdp_password }}</param>
+                      <param name="ignore-cert">true</param>
+                      <param name="enable-wallpaper">true</param>
+                  </connection>
+              </authorize>
+          </user-mapping>
+        dest: /etc/guacamole/user-mapping.xml
+
+    - name: Start and enable Guacamole services
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - guacamole
+        - guacamole-server
+        - guacamole-client
+        - guacamole-mitm

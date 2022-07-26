@@ -1,31 +1,5 @@
 ---
 
-- name: Configure VNC server
-  block:
-    - name: Get guacamole user info
-      user:
-        name: "{{ guacamole_user }}"
-        state: present
-      register: guacamole_user_info
-
-    - name: Set VNC server user facts for guacamole user
-      set_fact:
-        guacamole_user_vnc_config_dir: "{{ guacamole_user_info.home }}/.vnc"
-
-    - name: Ensure systemd overrides directory exists
-      file:
-        path: /etc/systemd/system/vncserver@:1.service.d
-        state: directory
-
-    - name: Configure user for systemd unit
-      copy:
-        dest: /etc/systemd/system/vncserver@:1.service.d/user.conf
-        content: |
-          [Service]
-          Environment=VNCSERVER_PASSWD_FILE={{ guacamole_user_vnc_config_dir }}/passwd
-          User={{ guacamole_user }}
-  when: desktop_enabled | bool
-
 - name: Install systemd unit for guacamole pod
   include_role: 
     name: linux-podman
@@ -97,18 +71,3 @@
     # Add a soft dependency on the client
     podman_service_wants:
       - guacamole-client
-
-- name: Write Guacamole ansible-init vars file
-  copy:
-    content: "{{ guacamole_init_vars | to_nice_yaml }}"
-    dest: /etc/ansible-init/vars/guacamole.yml
-  vars:
-    guacamole_init_vars:
-      desktop_enabled: "{{ desktop_enabled }}"
-      guacamole_user: "{{ guacamole_user }}"
-
-- name: Install Guacamole ansible-init playbook
-  copy:
-    src: guacamole-playbook.yml
-    # Execute between data volumes and zenith client
-    dest: /etc/ansible-init/playbooks/50-guacamole.yml
