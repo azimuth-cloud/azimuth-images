@@ -18,7 +18,7 @@ openstack image delete "$IMAGE_ID"
 
 # Convert the image to QCOW2 and compress it
 qemu-img convert \
-  -c
+  -c \
   -f "$IMAGE_DISK_FORMAT" \
   -O qcow2 \
   "$IMAGE_SOURCE_FILE" \
