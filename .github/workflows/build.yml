@@ -13,16 +13,16 @@ jobs:
         include:
           - name: ubuntu-desktop
             template: linux-desktop
-            var-files: common,linux,ubuntu
+            var-files: common,kvm,linux,ubuntu
           - name: ubuntu-rdp-gateway
             template: linux-rdp-gateway
-            var-files: common,linux,ubuntu
-          - name: ubuntu-webconsole
-            template: linux-webconsole
-            var-files: common,linux,ubuntu
+            var-files: common,kvm,linux,ubuntu
+          # - name: ubuntu-webconsole
+          #   template: linux-webconsole
+          #   var-files: common,linux,ubuntu
           - name: jupyter-repo2docker
             template: jupyter-repo2docker
-            var-files: common,linux,ubuntu
+            var-files: common,kvm,linux,ubuntu
     name: ${{ matrix.name }}
     steps:
       - name: Check out the repository

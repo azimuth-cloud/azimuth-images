@@ -11,7 +11,6 @@ collections:
     version: 1.9.3
 
 roles:
-- name: cloudalchemy.node_exporter
-  src: https://github.com/stackhpc/ansible-node-exporter.git
-  version: "2.0.0"
-    
+  - name: cloudalchemy.node_exporter
+    src: https://github.com/stackhpc/ansible-node-exporter.git
+    version: "2.0.0"

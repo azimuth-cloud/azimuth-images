@@ -24,15 +24,6 @@ variable "security_groups" {
   type = list(string)
 }
 
-variable "volume_size" {
-  type = number
-  default = 5
-}
-
-variable "disk_format" {
-  type = string
-}
-
 variable "distro_name" {
   type = string
 }
@@ -44,18 +35,12 @@ variable "ssh_username" {
 source "openstack" "linux-webconsole" {
   image_name = "${var.distro_name}-webconsole-${local.timestamp}"
   image_visibility = "private"
-  image_disk_format = "${var.disk_format}"
-  image_min_disk = "${var.volume_size}"
 
   source_image_name = "${var.source_image_name}"
   flavor = "${var.flavor}"
   networks = ["${var.network}"]
   security_groups = "${var.security_groups}"
   floating_ip_network = "${var.floating_ip_network}"
-
-  # In order to be able to specify an image disk format, we must be using a Cinder volume
-  use_blockstorage_volume = true
-  volume_size = "${var.volume_size}"
 
   communicator = "ssh"
   ssh_username = "${var.ssh_username}"
