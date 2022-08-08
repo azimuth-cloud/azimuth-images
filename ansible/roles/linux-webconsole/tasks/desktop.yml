@@ -11,6 +11,10 @@
   package:
     name: "{{ desktop_environment_package }}"
     state: present
+  # Allow the package installation to take up to an hour
+  async: 3600
+  # But poll it every 15s
+  poll: 15
 
 - name: Enable graphical environment
   systemd:
