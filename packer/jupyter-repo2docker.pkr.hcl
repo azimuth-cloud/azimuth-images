@@ -24,6 +24,16 @@ variable "security_groups" {
   type = list(string)
 }
 
+variable "volume_size" {
+  type = number
+  default = 5
+}
+
+variable "disk_format" {
+  type = string
+  default = "qcow2"
+}
+
 variable "distro_name" {
   type = string
 }
@@ -35,12 +45,16 @@ variable "ssh_username" {
 source "openstack" "jupyter-repo2docker" {
   image_name = "${var.distro_name}-jupyter-repo2docker-${local.timestamp}"
   image_visibility = "private"
+  image_disk_format = "${var.disk_format}"
 
   source_image_name = "${var.source_image_name}"
   flavor = "${var.flavor}"
   networks = ["${var.network}"]
   security_groups = "${var.security_groups}"
   floating_ip_network = "${var.floating_ip_network}"
+
+  use_blockstorage_volume = true
+  volume_size = "${var.volume_size}"
 
   communicator = "ssh"
   ssh_username = "${var.ssh_username}"

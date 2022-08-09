@@ -29,15 +29,29 @@ variable "security_groups" {
   type = list(string)
 }
 
+variable "volume_size" {
+  type = number
+  default = 20
+}
+
+variable "disk_format" {
+  type = string
+  default = "qcow2"
+}
+
 source "openstack" "windows-sshd" {
   image_name = "${source.name}-${local.timestamp}"
   image_visibility = "private"
+  image_disk_format = "${var.disk_format}"
 
   source_image_name = "${var.source_image_name}"
   flavor = "${var.flavor}"
   networks = ["${var.network}"]
   security_groups = "${var.security_groups}"
   floating_ip_network = "${var.floating_ip_network}"
+
+  use_blockstorage_volume = true
+  volume_size = "${var.volume_size}"
 
   communicator = "winrm"
   winrm_username = "${var.winrm_username}"
