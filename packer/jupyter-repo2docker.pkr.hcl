@@ -69,6 +69,7 @@ build {
     playbook_file = "${path.root}/../ansible/jupyter-repo2docker.yml"
     use_proxy = false
     extra_arguments = ["-v"]
+    ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10"]
   }
 
   post-processor "manifest" {
