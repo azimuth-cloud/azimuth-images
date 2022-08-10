@@ -16,13 +16,16 @@ IMAGE_SOURCE_FILE="${IMAGE_NAME}.source.${IMAGE_DISK_FORMAT}"
 openstack image save --file "$IMAGE_SOURCE_FILE" "$IMAGE_ID"
 openstack image delete "$IMAGE_ID"
 
-# Convert the image to QCOW2 and compress it
-qemu-img convert \
-  -c \
-  -f "$IMAGE_DISK_FORMAT" \
-  -O qcow2 \
-  "$IMAGE_SOURCE_FILE" \
-  "${IMAGE_NAME}.qcow2"
+# Convert the image to QCOW2 if required
+if [ "$IMAGE_DISK_FORMAT" = "qcow2" ]; then
+    mv "$IMAGE_SOURCE_FILE" "${IMAGE_NAME}.qcow2"
+else
+    qemu-img convert \
+      -f "$IMAGE_DISK_FORMAT" \
+      -O qcow2 \
+      "$IMAGE_SOURCE_FILE" \
+      "${IMAGE_NAME}.qcow2"
+fi
 
 # Upload the compressed image to S3
 cat <<EOF > ~/.s3cfg
