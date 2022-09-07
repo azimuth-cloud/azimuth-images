@@ -8,40 +8,38 @@
   vars_files:
     - /etc/ansible-init/vars/data-volumes.yml
   tasks:
-    - name: Get block device for root filesystem
-      set_fact:
-        root_device: >-
-          {{-
-            ansible_mounts |
-              json_query("[?mount=='/'].device") |
-              first |
-              regex_replace("(\/dev\/|\d+$)", "")
-          }}
+    - name: Check if serial files exist for block devices
+      stat:
+        path: /sys/block/{{ item }}/serial
+      loop: "{{ ansible_devices.keys() | list }}"
+      register: stat_sys_block_serial
 
-    - name: Get candidate block devices for data volumes
-      set_fact:
-        candidate_devices: >-
-          {{-
-            ansible_devices.keys() |
-              select("ne", root_device) |
-              reject("match", "loop") |
-              sort
-          }}
-
-    - name: Get serial numbers for candidate block devices
+    - name: Get serial numbers for block devices
       slurp:
         src: /sys/block/{{ item }}/serial
-      loop: "{{ candidate_devices }}"
+      loop: >-
+          {{-
+            stat_sys_block_serial.results |
+              selectattr("stat.exists") |
+              map(attribute = "item") |
+              list
+          }}
       register: slurp_sys_block_serial
 
-    - name: Zip serial numbers with the corresponding device name
+    # Get a list of (serial number, device) tuples
+    # Some devices have empty serial files, which we want to discard
+    - name: Get candidate block devices for data volumes
       set_fact:
         candidate_devices_with_serial_numbers: >-
           {{-
             slurp_sys_block_serial.results |
               map(attribute = "content") |
               map("b64decode") |
-              zip(candidate_devices) |
+              zip(
+                slurp_sys_block_serial.results |
+                  map(attribute = "item")
+              ) |
+              selectattr("0") |
               list
           }}
 
