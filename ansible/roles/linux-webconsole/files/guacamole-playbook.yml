@@ -8,7 +8,6 @@
   vars:
     os_metadata: "{{ lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json }}"
     os_user_metadata: "{{ os_metadata.get('meta', {}) }}"
-    os_project_id: "{{ os_metadata.project_id }}"
   tasks:
     # Allow the guacamole user to be overridden using metadata
     - name: Set Guacamole user fact
