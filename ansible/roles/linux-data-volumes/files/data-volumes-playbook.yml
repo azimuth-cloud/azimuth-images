@@ -8,41 +8,6 @@
   vars_files:
     - /etc/ansible-init/vars/data-volumes.yml
   tasks:
-    - name: Check if serial files exist for block devices
-      stat:
-        path: /sys/block/{{ item }}/serial
-      loop: "{{ ansible_devices.keys() | list }}"
-      register: stat_sys_block_serial
-
-    - name: Get serial numbers for block devices
-      slurp:
-        src: /sys/block/{{ item }}/serial
-      loop: >-
-          {{-
-            stat_sys_block_serial.results |
-              selectattr("stat.exists") |
-              map(attribute = "item") |
-              list
-          }}
-      register: slurp_sys_block_serial
-
-    # Get a list of (serial number, device) tuples
-    # Some devices have empty serial files, which we want to discard
-    - name: Get candidate block devices for data volumes
-      set_fact:
-        candidate_devices_with_serial_numbers: >-
-          {{-
-            slurp_sys_block_serial.results |
-              map(attribute = "content") |
-              map("b64decode") |
-              zip(
-                slurp_sys_block_serial.results |
-                  map(attribute = "item")
-              ) |
-              selectattr("0") |
-              list
-          }}
-
     - include_tasks: /etc/ansible-init/includes/data-volumes-configure-volume.yml
       loop: "{{ data_volumes }}"
       loop_control:
