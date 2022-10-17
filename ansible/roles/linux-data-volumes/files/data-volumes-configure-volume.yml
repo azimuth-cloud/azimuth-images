@@ -9,16 +9,43 @@
   set_fact:
     data_volume_id: "{{ openstack_metadata[data_volume.metadata_var] }}"
 
-- name: Get block device for volume
+# Use the same discovery logic as CSI Cinder, so that we succeed and fail on the same clouds
+# https://github.com/kubernetes/cloud-provider-openstack/blob/34f5f980f523e191285c568a8a77a2ca683272be/pkg/util/mount/mount.go#L152
+
+- name: Stat candidate device paths
+  stat:
+    path: "/dev/disk/by-id/{{ item }}"
+  loop:
+    # KVM
+    - "{{ 'virtio-{}'.format(data_volume_id[:20]) }}"
+    # KVM #852
+    - "{{ 'virtio-{}'.format(data_volume_id) }}"
+    # KVM virtio-scsi
+    - "{{ 'scsi-0QEMU_QEMU_HARDDISK_{}'.format(data_volume_id[:20]) }}"
+    # KVM virtio-scsi #852
+    - "{{ 'scsi-0QEMU_QEMU_HARDDISK_{}'.format(data_volume_id) }}"
+    # ESXi
+    - "{{ 'wwn-0x{}'.format(data_volume_id | replace('-', '')) }}"
+  register: candidate_device_paths_stat
+
+- name: Set volume block device name
   set_fact:
-    data_volume_device: "{{ item.1 }}"
-  loop: "{{ candidate_devices_with_serial_numbers }}"
-  when: data_volume_id is match(item.0)
+    data_volume_device: >-
+      {{-
+        candidate_device_paths_stat.results |
+          selectattr("stat.exists") |
+          map(attribute = "stat.lnk_source") |
+          first |
+          default("") |
+          trim("/") |
+          split("/") |
+          last
+      }}
 
 - name: Fail if block device was not found
   fail:
     msg: "Could not locate block device for volume {{ data_volume_id }}."
-  when: data_volume_device is not defined
+  when: data_volume_device == ""
 
 - name: Create filesystem on device
   community.general.filesystem:
