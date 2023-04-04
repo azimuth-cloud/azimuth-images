@@ -1,4 +1,5 @@
 ---
+
 - name: Run prechecks for Monitoring variables
   assert:
     that: "{{ item }} is defined"
@@ -16,7 +17,7 @@
 
 - name: Install node_exporter
   import_role:
-    name: cloudalchemy.node_exporter
+    name: prometheus.prometheus.node_exporter
     
 - include_tasks: grafana.yml
 

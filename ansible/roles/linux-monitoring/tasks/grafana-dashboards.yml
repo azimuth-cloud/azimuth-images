@@ -8,7 +8,6 @@
     -o /etc/grafana/dashboards/{{ item.name }}.json
   args:
     creates: "/etc/grafana/dashboards/{{ item.name }}.json"
-    warn: false
   register: _download_dashboards
   until: _download_dashboards is succeeded
   retries: 5
