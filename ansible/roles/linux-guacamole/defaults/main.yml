@@ -2,7 +2,9 @@
 
 guacamole_image_prefix: docker.io/guacamole
 
-guacamole_version: 1.5.0
+# Use 1.4.0 until 1.5.1 is released
+# This is due to https://issues.apache.org/jira/browse/GUACAMOLE-1741
+guacamole_version: 1.4.0
 
 guacamole_server_image_name: guacd
 guacamole_server_image_tag: "{{ guacamole_version }}"
