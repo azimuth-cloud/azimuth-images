@@ -53,9 +53,22 @@
     podman_service_volumes:
       - /etc/guacamole:/config:ro
 
-- name: Pull image for guacamole MITM
+- name: Ensure guacamole MITM config directory exists
+  file:
+    path: /etc/guacamole-mitm
+    state: directory
+
+- name: Install guacamole MITM config files
+  template:
+    src: "{{ item }}"
+    dest: "/etc/guacamole-mitm/{{ item }}"
+  loop:
+    - nginx.conf
+    - guacamole_auth.js
+
+- name: Pull NGINX image for guacamole MITM
   containers.podman.podman_image:
-    name: "{{ guacamole_mitm_image }}"
+    name: "{{ guacamole_nginx_image }}"
   become: yes
   become_user: "{{ podman_service_user }}"
 
@@ -66,8 +79,12 @@
   vars:
     podman_service_name: guacamole-mitm
     podman_service_type: container
-    podman_service_image: "{{ guacamole_mitm_image }}"
+    podman_service_image: "{{ guacamole_nginx_image }}"
     podman_service_pod: guacamole
     # Add a soft dependency on the client
     podman_service_wants:
       - guacamole-client
+    podman_service_command: >-
+      nginx -c /etc/guacamole-mitm/nginx.conf
+    podman_service_volumes:
+      - /etc/guacamole-mitm:/etc/guacamole-mitm:ro
