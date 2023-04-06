@@ -18,12 +18,21 @@ jobs:
           - name: ubuntu-rdp-gateway
             template: linux-rdp-gateway
             var-files: common,kvm,linux,ubuntu
-          # - name: ubuntu-webconsole
-          #   template: linux-webconsole
-          #   var-files: common,linux,ubuntu
           - name: jupyter-repo2docker
             template: jupyter-repo2docker
             var-files: common,kvm,linux,ubuntu
+          - name: kubernetes-1-23
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_23
+          - name: kubernetes-1-24
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_24
+          - name: kubernetes-1-25
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_25
+          - name: kubernetes-1-26
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_26
     name: ${{ matrix.name }}
     steps:
       - name: Check out the repository
