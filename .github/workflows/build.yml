@@ -18,22 +18,14 @@ jobs:
               paths:
                 - .github/workflows/build.yml
                 - requirements.yml
-                - env/base/common.env
-                - env/${{ secrets.ENVIRONMENT }}/common.env
-                - env/base/kvm.env
-                - env/${{ secrets.ENVIRONMENT }}/kvm.env
-                - env/base/linux.env
-                - env/${{ secrets.ENVIRONMENT }}/linux.env
-                - env/base/ubuntu.env
-                - env/${{ secrets.ENVIRONMENT }}/ubuntu.env
-                - vars/base/common.json
-                - vars/${{ secrets.ENVIRONMENT }}/common.json
-                - vars/base/kvm.json
-                - vars/${{ secrets.ENVIRONMENT }}/kvm.json
-                - vars/base/linux.json
-                - vars/${{ secrets.ENVIRONMENT }}/linux.json
-                - vars/base/ubuntu.json
-                - vars/${{ secrets.ENVIRONMENT }}/ubuntu.json
+                - env/*/common.env
+                - env/*/kvm.env
+                - env/*/linux.env
+                - env/*/ubuntu.env
+                - vars/*/common.json
+                - vars/*/kvm.json
+                - vars/*/linux.json
+                - vars/*/ubuntu.json
                 - packer/linux-desktop.pkr.hcl
                 - ansible/linux-webconsole.yml
                 - ansible/roles/linux-webconsole/**
@@ -50,22 +42,14 @@ jobs:
               paths:
                 - .github/workflows/build.yml
                 - requirements.yml
-                - env/base/common.env
-                - env/${{ secrets.ENVIRONMENT }}/common.env
-                - env/base/kvm.env
-                - env/${{ secrets.ENVIRONMENT }}/kvm.env
-                - env/base/linux.env
-                - env/${{ secrets.ENVIRONMENT }}/linux.env
-                - env/base/ubuntu.env
-                - env/${{ secrets.ENVIRONMENT }}/ubuntu.env
-                - vars/base/common.json
-                - vars/${{ secrets.ENVIRONMENT }}/common.json
-                - vars/base/kvm.json
-                - vars/${{ secrets.ENVIRONMENT }}/kvm.json
-                - vars/base/linux.json
-                - vars/${{ secrets.ENVIRONMENT }}/linux.json
-                - vars/base/ubuntu.json
-                - vars/${{ secrets.ENVIRONMENT }}/ubuntu.json
+                - env/*/common.env
+                - env/*/kvm.env
+                - env/*/linux.env
+                - env/*/ubuntu.env
+                - vars/*/common.json
+                - vars/*/kvm.json
+                - vars/*/linux.json
+                - vars/*/ubuntu.json
                 - packer/linux-rdp-gateway.pkr.hcl
                 - ansible/linux-rdp-gateway.yml
                 - ansible/roles/linux-rdp-gateway/**
@@ -81,22 +65,14 @@ jobs:
               paths:
                 - .github/workflows/build.yml
                 - requirements.yml
-                - env/base/common.env
-                - env/${{ secrets.ENVIRONMENT }}/common.env
-                - env/base/kvm.env
-                - env/${{ secrets.ENVIRONMENT }}/kvm.env
-                - env/base/linux.env
-                - env/${{ secrets.ENVIRONMENT }}/linux.env
-                - env/base/ubuntu.env
-                - env/${{ secrets.ENVIRONMENT }}/ubuntu.env
-                - vars/base/common.json
-                - vars/${{ secrets.ENVIRONMENT }}/common.json
-                - vars/base/kvm.json
-                - vars/${{ secrets.ENVIRONMENT }}/kvm.json
-                - vars/base/linux.json
-                - vars/${{ secrets.ENVIRONMENT }}/linux.json
-                - vars/base/ubuntu.json
-                - vars/${{ secrets.ENVIRONMENT }}/ubuntu.json
+                - env/*/common.env
+                - env/*/kvm.env
+                - env/*/linux.env
+                - env/*/ubuntu.env
+                - vars/*/common.json
+                - vars/*/kvm.json
+                - vars/*/linux.json
+                - vars/*/ubuntu.json
                 - packer/jupyter-repo2docker.pkr.hcl
                 - ansible/jupyter-repo2docker.yml
                 - ansible/roles/jupyter-repo2docker/**
@@ -112,30 +88,18 @@ jobs:
               paths:
                 - .github/workflows/build.yml
                 - requirements.yml
-                - env/base/common.env
-                - env/${{ secrets.ENVIRONMENT }}/common.env
-                - env/base/kvm.env
-                - env/${{ secrets.ENVIRONMENT }}/kvm.env
-                - env/base/linux.env
-                - env/${{ secrets.ENVIRONMENT }}/linux.env
-                - env/base/ubuntu.env
-                - env/${{ secrets.ENVIRONMENT }}/ubuntu.env
-                - env/base/kubernetes.env
-                - env/${{ secrets.ENVIRONMENT }}/kubernetes.env
-                - env/base/kubernetes_1_23.env
-                - env/${{ secrets.ENVIRONMENT }}/kubernetes_1_23.env
-                - vars/base/common.json
-                - vars/${{ secrets.ENVIRONMENT }}/common.json
-                - vars/base/kvm.json
-                - vars/${{ secrets.ENVIRONMENT }}/kvm.json
-                - vars/base/linux.json
-                - vars/${{ secrets.ENVIRONMENT }}/linux.json
-                - vars/base/ubuntu.json
-                - vars/${{ secrets.ENVIRONMENT }}/ubuntu.json
-                - vars/base/kubernetes.json
-                - vars/${{ secrets.ENVIRONMENT }}/kubernetes.json
-                - vars/base/kubernetes_1_23.json
-                - vars/${{ secrets.ENVIRONMENT }}/kubernetes_1_23.json
+                - env/*/common.env
+                - env/*/kvm.env
+                - env/*/linux.env
+                - env/*/ubuntu.env
+                - env/*/kubernetes.env
+                - env/*/kubernetes_1_23.env
+                - vars/*/common.json
+                - vars/*/kvm.json
+                - vars/*/linux.json
+                - vars/*/ubuntu.json
+                - vars/*/kubernetes.json
+                - vars/*/kubernetes_1_23.json
                 - packer/kubernetes.pkr.hcl
                 - vendor/image-builder/**
           - name: kubernetes-1-24
@@ -145,30 +109,18 @@ jobs:
               paths:
                 - .github/workflows/build.yml
                 - requirements.yml
-                - env/base/common.env
-                - env/${{ secrets.ENVIRONMENT }}/common.env
-                - env/base/kvm.env
-                - env/${{ secrets.ENVIRONMENT }}/kvm.env
-                - env/base/linux.env
-                - env/${{ secrets.ENVIRONMENT }}/linux.env
-                - env/base/ubuntu.env
-                - env/${{ secrets.ENVIRONMENT }}/ubuntu.env
-                - env/base/kubernetes.env
-                - env/${{ secrets.ENVIRONMENT }}/kubernetes.env
-                - env/base/kubernetes_1_24.env
-                - env/${{ secrets.ENVIRONMENT }}/kubernetes_1_24.env
-                - vars/base/common.json
-                - vars/${{ secrets.ENVIRONMENT }}/common.json
-                - vars/base/kvm.json
-                - vars/${{ secrets.ENVIRONMENT }}/kvm.json
-                - vars/base/linux.json
-                - vars/${{ secrets.ENVIRONMENT }}/linux.json
-                - vars/base/ubuntu.json
-                - vars/${{ secrets.ENVIRONMENT }}/ubuntu.json
-                - vars/base/kubernetes.json
-                - vars/${{ secrets.ENVIRONMENT }}/kubernetes.json
-                - vars/base/kubernetes_1_24.json
-                - vars/${{ secrets.ENVIRONMENT }}/kubernetes_1_24.json
+                - env/*/common.env
+                - env/*/kvm.env
+                - env/*/linux.env
+                - env/*/ubuntu.env
+                - env/*/kubernetes.env
+                - env/*/kubernetes_1_24.env
+                - vars/*/common.json
+                - vars/*/kvm.json
+                - vars/*/linux.json
+                - vars/*/ubuntu.json
+                - vars/*/kubernetes.json
+                - vars/*/kubernetes_1_24.json
                 - packer/kubernetes.pkr.hcl
                 - vendor/image-builder/**
           - name: kubernetes-1-25
@@ -178,30 +130,18 @@ jobs:
               paths:
                 - .github/workflows/build.yml
                 - requirements.yml
-                - env/base/common.env
-                - env/${{ secrets.ENVIRONMENT }}/common.env
-                - env/base/kvm.env
-                - env/${{ secrets.ENVIRONMENT }}/kvm.env
-                - env/base/linux.env
-                - env/${{ secrets.ENVIRONMENT }}/linux.env
-                - env/base/ubuntu.env
-                - env/${{ secrets.ENVIRONMENT }}/ubuntu.env
-                - env/base/kubernetes.env
-                - env/${{ secrets.ENVIRONMENT }}/kubernetes.env
-                - env/base/kubernetes_1_25.env
-                - env/${{ secrets.ENVIRONMENT }}/kubernetes_1_25.env
-                - vars/base/common.json
-                - vars/${{ secrets.ENVIRONMENT }}/common.json
-                - vars/base/kvm.json
-                - vars/${{ secrets.ENVIRONMENT }}/kvm.json
-                - vars/base/linux.json
-                - vars/${{ secrets.ENVIRONMENT }}/linux.json
-                - vars/base/ubuntu.json
-                - vars/${{ secrets.ENVIRONMENT }}/ubuntu.json
-                - vars/base/kubernetes.json
-                - vars/${{ secrets.ENVIRONMENT }}/kubernetes.json
-                - vars/base/kubernetes_1_25.json
-                - vars/${{ secrets.ENVIRONMENT }}/kubernetes_1_25.json
+                - env/*/common.env
+                - env/*/kvm.env
+                - env/*/linux.env
+                - env/*/ubuntu.env
+                - env/*/kubernetes.env
+                - env/*/kubernetes_1_25.env
+                - vars/*/common.json
+                - vars/*/kvm.json
+                - vars/*/linux.json
+                - vars/*/ubuntu.json
+                - vars/*/kubernetes.json
+                - vars/*/kubernetes_1_25.json
                 - packer/kubernetes.pkr.hcl
                 - vendor/image-builder/**
           - name: kubernetes-1-26
@@ -211,30 +151,18 @@ jobs:
               paths:
                 - .github/workflows/build.yml
                 - requirements.yml
-                - env/base/common.env
-                - env/${{ secrets.ENVIRONMENT }}/common.env
-                - env/base/kvm.env
-                - env/${{ secrets.ENVIRONMENT }}/kvm.env
-                - env/base/linux.env
-                - env/${{ secrets.ENVIRONMENT }}/linux.env
-                - env/base/ubuntu.env
-                - env/${{ secrets.ENVIRONMENT }}/ubuntu.env
-                - env/base/kubernetes.env
-                - env/${{ secrets.ENVIRONMENT }}/kubernetes.env
-                - env/base/kubernetes_1_26.env
-                - env/${{ secrets.ENVIRONMENT }}/kubernetes_1_26.env
-                - vars/base/common.json
-                - vars/${{ secrets.ENVIRONMENT }}/common.json
-                - vars/base/kvm.json
-                - vars/${{ secrets.ENVIRONMENT }}/kvm.json
-                - vars/base/linux.json
-                - vars/${{ secrets.ENVIRONMENT }}/linux.json
-                - vars/base/ubuntu.json
-                - vars/${{ secrets.ENVIRONMENT }}/ubuntu.json
-                - vars/base/kubernetes.json
-                - vars/${{ secrets.ENVIRONMENT }}/kubernetes.json
-                - vars/base/kubernetes_1_26.json
-                - vars/${{ secrets.ENVIRONMENT }}/kubernetes_1_26.json
+                - env/*/common.env
+                - env/*/kvm.env
+                - env/*/linux.env
+                - env/*/ubuntu.env
+                - env/*/kubernetes.env
+                - env/*/kubernetes_1_26.env
+                - vars/*/common.json
+                - vars/*/kvm.json
+                - vars/*/linux.json
+                - vars/*/ubuntu.json
+                - vars/*/kubernetes.json
+                - vars/*/kubernetes_1_26.json
                 - packer/kubernetes.pkr.hcl
                 - vendor/image-builder/**
     name: ${{ matrix.name }}
