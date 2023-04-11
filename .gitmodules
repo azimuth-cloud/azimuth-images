@@ -1,0 +1,3 @@
+[submodule "vendor/image-builder"]
+	path = vendor/image-builder
+	url = https://github.com/kubernetes-sigs/image-builder.git

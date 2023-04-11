@@ -5,6 +5,15 @@ set -eo pipefail
 REPO_ROOT="$(dirname $(dirname $(realpath ${BASH_SOURCE[0]:-${(%):-%x}})))"
 source "$REPO_ROOT/bin/env-vars"
 
+PACKER_VAR_FILES_ARGS=
+if [ -n "$PACKER_VAR_FILES" ]; then
+    IFS="," read -ra PACKER_VAR_FILES_ARR <<< "$PACKER_VAR_FILES"
+    for FILE in "${PACKER_VAR_FILES_ARR[@]}"; do
+        if [ -z "$FILE" ]; then continue; fi
+        PACKER_VAR_FILES_ARGS="$PACKER_VAR_FILES_ARGS -var-file=$REPO_ROOT/$FILE"
+    done
+fi
+
 set -x
 
 # If an image URL is set, download it and upload it as a temporary image
@@ -25,7 +34,12 @@ fi
 # whether the build is successful or not, but use the exit code from packer
 set +e
 
-PACKER_LOG=1 packer build --on-error=cleanup "$REPO_ROOT/packer/$PACKER_TEMPLATE.pkr.hcl"
+PACKER_LOG=1 \
+  packer build \
+    --on-error=cleanup \
+    $PACKER_VAR_FILES_ARGS \
+    $PACKER_EXTRA_ARGS \
+    "$REPO_ROOT/packer/$PACKER_TEMPLATE.pkr.hcl"
 EXIT_CODE="$?"
 
 set -e

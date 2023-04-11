@@ -1,0 +1,13 @@
+{
+  "containerd_additional_settings": "",
+  "containerd_arch": "amd64",
+  "containerd_url": "",
+  "containerd_wasm_shims_arch": "x86_64",
+  "containerd_wasm_shims_url": "",
+  "crictl_sha256": "",
+  "crictl_url": "",
+  "extra_debs": "nfs-common",
+  "kubernetes_cni_http_checksum": "",
+  "kubernetes_rpm_repo": "",
+  "python_path": ""
+}
