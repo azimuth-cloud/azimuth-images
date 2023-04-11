@@ -241,6 +241,8 @@ jobs:
     steps:
       - name: Check out the repository
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
       - name: Check if image should be built
         uses: dorny/paths-filter@v2
