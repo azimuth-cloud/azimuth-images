@@ -1,4 +1,6 @@
 collections:
+  - name: ansible.posix
+    version: 1.5.2
   - name: ansible.windows
     version: 1.10.0
   - name: chocolatey.chocolatey
