@@ -81,27 +81,6 @@ jobs:
                 - ansible/roles/linux-data-volumes/**
                 - ansible/roles/linux-monitoring/**
                 - ansible/roles/linux-zenith-client/**
-          - name: kubernetes-1-23
-            template: kubernetes
-            var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_23
-            path-filters: |
-              paths:
-                - .github/workflows/build.yml
-                - requirements.yml
-                - env/*/common.env
-                - env/*/kvm.env
-                - env/*/linux.env
-                - env/*/ubuntu.env
-                - env/*/kubernetes.env
-                - env/*/kubernetes_1_23.env
-                - vars/*/common.json
-                - vars/*/kvm.json
-                - vars/*/linux.json
-                - vars/*/ubuntu.json
-                - vars/*/kubernetes.json
-                - vars/*/kubernetes_1_23.json
-                - packer/kubernetes.pkr.hcl
-                - vendor/image-builder/**
           - name: kubernetes-1-24
             template: kubernetes
             var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_24
@@ -163,6 +142,27 @@ jobs:
                 - vars/*/ubuntu.json
                 - vars/*/kubernetes.json
                 - vars/*/kubernetes_1_26.json
+                - packer/kubernetes.pkr.hcl
+                - vendor/image-builder/**
+          - name: kubernetes-1-27
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_27
+            path-filters: |
+              paths:
+                - .github/workflows/build.yml
+                - requirements.yml
+                - env/*/common.env
+                - env/*/kvm.env
+                - env/*/linux.env
+                - env/*/ubuntu.env
+                - env/*/kubernetes.env
+                - env/*/kubernetes_1_27.env
+                - vars/*/common.json
+                - vars/*/kvm.json
+                - vars/*/linux.json
+                - vars/*/ubuntu.json
+                - vars/*/kubernetes.json
+                - vars/*/kubernetes_1_27.json
                 - packer/kubernetes.pkr.hcl
                 - vendor/image-builder/**
     name: ${{ matrix.name }}
