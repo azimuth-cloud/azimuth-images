@@ -7,14 +7,18 @@ source "$REPO_ROOT/bin/env-vars"
 
 set -x
 
-IMAGE_ID="$(jq --raw-output '.builds[-1].artifact_id' ./packer-manifest.json)"
+if [ -z "$1" ]; then
+  echo "No image ID specified" >&2
+  exit 1
+fi
+
+IMAGE_ID="$1"
 IMAGE_NAME="$(openstack image show -f value -c name $IMAGE_ID)"
 IMAGE_DISK_FORMAT="$(openstack image show -f value -c disk_format $IMAGE_ID)"
 
 # Download the image that got built
 IMAGE_SOURCE_FILE="${IMAGE_NAME}.source.${IMAGE_DISK_FORMAT}"
 openstack image save --file "$IMAGE_SOURCE_FILE" "$IMAGE_ID"
-openstack image delete "$IMAGE_ID"
 
 # Convert the image to QCOW2 if required
 if [ "$IMAGE_DISK_FORMAT" = "qcow2" ]; then

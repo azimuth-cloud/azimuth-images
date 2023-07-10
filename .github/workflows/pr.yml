@@ -1,14 +1,42 @@
-name: Build images
+name: Build images for PR
 on:
-  push:
-    branches: [main]
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - ready_for_review
+      - reopened
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
+
 jobs:
+  # This job exists so that PRs from outside the main repo are rejected
+  fail_on_remote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: PR must be from a branch in the azimuth-images repo
+        run: exit 1
+    if: ${{ github.repository != 'stackhpc/azimuth-images' }}
+
+  # This job exists so that draft PRs see the check as failed
+  fail_on_draft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: PR must be marked as ready for review before tests will run
+        run: exit 1
+    if: ${{ github.event.pull_request.draft }}
+
   build_images:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       # Each job consumes a FIP, so limit the number that can run concurrently
       max-parallel: 1
+      # We only build images whose dependencies have changed
       matrix:
         include:
           - name: ubuntu-desktop
@@ -16,7 +44,8 @@ jobs:
             var-files: common,kvm,linux,ubuntu
             path-filters: |
               paths:
-                - .github/workflows/build.yml
+                - .github/actions/**
+                - .github/workflows/pr.yml
                 - requirements.yml
                 - env/*/common.env
                 - env/*/kvm.env
@@ -40,7 +69,8 @@ jobs:
             var-files: common,kvm,linux,ubuntu
             path-filters: |
               paths:
-                - .github/workflows/build.yml
+                - .github/actions/**
+                - .github/workflows/pr.yml
                 - requirements.yml
                 - env/*/common.env
                 - env/*/kvm.env
@@ -63,7 +93,8 @@ jobs:
             var-files: common,kvm,linux,ubuntu
             path-filters: |
               paths:
-                - .github/workflows/build.yml
+                - .github/actions/**
+                - .github/workflows/pr.yml
                 - requirements.yml
                 - env/*/common.env
                 - env/*/kvm.env
@@ -86,7 +117,8 @@ jobs:
             var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_25
             path-filters: |
               paths:
-                - .github/workflows/build.yml
+                - .github/actions/**
+                - .github/workflows/pr.yml
                 - requirements.yml
                 - env/*/common.env
                 - env/*/kvm.env
@@ -107,7 +139,8 @@ jobs:
             var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_26
             path-filters: |
               paths:
-                - .github/workflows/build.yml
+                - .github/actions/**
+                - .github/workflows/pr.yml
                 - requirements.yml
                 - env/*/common.env
                 - env/*/kvm.env
@@ -128,7 +161,8 @@ jobs:
             var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_27
             path-filters: |
               paths:
-                - .github/workflows/build.yml
+                - .github/actions/**
+                - .github/workflows/pr.yml
                 - requirements.yml
                 - env/*/common.env
                 - env/*/kvm.env
@@ -157,31 +191,17 @@ jobs:
         with:
           filters: ${{ matrix.path-filters }}
 
-      - name: Set up Packer environment
-        if: ${{ steps.changes.outputs.paths == 'true' }}
-        run: ./bin/setup
-
       - name: Write OpenStack credentials
         if: ${{ steps.changes.outputs.paths == 'true' }}
         run: echo "$CLOUDS_YAML_B64" | base64 -d > ./clouds.yaml
         env:
           CLOUDS_YAML_B64: ${{ secrets.CLOUDS_YAML_B64 }}
 
+      # Just test that the images build, without publishing them
       - name: Build image
+        uses: ./.github/actions/build-image
+        with:
+          environment: arcus
+          packer-template: ${{ matrix.template }}
+          var-files: ${{ matrix.var-files }}
         if: ${{ steps.changes.outputs.paths == 'true' }}
-        run: ./bin/build
-        env:
-          OS_CLOUD: openstack
-          ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
-          PACKER_TEMPLATE: ${{ matrix.template }}
-          ENV_VAR_FILES: ${{ matrix.var-files }}
-
-      - name: Publish image to prerelease bucket
-        if: ${{ steps.changes.outputs.paths == 'true' }}
-        run: ./bin/publish
-        env:
-          OS_CLOUD: openstack
-          ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
-          ENV_VAR_FILES: ${{ matrix.var-files }}
-          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
