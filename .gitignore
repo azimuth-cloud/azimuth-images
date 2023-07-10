@@ -4,3 +4,6 @@ clouds.yaml*
 packer-manifest.json
 s3cfg
 venv
+
+# Ignore direnv file
+.envrc
