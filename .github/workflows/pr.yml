@@ -19,16 +19,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: PR must be from a branch in the azimuth-images repo
-        run: exit 1
-    if: ${{ github.repository != 'stackhpc/azimuth-images' }}
+        run: exit ${{ github.repository == 'stackhpc/azimuth-images' && '0' || '1' }}
 
   # This job exists so that draft PRs see the check as failed
   fail_on_draft:
     runs-on: ubuntu-latest
     steps:
       - name: PR must be marked as ready for review before tests will run
-        run: exit 1
-    if: ${{ github.event.pull_request.draft }}
+        run: exit ${{ github.event.pull_request.draft && '1' || '0' }}
 
   build_images:
     needs: [fail_on_remote, fail_on_draft]
