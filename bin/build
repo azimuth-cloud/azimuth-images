@@ -52,7 +52,7 @@ fi
 # Output the image id if the Packer command was successful
 if [ -f "./packer-manifest.json" ]; then
   IMAGE_ID="$(jq --raw-output '.builds[-1].artifact_id' ./packer-manifest.json)"
-  echo "image-id=$IMAGE_ID" >> "${GITHUB_OUTPUT:-/dev/stdout}
+  echo "image-id=$IMAGE_ID" >> "${GITHUB_OUTPUT:-/dev/stdout}"
 fi
 
 exit $EXIT_CODE

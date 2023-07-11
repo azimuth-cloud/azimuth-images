@@ -45,6 +45,8 @@ jobs:
               paths:
                 - .github/actions/**
                 - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
                 - requirements.yml
                 - env/*/common.env
                 - env/*/kvm.env
@@ -70,6 +72,8 @@ jobs:
               paths:
                 - .github/actions/**
                 - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
                 - requirements.yml
                 - env/*/common.env
                 - env/*/kvm.env
@@ -94,6 +98,8 @@ jobs:
               paths:
                 - .github/actions/**
                 - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
                 - requirements.yml
                 - env/*/common.env
                 - env/*/kvm.env
@@ -118,6 +124,8 @@ jobs:
               paths:
                 - .github/actions/**
                 - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
                 - requirements.yml
                 - env/*/common.env
                 - env/*/kvm.env
@@ -140,6 +148,8 @@ jobs:
               paths:
                 - .github/actions/**
                 - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
                 - requirements.yml
                 - env/*/common.env
                 - env/*/kvm.env
@@ -162,6 +172,8 @@ jobs:
               paths:
                 - .github/actions/**
                 - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
                 - requirements.yml
                 - env/*/common.env
                 - env/*/kvm.env
