@@ -50,7 +50,7 @@ runs:
     - name: Build image
       id: build-image
       shell: bash
-      run: ./bin/build
+      run: ./bin/build-image
       env:
         OS_CLIENT_CONFIG_FILE: ${{ inputs.os-client-config-file }}
         OS_CLOUD: ${{ inputs.os-cloud }}
@@ -62,7 +62,7 @@ runs:
     - name: Publish image
       id: publish-image
       shell: bash
-      run: ./bin/publish ${{ steps.build-image.outputs.image-id }}
+      run: ./bin/publish-image ${{ steps.build-image.outputs.image-id }}
       env:
         OS_CLIENT_CONFIG_FILE: ${{ inputs.os-client-config-file }}
         OS_CLOUD: ${{ inputs.os-cloud }}

@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+REPO_ROOT="$(dirname $(dirname $(realpath ${BASH_SOURCE[0]:-${(%):-%x}})))"
+source "$REPO_ROOT/bin/env-vars"
+source "$REPO_ROOT/bin/signals"
+
+PACKER_VAR_FILES_ARGS=
+if [ -n "$PACKER_VAR_FILES" ]; then
+    IFS="," read -ra PACKER_VAR_FILES_ARR <<< "$PACKER_VAR_FILES"
+    for FILE in "${PACKER_VAR_FILES_ARR[@]}"; do
+        if [ -z "$FILE" ]; then continue; fi
+        PACKER_VAR_FILES_ARGS="$PACKER_VAR_FILES_ARGS -var-file=$REPO_ROOT/$FILE"
+    done
+fi
+
+set -x
+
+cleanup() {
+  # Ignore errors during the cleanup
+  set +e
+  if [ -n "$PKR_VAR_source_image_name" ]; then
+    openstack image delete "$PKR_VAR_source_image_name"
+    if [ -f "$PKR_VAR_source_image_name.download" ]; then
+      rm "$PKR_VAR_source_image_name.download"
+    fi
+  fi
+}
+
+export PKR_VAR_source_image_name="packer-$(uuidgen | tr '[:upper:]' '[:lower:]')"
+run \
+  curl -Lo "$PKR_VAR_source_image_name.download" "$SOURCE_IMAGE_URL"
+
+run \
+  openstack image create \
+    --progress \
+    --private \
+    --container-format "${SOURCE_IMAGE_CONTAINER_FORMAT:-bare}" \
+    --disk-format "${SOURCE_IMAGE_DISK_FORMAT:-qcow2}" \
+    --file "$PKR_VAR_source_image_name.download" \
+    $SOURCE_IMAGE_PROPERTIES \
+    "$PKR_VAR_source_image_name"
+
+export PACKER_LOG=1
+run \
+  packer build \
+    --on-error=cleanup \
+    $PACKER_VAR_FILES_ARGS \
+    $PACKER_EXTRA_ARGS \
+    "$REPO_ROOT/packer/$PACKER_TEMPLATE.pkr.hcl"
+
+# Output the image id from the Packer build
+IMAGE_ID="$(jq --raw-output '.builds[-1].artifact_id' ./packer-manifest.json)"
+echo "image-id=$IMAGE_ID" >> "${GITHUB_OUTPUT:-/dev/stdout}"
+
+cleanup

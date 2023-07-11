@@ -4,6 +4,7 @@ set -eo pipefail
 
 REPO_ROOT="$(dirname $(dirname $(realpath ${BASH_SOURCE[0]:-${(%):-%x}})))"
 source "$REPO_ROOT/bin/env-vars"
+source "$REPO_ROOT/bin/signals"
 
 set -x
 
@@ -18,12 +19,14 @@ IMAGE_DISK_FORMAT="$(openstack image show -f value -c disk_format $IMAGE_ID)"
 
 # Download the image that got built
 IMAGE_SOURCE_FILE="${IMAGE_NAME}.source.${IMAGE_DISK_FORMAT}"
-openstack image save --file "$IMAGE_SOURCE_FILE" "$IMAGE_ID"
+run \
+  openstack image save --file "$IMAGE_SOURCE_FILE" "$IMAGE_ID"
 
 # Convert the image to QCOW2 if required
 if [ "$IMAGE_DISK_FORMAT" = "qcow2" ]; then
-    mv "$IMAGE_SOURCE_FILE" "${IMAGE_NAME}.qcow2"
+  mv "$IMAGE_SOURCE_FILE" "${IMAGE_NAME}.qcow2"
 else
+  run \
     qemu-img convert \
       -f "$IMAGE_DISK_FORMAT" \
       -O qcow2 \
@@ -39,5 +42,7 @@ access_key = ${S3_ACCESS_KEY}
 secret_key = ${S3_SECRET_KEY}
 use_https = True
 EOF
-s3cmd mb "s3://$S3_BUCKET"
-s3cmd put "${IMAGE_NAME}.qcow2" "s3://$S3_BUCKET"
+run \
+  s3cmd mb "s3://$S3_BUCKET"
+run \
+  s3cmd put "${IMAGE_NAME}.qcow2" "s3://$S3_BUCKET"
