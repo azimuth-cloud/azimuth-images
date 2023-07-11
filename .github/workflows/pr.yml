@@ -43,7 +43,6 @@ jobs:
             var-files: common,kvm,linux,ubuntu
             path-filters: |
               paths:
-                - .github/actions/**
                 - .github/workflows/pr.yml
                 - bin/*
                 - config.pkr.hcl
@@ -70,7 +69,6 @@ jobs:
           #   var-files: common,kvm,linux,ubuntu
           #   path-filters: |
           #     paths:
-          #       - .github/actions/**
           #       - .github/workflows/pr.yml
           #       - bin/*
           #       - config.pkr.hcl
@@ -96,7 +94,6 @@ jobs:
           #   var-files: common,kvm,linux,ubuntu
           #   path-filters: |
           #     paths:
-          #       - .github/actions/**
           #       - .github/workflows/pr.yml
           #       - bin/*
           #       - config.pkr.hcl
@@ -122,7 +119,6 @@ jobs:
           #   var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_25
           #   path-filters: |
           #     paths:
-          #       - .github/actions/**
           #       - .github/workflows/pr.yml
           #       - bin/*
           #       - config.pkr.hcl
@@ -146,7 +142,6 @@ jobs:
           #   var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_26
           #   path-filters: |
           #     paths:
-          #       - .github/actions/**
           #       - .github/workflows/pr.yml
           #       - bin/*
           #       - config.pkr.hcl
@@ -170,7 +165,6 @@ jobs:
           #   var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_27
           #   path-filters: |
           #     paths:
-          #       - .github/actions/**
           #       - .github/workflows/pr.yml
           #       - bin/*
           #       - config.pkr.hcl

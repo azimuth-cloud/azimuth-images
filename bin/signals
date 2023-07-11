@@ -1,12 +1,12 @@
 # This is the PID of the current child
 child_pid=
 
-# This function handles the signal specified as the first argument
+# This function handles a signal by sending SIGINT to the child process
 _handle_signal() {
   # Forward the signal to the active child process and wait for it to exit
   local forward_child_pid="$child_pid"
   if [ -n "$forward_child_pid" ]; then
-    kill -s "$1" "$forward_child_pid"
+    kill -s INT "$forward_child_pid"
     # We don't want this to cause the rest of the handler to exit
     wait "$forward_child_pid" || true
   fi
@@ -15,10 +15,7 @@ _handle_signal() {
 }
 
 # Register handlers for INT and TERM as these are used by GHA when cancelling jobs
-_handle_sigint() { _handle_signal "INT"; }
-trap _handle_sigint SIGINT
-_handle_sigterm() { _handle_signal "TERM"; }
-trap _handle_sigterm SIGTERM
+trap _handle_signal SIGINT SIGTERM
 
 # Utility function for running a command
 run() {
