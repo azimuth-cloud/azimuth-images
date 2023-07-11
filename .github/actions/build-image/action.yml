@@ -21,6 +21,9 @@ inputs:
   var-files:
     description: The var files to include
     required: true
+  github-token:
+    description: The GitHub API token to use to avoid rate limits
+    required: true
   publish:
     description: Indicates whether to publish the image or not
     required: true
@@ -51,6 +54,7 @@ runs:
       env:
         OS_CLIENT_CONFIG_FILE: ${{ inputs.os-client-config-file }}
         OS_CLOUD: ${{ inputs.os-cloud }}
+        PACKER_GITHUB_API_TOKEN: ${{ inputs.github-token }}
         ENVIRONMENT: ${{ inputs.environment }}
         PACKER_TEMPLATE: ${{ inputs.packer-template }}
         ENV_VAR_FILES: ${{ inputs.var-files }}
