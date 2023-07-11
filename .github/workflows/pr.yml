@@ -208,12 +208,23 @@ jobs:
           CLOUDS_YAML_B64: ${{ secrets.CLOUDS_YAML_B64 }}
         if: ${{ steps.changes.outputs.paths == 'true' }}
 
-      # Just test that the images build, without publishing them
+      - name: Set up Packer environment
+        run: ./bin/setup
+        if: ${{ steps.changes.outputs.paths == 'true' }}
+
       - name: Build image
-        uses: ./.github/actions/build-image
-        with:
-          environment: arcus
-          packer-template: ${{ matrix.template }}
-          var-files: ${{ matrix.var-files }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+        id: build-image
+        run: ./bin/build-image
+        env:
+          OS_CLOUD: openstack
+          PACKER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ENVIRONMENT: arcus
+          PACKER_TEMPLATE: ${{ matrix.template }}
+          ENV_VAR_FILES: ${{ matrix.var-files }}
+        if: ${{ steps.changes.outputs.paths == 'true' }}
+
+      - name: Delete image in OpenStack
+        run: openstack image delete ${{ steps.build-image.outputs.image-id }}
+        env:
+          OS_CLOUD: openstack
         if: ${{ steps.changes.outputs.paths == 'true' }}
