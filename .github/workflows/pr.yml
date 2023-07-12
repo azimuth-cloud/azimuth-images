@@ -9,10 +9,6 @@ on:
     branches:
       - main
 
-concurrency:
-  group: ${{ github.head_ref }}
-  cancel-in-progress: true
-
 jobs:
   # This job exists so that PRs from outside the main repo are rejected
   fail_on_remote:
@@ -215,10 +211,6 @@ jobs:
           ENVIRONMENT: arcus
           PACKER_TEMPLATE: ${{ matrix.template }}
           ENV_VAR_FILES: ${{ matrix.var-files }}
-        if: ${{ steps.changes.outputs.paths == 'true' }}
-
-      - name: Delete image in OpenStack
-        run: openstack image delete ${{ steps.build-image.outputs.image-id }}
-        env:
-          OS_CLOUD: openstack
+          # For PRs, we don't need to save images
+          PKR_VAR_skip_create_image: "true"
         if: ${{ steps.changes.outputs.paths == 'true' }}

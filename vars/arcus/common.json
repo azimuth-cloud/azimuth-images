@@ -1,5 +1,4 @@
 {
   "network": "97ed78b5-156c-441c-9fcb-5a26c8a4ed26",
-  "floating_ip_network": "57add367-d205-4030-a929-d75617a7c63e",
   "flavor": "vm.ska.cpu.general.small"
 }

@@ -4,7 +4,6 @@ set -eo pipefail
 
 REPO_ROOT="$(dirname $(dirname $(realpath ${BASH_SOURCE[0]:-${(%):-%x}})))"
 source "$REPO_ROOT/bin/env-vars"
-source "$REPO_ROOT/bin/signals"
 
 PACKER_VAR_FILES_ARGS=
 if [ -n "$PACKER_VAR_FILES" ]; then
@@ -18,8 +17,12 @@ fi
 set -x
 
 cleanup() {
-  # Ignore errors during the cleanup
+  # We want all the cleanup commands to run even if there is an error
   set +e
+  # If a floating IP has been allocated, release it
+  if [ -n "$PKR_VAR_floating_ip" ]; then
+    openstack floating ip delete "$PKR_VAR_floating_ip"
+  fi
   if [ -n "$PKR_VAR_source_image_name" ]; then
     openstack image delete "$PKR_VAR_source_image_name"
     if [ -f "$PKR_VAR_source_image_name.download" ]; then
@@ -27,31 +30,34 @@ cleanup() {
     fi
   fi
 }
+trap cleanup EXIT
 
-export PKR_VAR_source_image_name="packer-$(uuidgen | tr '[:upper:]' '[:lower:]')"
-run \
-  curl -Lo "$PKR_VAR_source_image_name.download" "$SOURCE_IMAGE_URL"
+# Wait until we are able to allocate a FIP
+PKR_VAR_floating_ip=
+while true; do
+  PKR_VAR_floating_ip="$(openstack floating ip create -f value -c floating_ip_address "$FLOATING_IP_NETWORK")"
+  [ "$?" -eq 0 ] && break
+  sleep 30
+done
 
-run \
-  openstack image create \
-    --progress \
-    --private \
-    --container-format "${SOURCE_IMAGE_CONTAINER_FORMAT:-bare}" \
-    --disk-format "${SOURCE_IMAGE_DISK_FORMAT:-qcow2}" \
-    --file "$PKR_VAR_source_image_name.download" \
-    $SOURCE_IMAGE_PROPERTIES \
-    "$PKR_VAR_source_image_name"
+PKR_VAR_source_image_name="packer-$(uuidgen | tr '[:upper:]' '[:lower:]')"
+curl -Lo "$PKR_VAR_source_image_name.download" "$SOURCE_IMAGE_URL"
+openstack image create \
+  --progress \
+  --private \
+  --container-format "${SOURCE_IMAGE_CONTAINER_FORMAT:-bare}" \
+  --disk-format "${SOURCE_IMAGE_DISK_FORMAT:-qcow2}" \
+  --file "$PKR_VAR_source_image_name.download" \
+  $SOURCE_IMAGE_PROPERTIES \
+  "$PKR_VAR_source_image_name"
 
-export PACKER_LOG=1
-run \
-  packer build \
-    --on-error=cleanup \
-    $PACKER_VAR_FILES_ARGS \
-    $PACKER_EXTRA_ARGS \
-    "$REPO_ROOT/packer/$PACKER_TEMPLATE.pkr.hcl"
+export PACKER_LOG=1 PKR_VAR_floating_ip PKR_VAR_source_image_name
+packer build \
+  --on-error=cleanup \
+  $PACKER_VAR_FILES_ARGS \
+  $PACKER_EXTRA_ARGS \
+  "$REPO_ROOT/packer/$PACKER_TEMPLATE.pkr.hcl"
 
 # Output the image id from the Packer build
 IMAGE_ID="$(jq --raw-output '.builds[-1].artifact_id' ./packer-manifest.json)"
 echo "image-id=$IMAGE_ID" >> "${GITHUB_OUTPUT:-/dev/stdout}"
-
-cleanup
