@@ -58,6 +58,8 @@ packer build \
   $PACKER_EXTRA_ARGS \
   "$REPO_ROOT/packer/$PACKER_TEMPLATE.pkr.hcl"
 
-# Output the image id from the Packer build
-IMAGE_ID="$(jq --raw-output '.builds[-1].artifact_id' ./packer-manifest.json)"
-echo "image-id=$IMAGE_ID" >> "${GITHUB_OUTPUT:-/dev/stdout}"
+# Output the image id from the Packer build, if an image was built
+if [ -f "./packer-manifest.json" ]; then
+  IMAGE_ID="$(jq --raw-output '.builds[-1].artifact_id' ./packer-manifest.json)"
+  echo "image-id=$IMAGE_ID" >> "${GITHUB_OUTPUT:-/dev/stdout}"
+fi

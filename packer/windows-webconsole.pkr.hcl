@@ -12,7 +12,7 @@ variable "network" {
   type = string
 }
 
-variable "floating_ip_network" {
+variable "floating_ip" {
   type = string
 }
 
@@ -39,22 +39,30 @@ variable "disk_format" {
   default = "qcow2"
 }
 
+variable "skip_create_image" {
+  type = bool
+  default = false
+}
+
 source "openstack" "windows-webconsole" {
+  # Allow image creation to be skipped for build tests
+  skip_create_image = var.skip_create_image
+
   image_name = "${source.name}-${local.timestamp}"
   image_visibility = "private"
-  image_disk_format = "${var.disk_format}"
+  image_disk_format = var.disk_format
 
-  source_image_name = "${var.source_image_name}"
-  flavor = "${var.flavor}"
-  networks = ["${var.network}"]
-  security_groups = "${var.security_groups}"
-  floating_ip_network = "${var.floating_ip_network}"
+  source_image_name = var.source_image_name
+  flavor = var.flavor
+  networks = [var.network]
+  security_groups = var.security_groups
+  floating_ip = var.floating_ip
 
   use_blockstorage_volume = true
-  volume_size = "${var.volume_size}"
+  volume_size = var.volume_size
 
   communicator = "winrm"
-  winrm_username = "${var.winrm_username}"
+  winrm_username = var.winrm_username
   winrm_use_ssl = true
   winrm_insecure = true
 }
@@ -66,7 +74,7 @@ build {
     galaxy_file = "${path.root}/../requirements.yml"
     playbook_file = "${path.root}/../ansible/windows-webconsole.yml"
     use_proxy = false
-    user = "${var.winrm_username}"
+    user = var.winrm_username
     extra_arguments = [
       "-vvv",
       "--extra-vars",
@@ -76,7 +84,7 @@ build {
 
   post-processor "manifest" {
     custom_data = {
-      source = "${source.name}"
+      source = source.name
     }
   }
 }

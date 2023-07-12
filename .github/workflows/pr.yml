@@ -29,8 +29,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      # Each job consumes a FIP, so limit the number that can run concurrently
-      max-parallel: 1
       # We only build images whose dependencies have changed
       matrix:
         include:
@@ -60,125 +58,125 @@ jobs:
                 - ansible/roles/linux-guacamole/**
                 - ansible/roles/linux-monitoring/**
                 - ansible/roles/linux-zenith-client/**
-          # - name: ubuntu-rdp-gateway
-          #   template: linux-rdp-gateway
-          #   var-files: common,kvm,linux,ubuntu
-          #   path-filters: |
-          #     paths:
-          #       - .github/workflows/pr.yml
-          #       - bin/*
-          #       - config.pkr.hcl
-          #       - requirements.yml
-          #       - env/*/common.env
-          #       - env/*/kvm.env
-          #       - env/*/linux.env
-          #       - env/*/ubuntu.env
-          #       - vars/*/common.json
-          #       - vars/*/kvm.json
-          #       - vars/*/linux.json
-          #       - vars/*/ubuntu.json
-          #       - packer/linux-rdp-gateway.pkr.hcl
-          #       - ansible/linux-rdp-gateway.yml
-          #       - ansible/roles/linux-rdp-gateway/**
-          #       - ansible/roles/linux-ansible-init/**
-          #       - ansible/roles/linux-podman/**
-          #       - ansible/roles/linux-data-volumes/**
-          #       - ansible/roles/linux-guacamole/**
-          #       - ansible/roles/linux-zenith-client/**
-          # - name: jupyter-repo2docker
-          #   template: jupyter-repo2docker
-          #   var-files: common,kvm,linux,ubuntu
-          #   path-filters: |
-          #     paths:
-          #       - .github/workflows/pr.yml
-          #       - bin/*
-          #       - config.pkr.hcl
-          #       - requirements.yml
-          #       - env/*/common.env
-          #       - env/*/kvm.env
-          #       - env/*/linux.env
-          #       - env/*/ubuntu.env
-          #       - vars/*/common.json
-          #       - vars/*/kvm.json
-          #       - vars/*/linux.json
-          #       - vars/*/ubuntu.json
-          #       - packer/jupyter-repo2docker.pkr.hcl
-          #       - ansible/jupyter-repo2docker.yml
-          #       - ansible/roles/jupyter-repo2docker/**
-          #       - ansible/roles/linux-ansible-init/**
-          #       - ansible/roles/linux-podman/**
-          #       - ansible/roles/linux-data-volumes/**
-          #       - ansible/roles/linux-monitoring/**
-          #       - ansible/roles/linux-zenith-client/**
-          # - name: kubernetes-1-25
-          #   template: kubernetes
-          #   var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_25
-          #   path-filters: |
-          #     paths:
-          #       - .github/workflows/pr.yml
-          #       - bin/*
-          #       - config.pkr.hcl
-          #       - requirements.yml
-          #       - env/*/common.env
-          #       - env/*/kvm.env
-          #       - env/*/linux.env
-          #       - env/*/ubuntu.env
-          #       - env/*/kubernetes.env
-          #       - env/*/kubernetes_1_25.env
-          #       - vars/*/common.json
-          #       - vars/*/kvm.json
-          #       - vars/*/linux.json
-          #       - vars/*/ubuntu.json
-          #       - vars/*/kubernetes.json
-          #       - vars/*/kubernetes_1_25.json
-          #       - packer/kubernetes.pkr.hcl
-          #       - vendor/image-builder/**
-          # - name: kubernetes-1-26
-          #   template: kubernetes
-          #   var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_26
-          #   path-filters: |
-          #     paths:
-          #       - .github/workflows/pr.yml
-          #       - bin/*
-          #       - config.pkr.hcl
-          #       - requirements.yml
-          #       - env/*/common.env
-          #       - env/*/kvm.env
-          #       - env/*/linux.env
-          #       - env/*/ubuntu.env
-          #       - env/*/kubernetes.env
-          #       - env/*/kubernetes_1_26.env
-          #       - vars/*/common.json
-          #       - vars/*/kvm.json
-          #       - vars/*/linux.json
-          #       - vars/*/ubuntu.json
-          #       - vars/*/kubernetes.json
-          #       - vars/*/kubernetes_1_26.json
-          #       - packer/kubernetes.pkr.hcl
-          #       - vendor/image-builder/**
-          # - name: kubernetes-1-27
-          #   template: kubernetes
-          #   var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_27
-          #   path-filters: |
-          #     paths:
-          #       - .github/workflows/pr.yml
-          #       - bin/*
-          #       - config.pkr.hcl
-          #       - requirements.yml
-          #       - env/*/common.env
-          #       - env/*/kvm.env
-          #       - env/*/linux.env
-          #       - env/*/ubuntu.env
-          #       - env/*/kubernetes.env
-          #       - env/*/kubernetes_1_27.env
-          #       - vars/*/common.json
-          #       - vars/*/kvm.json
-          #       - vars/*/linux.json
-          #       - vars/*/ubuntu.json
-          #       - vars/*/kubernetes.json
-          #       - vars/*/kubernetes_1_27.json
-          #       - packer/kubernetes.pkr.hcl
-          #       - vendor/image-builder/**
+          - name: ubuntu-rdp-gateway
+            template: linux-rdp-gateway
+            var-files: common,kvm,linux,ubuntu
+            path-filters: |
+              paths:
+                - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
+                - requirements.yml
+                - env/*/common.env
+                - env/*/kvm.env
+                - env/*/linux.env
+                - env/*/ubuntu.env
+                - vars/*/common.json
+                - vars/*/kvm.json
+                - vars/*/linux.json
+                - vars/*/ubuntu.json
+                - packer/linux-rdp-gateway.pkr.hcl
+                - ansible/linux-rdp-gateway.yml
+                - ansible/roles/linux-rdp-gateway/**
+                - ansible/roles/linux-ansible-init/**
+                - ansible/roles/linux-podman/**
+                - ansible/roles/linux-data-volumes/**
+                - ansible/roles/linux-guacamole/**
+                - ansible/roles/linux-zenith-client/**
+          - name: jupyter-repo2docker
+            template: jupyter-repo2docker
+            var-files: common,kvm,linux,ubuntu
+            path-filters: |
+              paths:
+                - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
+                - requirements.yml
+                - env/*/common.env
+                - env/*/kvm.env
+                - env/*/linux.env
+                - env/*/ubuntu.env
+                - vars/*/common.json
+                - vars/*/kvm.json
+                - vars/*/linux.json
+                - vars/*/ubuntu.json
+                - packer/jupyter-repo2docker.pkr.hcl
+                - ansible/jupyter-repo2docker.yml
+                - ansible/roles/jupyter-repo2docker/**
+                - ansible/roles/linux-ansible-init/**
+                - ansible/roles/linux-podman/**
+                - ansible/roles/linux-data-volumes/**
+                - ansible/roles/linux-monitoring/**
+                - ansible/roles/linux-zenith-client/**
+          - name: kubernetes-1-25
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_25
+            path-filters: |
+              paths:
+                - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
+                - requirements.yml
+                - env/*/common.env
+                - env/*/kvm.env
+                - env/*/linux.env
+                - env/*/ubuntu.env
+                - env/*/kubernetes.env
+                - env/*/kubernetes_1_25.env
+                - vars/*/common.json
+                - vars/*/kvm.json
+                - vars/*/linux.json
+                - vars/*/ubuntu.json
+                - vars/*/kubernetes.json
+                - vars/*/kubernetes_1_25.json
+                - packer/kubernetes.pkr.hcl
+                - vendor/image-builder/**
+          - name: kubernetes-1-26
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_26
+            path-filters: |
+              paths:
+                - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
+                - requirements.yml
+                - env/*/common.env
+                - env/*/kvm.env
+                - env/*/linux.env
+                - env/*/ubuntu.env
+                - env/*/kubernetes.env
+                - env/*/kubernetes_1_26.env
+                - vars/*/common.json
+                - vars/*/kvm.json
+                - vars/*/linux.json
+                - vars/*/ubuntu.json
+                - vars/*/kubernetes.json
+                - vars/*/kubernetes_1_26.json
+                - packer/kubernetes.pkr.hcl
+                - vendor/image-builder/**
+          - name: kubernetes-1-27
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_27
+            path-filters: |
+              paths:
+                - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
+                - requirements.yml
+                - env/*/common.env
+                - env/*/kvm.env
+                - env/*/linux.env
+                - env/*/ubuntu.env
+                - env/*/kubernetes.env
+                - env/*/kubernetes_1_27.env
+                - vars/*/common.json
+                - vars/*/kvm.json
+                - vars/*/linux.json
+                - vars/*/ubuntu.json
+                - vars/*/kubernetes.json
+                - vars/*/kubernetes_1_27.json
+                - packer/kubernetes.pkr.hcl
+                - vendor/image-builder/**
     name: ${{ matrix.name }}
     steps:
       - name: Check out the repository
@@ -203,8 +201,7 @@ jobs:
         if: ${{ steps.changes.outputs.paths == 'true' }}
 
       - name: Build image
-        id: build-image
-        run: exec ./bin/build-image
+        run: ./bin/build-image
         env:
           OS_CLOUD: openstack
           PACKER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
