@@ -34,9 +34,9 @@ trap cleanup EXIT
 
 # Wait until we are able to allocate a FIP
 PKR_VAR_floating_ip=
-while true; do
+until \
   PKR_VAR_floating_ip="$(openstack floating ip create -f value -c id "$FLOATING_IP_NETWORK")"
-  [ "$?" -eq 0 ] && break
+do
   sleep 30
 done
 
