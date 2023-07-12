@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
 REPO_ROOT="$(dirname $(dirname $(realpath ${BASH_SOURCE[0]:-${(%):-%x}})))"
 
@@ -17,3 +17,6 @@ pip install -r "$REPO_ROOT/requirements.txt"
 
 # Install the Galaxy requirements
 ansible-galaxy install -f -r "$REPO_ROOT/requirements.yml"
+
+# Initialise Packer plugins
+packer init "$REPO_ROOT/config.pkr.hcl"

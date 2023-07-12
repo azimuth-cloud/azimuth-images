@@ -12,7 +12,7 @@ variable "network" {
   type = string
 }
 
-variable "floating_ip_network" {
+variable "floating_ip" {
   type = string
 }
 
@@ -42,22 +42,30 @@ variable "ssh_username" {
   type = string
 }
 
+variable "skip_create_image" {
+  type = bool
+  default = false
+}
+
 source "openstack" "linux-desktop" {
+  # Allow image creation to be skipped for build tests
+  skip_create_image = var.skip_create_image
+
   image_name = "${var.distro_name}-desktop-${local.timestamp}"
   image_visibility = "private"
-  image_disk_format = "${var.disk_format}"
+  image_disk_format = var.disk_format
 
-  source_image_name = "${var.source_image_name}"
-  flavor = "${var.flavor}"
-  networks = ["${var.network}"]
-  security_groups = "${var.security_groups}"
-  floating_ip_network = "${var.floating_ip_network}"
+  source_image_name = var.source_image_name
+  flavor = var.flavor
+  networks = [var.network]
+  security_groups = var.security_groups
+  floating_ip = var.floating_ip
 
   use_blockstorage_volume = true
-  volume_size = "${var.volume_size}"
+  volume_size = var.volume_size
 
   communicator = "ssh"
-  ssh_username = "${var.ssh_username}"
+  ssh_username = var.ssh_username
   ssh_clear_authorized_keys = true
 }
 
@@ -78,7 +86,7 @@ build {
 
   post-processor "manifest" {
     custom_data = {
-      source = "${source.name}"
+      source = source.name
     }
   }
 }

@@ -1,0 +1,68 @@
+name: Build and publish images for tag
+on:
+  push:
+    tags:
+      - "**"
+
+jobs:
+  build_images:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ubuntu-desktop
+            template: linux-desktop
+            var-files: common,kvm,linux,ubuntu
+          - name: ubuntu-rdp-gateway
+            template: linux-rdp-gateway
+            var-files: common,kvm,linux,ubuntu
+          - name: jupyter-repo2docker
+            template: jupyter-repo2docker
+            var-files: common,kvm,linux,ubuntu
+          - name: kubernetes-1-25
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_25
+          - name: kubernetes-1-26
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_26
+          - name: kubernetes-1-27
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_27
+    name: ${{ matrix.name }}
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Write OpenStack credentials
+        run: echo "$CLOUDS_YAML_B64" | base64 -d > ./clouds.yaml
+        env:
+          CLOUDS_YAML_B64: ${{ secrets.CLOUDS_YAML_B64 }}
+
+      - name: Set up Packer environment
+        run: ./bin/setup
+
+      - name: Build image
+        id: build-image
+        run: ./bin/build-image
+        env:
+          OS_CLOUD: openstack
+          PACKER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ENVIRONMENT: arcus
+          PACKER_TEMPLATE: ${{ matrix.template }}
+          ENV_VAR_FILES: ${{ matrix.var-files }}
+
+      - name: Publish image
+        id: publish-image
+        run: ./bin/publish-image ${{ steps.build-image.outputs.image-id }}
+        env:
+          OS_CLOUD: openstack
+          ENVIRONMENT: arcus
+          ENV_VAR_FILES: ${{ matrix.var-files }}
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+
+  # TODO(mkjpryor)
+  # Upload release artefact

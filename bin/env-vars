@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 echo "Importing environment variables..."
 IFS="," read -ra ENV_VAR_FILES_ARR <<< "$ENV_VAR_FILES"
 for FILE in "${ENV_VAR_FILES_ARR[@]}"; do

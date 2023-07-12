@@ -1,14 +1,35 @@
-name: Build images
+name: Build images for PR
 on:
-  push:
-    branches: [main]
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - ready_for_review
+      - reopened
+    branches:
+      - main
+
 jobs:
+  # This job exists so that PRs from outside the main repo are rejected
+  fail_on_remote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: PR must be from a branch in the azimuth-images repo
+        run: exit ${{ github.repository == 'stackhpc/azimuth-images' && '0' || '1' }}
+
+  # This job exists so that draft PRs see the check as failed
+  fail_on_draft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: PR must be marked as ready for review before tests will run
+        run: exit ${{ github.event.pull_request.draft && '1' || '0' }}
+
   build_images:
+    needs: [fail_on_remote, fail_on_draft]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      # Each job consumes a FIP, so limit the number that can run concurrently
-      max-parallel: 1
+      # We only build images whose dependencies have changed
       matrix:
         include:
           - name: ubuntu-desktop
@@ -16,7 +37,9 @@ jobs:
             var-files: common,kvm,linux,ubuntu
             path-filters: |
               paths:
-                - .github/workflows/build.yml
+                - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
                 - requirements.yml
                 - env/*/common.env
                 - env/*/kvm.env
@@ -40,7 +63,9 @@ jobs:
             var-files: common,kvm,linux,ubuntu
             path-filters: |
               paths:
-                - .github/workflows/build.yml
+                - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
                 - requirements.yml
                 - env/*/common.env
                 - env/*/kvm.env
@@ -63,7 +88,9 @@ jobs:
             var-files: common,kvm,linux,ubuntu
             path-filters: |
               paths:
-                - .github/workflows/build.yml
+                - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
                 - requirements.yml
                 - env/*/common.env
                 - env/*/kvm.env
@@ -86,7 +113,9 @@ jobs:
             var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_25
             path-filters: |
               paths:
-                - .github/workflows/build.yml
+                - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
                 - requirements.yml
                 - env/*/common.env
                 - env/*/kvm.env
@@ -107,7 +136,9 @@ jobs:
             var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_26
             path-filters: |
               paths:
-                - .github/workflows/build.yml
+                - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
                 - requirements.yml
                 - env/*/common.env
                 - env/*/kvm.env
@@ -128,7 +159,9 @@ jobs:
             var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_27
             path-filters: |
               paths:
-                - .github/workflows/build.yml
+                - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
                 - requirements.yml
                 - env/*/common.env
                 - env/*/kvm.env
@@ -157,31 +190,24 @@ jobs:
         with:
           filters: ${{ matrix.path-filters }}
 
-      - name: Set up Packer environment
-        if: ${{ steps.changes.outputs.paths == 'true' }}
-        run: ./bin/setup
-
       - name: Write OpenStack credentials
-        if: ${{ steps.changes.outputs.paths == 'true' }}
         run: echo "$CLOUDS_YAML_B64" | base64 -d > ./clouds.yaml
         env:
           CLOUDS_YAML_B64: ${{ secrets.CLOUDS_YAML_B64 }}
+        if: ${{ steps.changes.outputs.paths == 'true' }}
+
+      - name: Set up Packer environment
+        run: ./bin/setup
+        if: ${{ steps.changes.outputs.paths == 'true' }}
 
       - name: Build image
-        if: ${{ steps.changes.outputs.paths == 'true' }}
-        run: ./bin/build
+        run: ./bin/build-image
         env:
           OS_CLOUD: openstack
-          ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
+          PACKER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ENVIRONMENT: arcus
           PACKER_TEMPLATE: ${{ matrix.template }}
           ENV_VAR_FILES: ${{ matrix.var-files }}
-
-      - name: Publish image to prerelease bucket
+          # For PRs, we don't need to save images
+          PKR_VAR_skip_create_image: "true"
         if: ${{ steps.changes.outputs.paths == 'true' }}
-        run: ./bin/publish
-        env:
-          OS_CLOUD: openstack
-          ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
-          ENV_VAR_FILES: ${{ matrix.var-files }}
-          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
