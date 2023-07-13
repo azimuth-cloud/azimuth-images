@@ -81,17 +81,31 @@ jobs:
       #     ENV_VAR_FILES: ${{ matrix.var-files }}
       #     S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
       #     S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+
+      - name: Write matrix outputs
+        uses: cloudposse/github-action-matrix-outputs-write@main
+        with:
+          matrix-step-name: ${{ github.job }}
+          matrix-key: ${{ matrix.name }}
+          outputs: |-
+            image-id: ${{ steps.build-image.outputs.image-id }}
   
   publish_manifest:
     needs: [build_images]
     runs-on: ubuntu-latest
     steps:
+      - name: Read matrix outputs
+        id: matrix-outputs
+        uses: cloudposse/github-action-matrix-outputs-read@main
+        with:
+          matrix-step-name: build_images
+
       - name: Write outputs
         uses: DamianReeves/write-file-action@master
         with:
           path: outputs.json
           write-mode: overwrite
-          contents: ${{ toJson(needs) }}
+          contents: ${{ steps.matrix-outputs.outputs.result }}
       
       - name: Cat outputs
         run: cat outputs.json
