@@ -91,7 +91,7 @@ jobs:
         with:
           path: outputs.json
           write-mode: overwrite
-          contents: ${{ toJson(needs.build_images.outputs) }}
+          contents: ${{ toJson(needs.build_images) }}
       
       - name: Cat outputs
         run: cat outputs.json
