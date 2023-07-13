@@ -60,13 +60,17 @@ jobs:
 
       - name: Build image
         id: build-image
-        run: ./bin/build-image
-        env:
-          OS_CLOUD: openstack
-          PACKER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ENVIRONMENT: arcus
-          PACKER_TEMPLATE: ${{ matrix.template }}
-          ENV_VAR_FILES: ${{ matrix.var-files }}
+        run: echo "image-id=${{ matrix.name }}-oewbewogbeiwbio"
+
+      # - name: Build image
+      #   id: build-image
+      #   run: ./bin/build-image
+      #   env:
+      #     OS_CLOUD: openstack
+      #     PACKER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     ENVIRONMENT: arcus
+      #     PACKER_TEMPLATE: ${{ matrix.template }}
+      #     ENV_VAR_FILES: ${{ matrix.var-files }}
 
       # - name: Publish image
       #   id: publish-image
