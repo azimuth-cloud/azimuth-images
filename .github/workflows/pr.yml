@@ -34,7 +34,7 @@ jobs:
         include:
           - name: ubuntu-desktop
             template: linux-desktop
-            var-files: common,kvm,linux,ubuntu
+            var-files: common,kvm,linux,ubuntu-focal
             path-filters: |
               paths:
                 - .github/workflows/pr.yml
@@ -44,11 +44,11 @@ jobs:
                 - env/*/common.env
                 - env/*/kvm.env
                 - env/*/linux.env
-                - env/*/ubuntu.env
+                - env/*/ubuntu-focal.env
                 - vars/*/common.json
                 - vars/*/kvm.json
                 - vars/*/linux.json
-                - vars/*/ubuntu.json
+                - vars/*/ubuntu-focal.json
                 - packer/linux-desktop.pkr.hcl
                 - ansible/linux-webconsole.yml
                 - ansible/roles/linux-webconsole/**
@@ -60,7 +60,7 @@ jobs:
                 - ansible/roles/linux-zenith-client/**
           - name: ubuntu-rdp-gateway
             template: linux-rdp-gateway
-            var-files: common,kvm,linux,ubuntu
+            var-files: common,kvm,linux,ubuntu-focal
             path-filters: |
               paths:
                 - .github/workflows/pr.yml
@@ -70,11 +70,11 @@ jobs:
                 - env/*/common.env
                 - env/*/kvm.env
                 - env/*/linux.env
-                - env/*/ubuntu.env
+                - env/*/ubuntu-focal.env
                 - vars/*/common.json
                 - vars/*/kvm.json
                 - vars/*/linux.json
-                - vars/*/ubuntu.json
+                - vars/*/ubuntu-focal.json
                 - packer/linux-rdp-gateway.pkr.hcl
                 - ansible/linux-rdp-gateway.yml
                 - ansible/roles/linux-rdp-gateway/**
@@ -85,7 +85,7 @@ jobs:
                 - ansible/roles/linux-zenith-client/**
           - name: jupyter-repo2docker
             template: jupyter-repo2docker
-            var-files: common,kvm,linux,ubuntu
+            var-files: common,kvm,linux,ubuntu-focal
             path-filters: |
               paths:
                 - .github/workflows/pr.yml
@@ -95,11 +95,11 @@ jobs:
                 - env/*/common.env
                 - env/*/kvm.env
                 - env/*/linux.env
-                - env/*/ubuntu.env
+                - env/*/ubuntu-focal.env
                 - vars/*/common.json
                 - vars/*/kvm.json
                 - vars/*/linux.json
-                - vars/*/ubuntu.json
+                - vars/*/ubuntu-focal.json
                 - packer/jupyter-repo2docker.pkr.hcl
                 - ansible/jupyter-repo2docker.yml
                 - ansible/roles/jupyter-repo2docker/**
@@ -108,9 +108,10 @@ jobs:
                 - ansible/roles/linux-data-volumes/**
                 - ansible/roles/linux-monitoring/**
                 - ansible/roles/linux-zenith-client/**
-          - name: kubernetes-1-25
+          # For now, we build Kubernetes images for focal _and_ jammy
+          - name: kubernetes-1-25-focal
             template: kubernetes
-            var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_25
+            var-files: common,kvm,linux,ubuntu-focal,kubernetes,kubernetes_1_25
             path-filters: |
               paths:
                 - .github/workflows/pr.yml
@@ -120,20 +121,20 @@ jobs:
                 - env/*/common.env
                 - env/*/kvm.env
                 - env/*/linux.env
-                - env/*/ubuntu.env
+                - env/*/ubuntu-focal.env
                 - env/*/kubernetes.env
                 - env/*/kubernetes_1_25.env
                 - vars/*/common.json
                 - vars/*/kvm.json
                 - vars/*/linux.json
-                - vars/*/ubuntu.json
+                - vars/*/ubuntu-focal.json
                 - vars/*/kubernetes.json
                 - vars/*/kubernetes_1_25.json
                 - packer/kubernetes.pkr.hcl
                 - vendor/image-builder/**
-          - name: kubernetes-1-26
+          - name: kubernetes-1-25-jammy
             template: kubernetes
-            var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_26
+            var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_25
             path-filters: |
               paths:
                 - .github/workflows/pr.yml
@@ -143,20 +144,43 @@ jobs:
                 - env/*/common.env
                 - env/*/kvm.env
                 - env/*/linux.env
-                - env/*/ubuntu.env
+                - env/*/ubuntu-jammy.env
+                - env/*/kubernetes.env
+                - env/*/kubernetes_1_25.env
+                - vars/*/common.json
+                - vars/*/kvm.json
+                - vars/*/linux.json
+                - vars/*/ubuntu-jammy.json
+                - vars/*/kubernetes.json
+                - vars/*/kubernetes_1_25.json
+                - packer/kubernetes.pkr.hcl
+                - vendor/image-builder/**
+          - name: kubernetes-1-26-focal
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu-focal,kubernetes,kubernetes_1_26
+            path-filters: |
+              paths:
+                - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
+                - requirements.yml
+                - env/*/common.env
+                - env/*/kvm.env
+                - env/*/linux.env
+                - env/*/ubuntu-focal.env
                 - env/*/kubernetes.env
                 - env/*/kubernetes_1_26.env
                 - vars/*/common.json
                 - vars/*/kvm.json
                 - vars/*/linux.json
-                - vars/*/ubuntu.json
+                - vars/*/ubuntu-focal.json
                 - vars/*/kubernetes.json
                 - vars/*/kubernetes_1_26.json
                 - packer/kubernetes.pkr.hcl
                 - vendor/image-builder/**
-          - name: kubernetes-1-27
+          - name: kubernetes-1-26-jammy
             template: kubernetes
-            var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_27
+            var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_26
             path-filters: |
               paths:
                 - .github/workflows/pr.yml
@@ -166,13 +190,59 @@ jobs:
                 - env/*/common.env
                 - env/*/kvm.env
                 - env/*/linux.env
-                - env/*/ubuntu.env
+                - env/*/ubuntu-jammy.env
+                - env/*/kubernetes.env
+                - env/*/kubernetes_1_26.env
+                - vars/*/common.json
+                - vars/*/kvm.json
+                - vars/*/linux.json
+                - vars/*/ubuntu-jammy.json
+                - vars/*/kubernetes.json
+                - vars/*/kubernetes_1_26.json
+                - packer/kubernetes.pkr.hcl
+                - vendor/image-builder/**
+          - name: kubernetes-1-27-focal
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu-focal,kubernetes,kubernetes_1_27
+            path-filters: |
+              paths:
+                - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
+                - requirements.yml
+                - env/*/common.env
+                - env/*/kvm.env
+                - env/*/linux.env
+                - env/*/ubuntu-focal.env
                 - env/*/kubernetes.env
                 - env/*/kubernetes_1_27.env
                 - vars/*/common.json
                 - vars/*/kvm.json
                 - vars/*/linux.json
-                - vars/*/ubuntu.json
+                - vars/*/ubuntu-focal.json
+                - vars/*/kubernetes.json
+                - vars/*/kubernetes_1_27.json
+                - packer/kubernetes.pkr.hcl
+                - vendor/image-builder/**
+          - name: kubernetes-1-27-jammy
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_27
+            path-filters: |
+              paths:
+                - .github/workflows/pr.yml
+                - bin/*
+                - config.pkr.hcl
+                - requirements.yml
+                - env/*/common.env
+                - env/*/kvm.env
+                - env/*/linux.env
+                - env/*/ubuntu-jammy.env
+                - env/*/kubernetes.env
+                - env/*/kubernetes_1_27.env
+                - vars/*/common.json
+                - vars/*/kvm.json
+                - vars/*/linux.json
+                - vars/*/ubuntu-jammy.json
                 - vars/*/kubernetes.json
                 - vars/*/kubernetes_1_27.json
                 - packer/kubernetes.pkr.hcl
