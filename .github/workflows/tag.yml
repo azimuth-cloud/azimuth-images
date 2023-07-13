@@ -50,13 +50,13 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Write OpenStack credentials
-        run: echo "$CLOUDS_YAML_B64" | base64 -d > ./clouds.yaml
-        env:
-          CLOUDS_YAML_B64: ${{ secrets.CLOUDS_YAML_B64 }}
+      # - name: Write OpenStack credentials
+      #   run: echo "$CLOUDS_YAML_B64" | base64 -d > ./clouds.yaml
+      #   env:
+      #     CLOUDS_YAML_B64: ${{ secrets.CLOUDS_YAML_B64 }}
 
-      - name: Set up Packer environment
-        run: ./bin/setup
+      # - name: Set up Packer environment
+      #   run: ./bin/setup
 
       - name: Build image
         id: build-image
