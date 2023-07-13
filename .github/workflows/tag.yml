@@ -1,12 +1,16 @@
 name: Build and publish images for tag
 on:
   push:
+    branches:
+      - "**"
     tags:
       - "**"
 
 jobs:
   build_images:
     runs-on: ubuntu-latest
+    outputs:
+      image-id: ${{ steps.build-image.outputs.image-id }}
     strategy:
       fail-fast: false
       matrix:
@@ -17,28 +21,28 @@ jobs:
           - name: ubuntu-rdp-gateway
             template: linux-rdp-gateway
             var-files: common,kvm,linux,ubuntu-focal
-          - name: jupyter-repo2docker
-            template: jupyter-repo2docker
-            var-files: common,kvm,linux,ubuntu-focal
-          # For now, we build Kubernetes images for focal _and_ jammy
-          - name: kubernetes-1-25-focal
-            template: kubernetes
-            var-files: common,kvm,linux,ubuntu-focal,kubernetes,kubernetes_1_25
-          - name: kubernetes-1-25-jammy
-            template: kubernetes
-            var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_25
-          - name: kubernetes-1-26-focal
-            template: kubernetes
-            var-files: common,kvm,linux,ubuntu-focal,kubernetes,kubernetes_1_26
-          - name: kubernetes-1-26-jammy
-            template: kubernetes
-            var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_26
-          - name: kubernetes-1-27-focal
-            template: kubernetes
-            var-files: common,kvm,linux,ubuntu-focal,kubernetes,kubernetes_1_27
-          - name: kubernetes-1-27-jammy
-            template: kubernetes
-            var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_27
+          # - name: jupyter-repo2docker
+          #   template: jupyter-repo2docker
+          #   var-files: common,kvm,linux,ubuntu-focal
+          # # For now, we build Kubernetes images for focal _and_ jammy
+          # - name: kubernetes-1-25-focal
+          #   template: kubernetes
+          #   var-files: common,kvm,linux,ubuntu-focal,kubernetes,kubernetes_1_25
+          # - name: kubernetes-1-25-jammy
+          #   template: kubernetes
+          #   var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_25
+          # - name: kubernetes-1-26-focal
+          #   template: kubernetes
+          #   var-files: common,kvm,linux,ubuntu-focal,kubernetes,kubernetes_1_26
+          # - name: kubernetes-1-26-jammy
+          #   template: kubernetes
+          #   var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_26
+          # - name: kubernetes-1-27-focal
+          #   template: kubernetes
+          #   var-files: common,kvm,linux,ubuntu-focal,kubernetes,kubernetes_1_27
+          # - name: kubernetes-1-27-jammy
+          #   template: kubernetes
+          #   var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_27
     name: ${{ matrix.name }}
     steps:
       - name: Check out the repository
@@ -64,15 +68,31 @@ jobs:
           PACKER_TEMPLATE: ${{ matrix.template }}
           ENV_VAR_FILES: ${{ matrix.var-files }}
 
-      - name: Publish image
-        id: publish-image
-        run: ./bin/publish-image ${{ steps.build-image.outputs.image-id }}
-        env:
-          OS_CLOUD: openstack
-          ENVIRONMENT: arcus
-          ENV_VAR_FILES: ${{ matrix.var-files }}
-          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+      # - name: Publish image
+      #   id: publish-image
+      #   run: ./bin/publish-image ${{ steps.build-image.outputs.image-id }}
+      #   env:
+      #     OS_CLOUD: openstack
+      #     ENVIRONMENT: arcus
+      #     ENV_VAR_FILES: ${{ matrix.var-files }}
+      #     S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+      #     S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+  
+  publish_manifest:
+    needs: [build_images]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write outputs
+        uses: DamianReeves/write-file-action@master
+        with:
+          path: outputs.json
+          write-mode: overwrite
+          contents: ${{ toJson(needs.build_images.outputs) }}
+      
+      - name: Cat outputs
+        run: cat outputs.json
+        
+    
 
   # TODO(mkjpryor)
   # Upload release artefact
