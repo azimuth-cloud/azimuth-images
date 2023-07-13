@@ -88,7 +88,7 @@ jobs:
             image-id: ${{ steps.build-image.outputs.image-id }}
             image-name: ${{ steps.publish-image.outputs.image-name }}
             image-url: ${{ steps.publish-image.outputs.image-url }}
-            image-checksum: ${{ publish.build-image.outputs.image-checksum }}
+            image-checksum: ${{ steps.publish-image.outputs.image-checksum }}
 
   publish_manifest:
     needs: [build_images]
