@@ -13,22 +13,32 @@ jobs:
         include:
           - name: ubuntu-desktop
             template: linux-desktop
-            var-files: common,kvm,linux,ubuntu
+            var-files: common,kvm,linux,ubuntu-focal
           - name: ubuntu-rdp-gateway
             template: linux-rdp-gateway
-            var-files: common,kvm,linux,ubuntu
+            var-files: common,kvm,linux,ubuntu-focal
           - name: jupyter-repo2docker
             template: jupyter-repo2docker
-            var-files: common,kvm,linux,ubuntu
-          - name: kubernetes-1-25
+            var-files: common,kvm,linux,ubuntu-focal
+          # For now, we build Kubernetes images for focal _and_ jammy
+          - name: kubernetes-1-25-focal
             template: kubernetes
-            var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_25
-          - name: kubernetes-1-26
+            var-files: common,kvm,linux,ubuntu-focal,kubernetes,kubernetes_1_25
+          - name: kubernetes-1-25-jammy
             template: kubernetes
-            var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_26
-          - name: kubernetes-1-27
+            var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_25
+          - name: kubernetes-1-26-focal
             template: kubernetes
-            var-files: common,kvm,linux,ubuntu,kubernetes,kubernetes_1_27
+            var-files: common,kvm,linux,ubuntu-focal,kubernetes,kubernetes_1_26
+          - name: kubernetes-1-26-jammy
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_26
+          - name: kubernetes-1-27-focal
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu-focal,kubernetes,kubernetes_1_27
+          - name: kubernetes-1-27-jammy
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_27
     name: ${{ matrix.name }}
     steps:
       - name: Check out the repository
