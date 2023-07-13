@@ -60,7 +60,7 @@ jobs:
 
       - name: Build image
         id: build-image
-        run: echo "image-id=${{ matrix.name }}-oewbewogbeiwbio"
+        run: echo "image-id=${{ matrix.name }}-oewbewogbeiwbio" >> $GITHUB_OUTPUT
 
       # - name: Build image
       #   id: build-image
