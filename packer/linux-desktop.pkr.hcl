@@ -72,17 +72,17 @@ source "openstack" "linux-desktop" {
 build {
   source "source.openstack.linux-desktop" { }
 
-  provisioner "ansible" {
-    galaxy_file = "${path.root}/../requirements.yml"
-    playbook_file = "${path.root}/../ansible/linux-webconsole.yml"
-    use_proxy = false
-    extra_arguments = [
-      "-v",
-      "--extra-vars",
-      "desktop_enabled=yes",
-    ]
-    ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10"]
-  }
+  # provisioner "ansible" {
+  #   galaxy_file = "${path.root}/../requirements.yml"
+  #   playbook_file = "${path.root}/../ansible/linux-webconsole.yml"
+  #   use_proxy = false
+  #   extra_arguments = [
+  #     "-v",
+  #     "--extra-vars",
+  #     "desktop_enabled=yes",
+  #   ]
+  #   ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10"]
+  # }
 
   post-processor "manifest" {
     custom_data = {
