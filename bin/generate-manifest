@@ -15,7 +15,8 @@ manifest = {}
 for key in build_outputs:
     for image, value in build_outputs[key].items():
         if key == "manifest-extra":
-            manifest.setdefault(image, {}).update(value)
+            extra = json.loads(value)
+            manifest.setdefault(image, {}).update(extra)
         else:
             manifest.setdefault(image, {})[key] = value
 
