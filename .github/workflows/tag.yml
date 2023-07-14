@@ -1,16 +1,12 @@
 name: Build and publish images for tag
 on:
   push:
-    branches:
-      - "**"
     tags:
       - "**"
 
 jobs:
   build_images:
     runs-on: ubuntu-latest
-    outputs:
-      image-id: ${{ steps.build-image.outputs.image-id }}
     strategy:
       fail-fast: false
       matrix:
@@ -19,31 +15,30 @@ jobs:
             template: linux-desktop
             var-files: common,kvm,linux,ubuntu-focal
           - name: ubuntu-rdp-gateway
-            # template: linux-rdp-gateway
-            template: linux-desktop
+            template: linux-rdp-gateway
             var-files: common,kvm,linux,ubuntu-focal
-          # - name: jupyter-repo2docker
-          #   template: jupyter-repo2docker
-          #   var-files: common,kvm,linux,ubuntu-focal
-          # # For now, we build Kubernetes images for focal _and_ jammy
-          # - name: kubernetes-1-25-focal
-          #   template: kubernetes
-          #   var-files: common,kvm,linux,ubuntu-focal,kubernetes,kubernetes_1_25
-          # - name: kubernetes-1-25-jammy
-          #   template: kubernetes
-          #   var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_25
-          # - name: kubernetes-1-26-focal
-          #   template: kubernetes
-          #   var-files: common,kvm,linux,ubuntu-focal,kubernetes,kubernetes_1_26
-          # - name: kubernetes-1-26-jammy
-          #   template: kubernetes
-          #   var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_26
-          # - name: kubernetes-1-27-focal
-          #   template: kubernetes
-          #   var-files: common,kvm,linux,ubuntu-focal,kubernetes,kubernetes_1_27
-          # - name: kubernetes-1-27-jammy
-          #   template: kubernetes
-          #   var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_27
+          - name: jupyter-repo2docker
+            template: jupyter-repo2docker
+            var-files: common,kvm,linux,ubuntu-focal
+          # For now, we build Kubernetes images for focal _and_ jammy
+          - name: kubernetes-1-25-focal
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu-focal,kubernetes,kubernetes_1_25
+          - name: kubernetes-1-25-jammy
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_25
+          - name: kubernetes-1-26-focal
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu-focal,kubernetes,kubernetes_1_26
+          - name: kubernetes-1-26-jammy
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_26
+          - name: kubernetes-1-27-focal
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu-focal,kubernetes,kubernetes_1_27
+          - name: kubernetes-1-27-jammy
+            template: kubernetes
+            var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_27
     name: ${{ matrix.name }}
     steps:
       - name: Check out the repository
@@ -91,7 +86,7 @@ jobs:
             url: ${{ steps.publish-image.outputs.image-url }}
             checksum: ${{ steps.publish-image.outputs.image-checksum }}
 
-  publish_manifest:
+  publish_release:
     needs: [build_images]
     runs-on: ubuntu-latest
     steps:
@@ -117,10 +112,7 @@ jobs:
           BUILD_OUTPUTS_FILE: ./build-outputs.json
           MANIFEST_FILE: ./manifest.json
 
-      # - name: Create release
-      #   uses: softprops/action-gh-release@v1
-      #   with:
-      #     files: manifest.json
-      
-      - name: Cat manifest
-        run: cat manifest.json
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: manifest.json

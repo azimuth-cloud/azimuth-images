@@ -1,14 +1,13 @@
 name: Build images for PR
 on:
-  workflow_call:
-  # pull_request:
-  #   types:
-  #     - opened
-  #     - synchronize
-  #     - ready_for_review
-  #     - reopened
-  #   branches:
-  #     - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - ready_for_review
+      - reopened
+    branches:
+      - main
 
 jobs:
   # This job exists so that PRs from outside the main repo are rejected
@@ -269,6 +268,8 @@ jobs:
 
       - name: Set up Packer environment
         run: ./bin/setup
+        env:
+          PACKER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ steps.changes.outputs.paths == 'true' }}
 
       - name: Build image
