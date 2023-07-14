@@ -62,5 +62,7 @@ packer build \
 # Output the image id from the Packer build, if an image was built
 if [ -f "./packer-manifest.json" ]; then
   IMAGE_ID="$(jq --raw-output '.builds[-1].artifact_id' ./packer-manifest.json)"
+  MANIFEST_EXTRA="$(jq --raw-output '.builds[-1].custom_data' ./packer-manifest.json)"
   echo "image-id=$IMAGE_ID" >> "${GITHUB_OUTPUT:-/dev/stdout}"
+  echo "manifest-extra=$MANIFEST_EXTRA" >> "${GITHUB_OUTPUT:-/dev/stdout}"
 fi
