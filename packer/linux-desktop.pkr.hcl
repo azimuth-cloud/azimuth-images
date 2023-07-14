@@ -84,9 +84,5 @@ build {
     ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10"]
   }
 
-  post-processor "manifest" {
-    custom_data = {
-      source = source.name
-    }
-  }
+  post-processor "manifest" { }
 }

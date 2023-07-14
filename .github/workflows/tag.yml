@@ -85,6 +85,7 @@ jobs:
             name: ${{ steps.publish-image.outputs.image-name }}
             url: ${{ steps.publish-image.outputs.image-url }}
             checksum: ${{ steps.publish-image.outputs.image-checksum }}
+            manifest-extra: ${{ steps.build-image.outputs.manifest-extra }}
 
   publish_release:
     needs: [build_images]

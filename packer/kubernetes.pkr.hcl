@@ -499,7 +499,7 @@ build {
 
   post-processor "manifest" {
     custom_data = {
-      source = source.name
+      kubernetes_version = var.kubernetes_semver
     }
   }
 }
