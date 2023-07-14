@@ -82,5 +82,9 @@ build {
     ]
   }
 
-  post-processor "manifest" { }
+  post-processor "manifest" {
+    custom_data = {
+      source = source.name
+    }
+  }
 }
