@@ -58,6 +58,8 @@ jobs:
 
       - name: Set up Packer environment
         run: ./bin/setup
+        env:
+          PACKER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build image
         id: build-image
@@ -114,11 +116,11 @@ jobs:
         env:
           BUILD_OUTPUTS_FILE: ./build-outputs.json
           MANIFEST_FILE: ./manifest.json
+
+      # - name: Create release
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     files: manifest.json
       
       - name: Cat manifest
         run: cat manifest.json
-
-    
-
-  # TODO(mkjpryor)
-  # Upload release artefact
