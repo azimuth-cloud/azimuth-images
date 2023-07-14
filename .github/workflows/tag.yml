@@ -93,6 +93,9 @@ jobs:
     needs: [build_images]
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
       - name: Read matrix outputs
         id: matrix-outputs
         uses: cloudposse/github-action-matrix-outputs-read@main

@@ -49,7 +49,7 @@ s3cmd put "${IMAGE_NAME}.qcow2" "s3://$S3_BUCKET"
 IMAGE_URL="$(s3cmd signurl "s3://$S3_BUCKET/${IMAGE_NAME}.qcow2" +31536000)"
 
 # Get the checksum of the image
-IMAGE_CHECKSUM="$(sha256sum "${IMAGE_NAME}.qcow2" | awk '{ print $1 }')"
+IMAGE_CHECKSUM="sha256:$(sha256sum "${IMAGE_NAME}.qcow2" | awk '{ print $1 }')"
 
 # Produce outputs
 echo "image-name=$IMAGE_NAME" >> "${GITHUB_OUTPUT:-/dev/stdout}"
