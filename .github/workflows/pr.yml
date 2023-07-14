@@ -268,6 +268,8 @@ jobs:
 
       - name: Set up Packer environment
         run: ./bin/setup
+        env:
+          PACKER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ steps.changes.outputs.paths == 'true' }}
 
       - name: Build image
