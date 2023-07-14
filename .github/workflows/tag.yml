@@ -85,10 +85,9 @@ jobs:
           matrix-step-name: ${{ github.job }}
           matrix-key: ${{ matrix.name }}
           outputs: |-
-            image-id: ${{ steps.build-image.outputs.image-id }}
-            image-name: ${{ steps.publish-image.outputs.image-name }}
-            image-url: ${{ steps.publish-image.outputs.image-url }}
-            image-checksum: ${{ steps.publish-image.outputs.image-checksum }}
+            name: ${{ steps.publish-image.outputs.image-name }}
+            url: ${{ steps.publish-image.outputs.image-url }}
+            checksum: ${{ steps.publish-image.outputs.image-checksum }}
 
   publish_manifest:
     needs: [build_images]
@@ -103,13 +102,19 @@ jobs:
       - name: Write outputs
         uses: DamianReeves/write-file-action@master
         with:
-          path: outputs.json
+          path: build-outputs.json
           write-mode: overwrite
           contents: ${{ steps.matrix-outputs.outputs.result }}
+
+      - name: Generate release manifest
+        run: ./bin/generate-manifest
+        env:
+          BUILD_OUTPUTS_FILE: ./build-outputs.json
+          MANIFEST_FILE: ./manifest.json
       
-      - name: Cat outputs
-        run: cat outputs.json
-        
+      - name: Cat manifest
+        run: cat manifest.json
+
     
 
   # TODO(mkjpryor)
