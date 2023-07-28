@@ -1,0 +1,28 @@
+- hosts: localhost
+  gather_facts: true
+  become: true
+  vars:
+    os_metadata: "{{ lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json }}"
+    os_user_metadata: "{{ os_metadata.get('meta', {}) }}"
+    os_project_id: "{{ os_metadata.project_id }}"
+  # vars_files:
+  #   - /etc/ansible-init/vars/monitoring.yml
+  tasks:
+  - name: Start and enable monitoring + rstudio-server services
+    service:
+      name: "{{ item }}"
+      state: started
+      enabled: yes
+    loop:
+      - grafana
+      - prometheus
+      - monitoring
+      - rstudio-server
+
+  - name: Ensure symbolic link to data volume exists in rstudio home dir
+    ansible.builtin.file:
+      src: /data
+      dest: /home/rstudio/data
+      owner: rstudio
+      group: rstudio
+      state: link

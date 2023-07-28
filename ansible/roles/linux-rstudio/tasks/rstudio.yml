@@ -1,0 +1,24 @@
+---
+
+- name: Ensure required system packages are installed
+  ansible.builtin.apt:
+    package:
+      - r-base
+      # Required by `deb` option in R-Studio Server install task
+      - xz-utils
+      # To allow non-root rstudio user to manage a python venv
+      # (https://support.posit.co/hc/en-us/articles/360023654474-Installing-and-Configuring-Python-with-RStudio)
+      - python3-venv
+      - python3-pip
+    update_cache: true
+    state: present
+
+- name: Ensure R-Studio Server is installed
+  ansible.builtin.apt:
+    deb: https://download2.rstudio.org/server/focal/amd64/rstudio-server-2023.06.1-524-amd64.deb
+    state: present
+
+- name: Ensure rstudio user exists
+  ansible.builtin.user:
+    name: rstudio
+    password: "{{ 'rstudio' | password_hash('sha512', 'irrelevant') }}"
