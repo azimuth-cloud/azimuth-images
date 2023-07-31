@@ -67,10 +67,6 @@ source "openstack" "linux-rstudio" {
   communicator = "ssh"
   ssh_username = var.ssh_username
   ssh_clear_authorized_keys = true
-
-  ssh_interface = "public_ip"
-  ssh_keypair_name = "hu-workstation"
-  ssh_private_key_file = "~/.ssh/id_rsa"
 }
 
 build {
