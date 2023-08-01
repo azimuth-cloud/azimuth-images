@@ -43,6 +43,12 @@
 
 - include_tasks: rstudio.yml
 
+- name: Install rstudio ansible-init playbook
+  copy:
+    src: rstudio-server-playbook.yml
+    # Execute between data volumes and zenith client
+    dest: /etc/ansible-init/playbooks/50-monitoring.yml
+
 - include_role:
     name: linux-monitoring
   vars:
