@@ -60,6 +60,7 @@
     zenith_client_name: rstudio-zenith-client
     # Rstudio server default install is as a systemd unit
     zenith_client_wants: [rstudio-server]
+    zenith_forward_to_host: "HOST_IP"
     zenith_forward_to_port: 8787
     zenith_registrar_token_metadata_key: zenith_registrar_token_rstudio
     zenith_client_playbook_priority: "51"
