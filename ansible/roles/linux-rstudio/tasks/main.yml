@@ -47,7 +47,7 @@
   copy:
     src: rstudio-server-playbook.yml
     # Execute between data volumes and zenith client
-    dest: /etc/ansible-init/playbooks/50-monitoring.yml
+    dest: /etc/ansible-init/playbooks/50-rstudio.yml
 
 - include_role:
     name: linux-monitoring
