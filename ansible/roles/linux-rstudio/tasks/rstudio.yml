@@ -22,3 +22,23 @@
   ansible.builtin.user:
     name: rstudio
     password: "{{ 'rstudio' | password_hash('sha512', 'irrelevant') }}"
+
+- name: Ensure auth is disabled in rstudio config file
+  ansible.builtin.blockinfile:
+    block: |
+      auth-none=1
+    path: /etc/rstudio/rserver.conf
+
+- name: Ensure rstudio-server systemd override file is populated
+  ansible.builtin.blockinfile:
+    path: /etc/systemd/system/rstudio-server.service.d/override.conf
+    create: true
+    block: |
+      [Service]
+      Environment=USER=rstudio
+
+- name: Ensure rstudio-server service is restarted to pick up config overrides
+  ansible.builtin.systemd:
+    name: rstudio-server.service
+    daemon_reload: true
+    state: reloaded
