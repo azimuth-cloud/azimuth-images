@@ -1,5 +1,15 @@
 ---
 
+- name: Ensure R repo apt key is downloaded
+  ansible.builtin.get_url:
+    url: https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc
+    dest: /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+
+- name: Ensure R apt repository is present
+  ansible.builtin.apt_repository:
+    repo: deb https://cloud.r-project.org/bin/linux/ubuntu {{ ansible_distribution_release }}-cran40/
+    state: present
+
 - name: Ensure required system packages are installed
   ansible.builtin.apt:
     package:
@@ -15,7 +25,7 @@
 
 - name: Ensure R-Studio Server is installed
   ansible.builtin.apt:
-    deb: https://download2.rstudio.org/server/focal/amd64/rstudio-server-2023.06.1-524-amd64.deb
+    deb: https://download2.rstudio.org/server/{{ ansible_distribution_release }}/amd64/rstudio-server-2023.06.1-524-amd64.deb
     state: present
 
 - name: Ensure rstudio user exists
