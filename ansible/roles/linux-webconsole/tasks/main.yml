@@ -86,7 +86,7 @@
   vars:
     prometheus_data_directory: /data/prometheus/database
 
-- import_role:
+- include_role:
     name: linux-zenith-client
   vars:
     zenith_client_name: guacamole-zenith-client
