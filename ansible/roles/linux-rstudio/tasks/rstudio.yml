@@ -46,9 +46,3 @@
     block: |
       [Service]
       Environment=USER=rstudio
-
-- name: Ensure rstudio-server service is restarted to pick up config overrides
-  ansible.builtin.systemd:
-    name: rstudio-server.service
-    daemon_reload: true
-    state: reloaded
