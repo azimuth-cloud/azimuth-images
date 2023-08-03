@@ -62,7 +62,7 @@
     podman_service_name: rstudio
     podman_service_type: pod
 
-- import_role:
+- include_role:
     name: linux-zenith-client
   vars:
     zenith_client_name: rstudio-zenith-client
