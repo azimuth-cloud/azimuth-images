@@ -45,7 +45,7 @@
     # Execute between data volumes and zenith client
     dest: /etc/ansible-init/playbooks/50-guacamole.yml
 
-- import_role:
+- include_role:
     name: linux-zenith-client
   vars:
     zenith_client_name: guacamole-zenith-client
