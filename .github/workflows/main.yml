@@ -78,7 +78,7 @@ jobs:
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
 
       - name: Write matrix outputs
-        uses: cloudposse/github-action-matrix-outputs-write@main
+        uses: cloudposse/github-action-matrix-outputs-write@0.4.2
         with:
           matrix-step-name: ${{ github.job }}
           matrix-key: ${{ matrix.name }}
@@ -97,12 +97,12 @@ jobs:
 
       - name: Read matrix outputs
         id: matrix-outputs
-        uses: cloudposse/github-action-matrix-outputs-read@main
+        uses: cloudposse/github-action-matrix-outputs-read@0.4.2
         with:
           matrix-step-name: build_images
 
       - name: Write outputs
-        uses: DamianReeves/write-file-action@master
+        uses: DamianReeves/write-file-action@0a7fcbe1960c53fc08fe789fa4850d24885f4d84
         with:
           path: build-outputs.json
           write-mode: overwrite
