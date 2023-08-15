@@ -33,6 +33,12 @@
     name: rstudio
     password: "{{ 'rstudio' | password_hash('sha512', 'irrelevant') }}"
 
+- name: Ensure rstudio user has passwordless sudo permissions
+  community.general.sudoers:
+    name: rstudio
+    user: rstudio
+    commands: ALL
+
 - name: Ensure auth is disabled in rstudio config file
   ansible.builtin.blockinfile:
     block: |
