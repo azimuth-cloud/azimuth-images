@@ -7,12 +7,6 @@ source "$REPO_ROOT/bin/env-vars"
 
 set -x
 
-if [ -z "$1" ]; then
-  echo "No image ID specified" >&2
-  exit 1
-fi
-
-IMAGE_ID="$1"
 IMAGE_NAME="$(openstack image show -f value -c name $IMAGE_ID)"
 IMAGE_DISK_FORMAT="$(openstack image show -f value -c disk_format $IMAGE_ID)"
 
