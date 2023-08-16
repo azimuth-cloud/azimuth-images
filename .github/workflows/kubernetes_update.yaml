@@ -1,5 +1,8 @@
 name: Update Kubernetes versions
 on:
+  push:
+    branches:
+      - feature/automate-k8s-versions
   # Allow manual executions
   workflow_dispatch:
   # Run nightly
