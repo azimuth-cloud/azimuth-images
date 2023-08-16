@@ -114,6 +114,11 @@ jobs:
           BUILD_OUTPUTS_FILE: ./build-outputs.json
           MANIFEST_FILE: ./manifest.json
 
+      - name: Install s3cmd
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y s3cmd
+
       - name: Publish manifest to S3
         run: ./bin/publish-manifest
         env:
