@@ -1,0 +1,110 @@
+name: Update Kubernetes versions
+on:
+  # Allow manual executions
+  workflow_dispatch:
+  # Run nightly
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  propose_patch_versions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install script dependencies
+        run: pip install -r .github/scripts/requirements.txt
+
+      - name: Check for Kubernetes updates
+        id: k8s-update
+        run: ./bin/k8s-update
+
+      - name: Generate app token for PR
+        uses: stackhpc/github-actions/generate-app-token@main
+        id: generate-app-token
+        with:
+          repository: ${{ github.repository }}
+          app-id: ${{ secrets.APP_ID }}
+          app-private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Propose changes via PR if required
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ steps.generate-app-token.outputs.token }}
+          commit-message: ${{ fromJson(steps.k8s-update.outputs.pr).title }}
+          branch: update/kubernetes-patch
+          delete-branch: true
+          title: ${{ fromJson(steps.k8s-update.outputs.pr).title }}
+          body: ${{ fromJson(steps.k8s-update.outputs.pr).body }}
+          labels: |
+            automation
+            dependency-update
+
+  propose_next_version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install script dependencies
+        run: pip install -r .github/scripts/requirements.txt
+
+      - name: Check for next Kubernetes version
+        id: k8s-next
+        run: ./bin/k8s-next
+
+      - name: Generate app token for PR
+        uses: stackhpc/github-actions/generate-app-token@main
+        id: generate-app-token
+        with:
+          repository: ${{ github.repository }}
+          app-id: ${{ secrets.APP_ID }}
+          app-private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Propose changes via PR if required
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ steps.generate-app-token.outputs.token }}
+          commit-message: ${{ fromJson(steps.k8s-next.outputs.pr).title }}
+          branch: update/kubernetes-next
+          delete-branch: true
+          title: ${{ fromJson(steps.k8s-next.outputs.pr).title }}
+          body: ${{ fromJson(steps.k8s-next.outputs.pr).body }}
+          labels: |
+            automation
+            dependency-update
+
+  propose_image_builder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Update image-builder submodule
+        run: git submodule update --remote vendor/image-builder
+
+      - name: Generate app token for PR
+        uses: stackhpc/github-actions/generate-app-token@main
+        id: generate-app-token
+        with:
+          repository: ${{ github.repository }}
+          app-id: ${{ secrets.APP_ID }}
+          app-private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Propose changes via PR if required
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ steps.generate-app-token.outputs.token }}
+          commit-message: Update Kubernetes image-builder submodule
+          branch: update/kubernetes-image-builder
+          delete-branch: true
+          title: Update Kubernetes image-builder submodule
+          body: |
+            This PR was created automatically to update the Kubernetes image-builder
+            submodule to `HEAD`.
+          labels: |
+            automation
+            dependency-update

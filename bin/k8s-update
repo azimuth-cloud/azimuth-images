@@ -45,16 +45,44 @@ def k8s_latest_version_for_series(series):
 repo_root = pathlib.Path(__file__).parent.parent.resolve()
 
 # Update the existing vars files to the most recent patch version
+# We collect the new versions as we go for reporting purposes
+next_versions = []
 vars_files_dir = repo_root / "vars" / "base"
 for vars_file in vars_files_dir.glob("kubernetes_*.json"):
     with vars_file.open() as fh:
         data = json.load(fh)
+    current_version = easysemver.Version(data["kubernetes_semver"])
     # Get the latest version for the series and update the file
     latest_version = k8s_latest_version_for_series(data["kubernetes_series"])
-    data.update({
-        "kubernetes_deb_version": f"{latest_version.format(prefix = False)}-00",
-        "kubernetes_rpm_version": f"{latest_version.format(prefix = False)}-0",
-        "kubernetes_semver": str(latest_version),
-    })
-    with vars_file.open("w") as fh:
-        json.dump(data, fh, indent = 4)
+    if latest_version > current_version:
+        data.update({
+            "kubernetes_deb_version": f"{latest_version.format(prefix = False)}-00",
+            "kubernetes_rpm_version": f"{latest_version.format(prefix = False)}-0",
+            "kubernetes_semver": str(latest_version),
+        })
+        with vars_file.open("w") as fh:
+            json.dump(data, fh, indent = 4)
+        next_versions.append(str(latest_version))
+
+if not next_versions:
+    exit()
+
+# Output the title and body for the PR as a JSON document
+pr = {
+    "title": "Update Kubernetes patch versions ({})".format(
+        ", ".join(str(v) for v in next_versions)
+    ),
+    "body": "\n".join([
+        (
+            "This PR was created automatically to update Kubernetes to the latest "
+            "patch version for each supported release:"
+        ),
+        "",
+        *[f"  * {version}" for version in next_versions]
+    ]),
+}
+
+# Output the new versions so they can be included in the PR
+output_path = os.environ.get("GITHUB_OUTPUT", "/dev/stdout")
+with open(output_path, "a") as fh:
+    print(f"pr={json.dumps(pr)}", file = fh)

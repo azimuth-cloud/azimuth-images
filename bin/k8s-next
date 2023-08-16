@@ -110,3 +110,18 @@ builds.extend([
 
 with path.open("w") as fh:
     yaml.dump(builds, fh)
+
+# Output the title and body for the PR as a JSON document
+pr = {
+    "title": f"Add new Kubernetes version ({latest_version})",
+    "body": "\n".join([
+        "This PR was created automatically to add a new Kubernetes version:",
+        "",
+        f"  * {latest_version}",
+    ]),
+}
+
+# Output the new versions so they can be included in the PR
+output_path = os.environ.get("GITHUB_OUTPUT", "/dev/stdout")
+with open(output_path, "a") as fh:
+    print(f"pr={json.dumps(pr)}", file = fh)
