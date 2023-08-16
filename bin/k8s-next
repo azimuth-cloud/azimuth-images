@@ -1,0 +1,112 @@
+#!/usr/bin/env python3
+
+import json
+import os
+import pathlib
+
+import requests
+import ruamel.yaml
+
+import easysemver
+
+
+#####
+# This script adds a new build for a new version of Kubernetes
+#####
+
+
+LATEST_RELEASE_URL = "https://api.github.com/repos/kubernetes/kubernetes/releases/latest"
+
+# The leading new line is important to get a nice layout in builds.yaml!
+BUILD_TEMPLATE = """
+
+name: kubernetes-{major}-{minor}-{distro}
+template: kubernetes
+var-files: common,kvm,linux,ubuntu-{distro},kubernetes,kubernetes_{major}_{minor}
+path-filters: |
+  paths:
+    - .github/workflows/pr.yml
+    - bin/*
+    - config.pkr.hcl
+    - requirements.yml
+    - env/*/common.env
+    - env/*/kvm.env
+    - env/*/linux.env
+    - env/*/ubuntu-{distro}.env
+    - env/*/kubernetes.env
+    - env/*/kubernetes_{major}_{minor}.env
+    - vars/*/common.json
+    - vars/*/kvm.json
+    - vars/*/linux.json
+    - vars/*/ubuntu-{distro}.json
+    - vars/*/kubernetes.json
+    - vars/*/kubernetes_{major}_{minor}.json
+    - packer/kubernetes.pkr.hcl
+    - vendor/image-builder/**
+"""
+
+
+# Get the repository root
+repo_root = pathlib.Path(__file__).parent.parent.resolve()
+
+# Get the latest Kubernetes version
+headers = { "Content-Type": "application/json" }
+if "GITHUB_TOKEN" in os.environ:
+    headers["Authorization"] = f"Bearer {os.environ['GITHUB_TOKEN']}"
+response = requests.get(LATEST_RELEASE_URL, headers = headers)
+response.raise_for_status()
+latest_version = easysemver.Version(response.json()["tag_name"])
+
+# Check if a vars file exists for it
+latest_filename = f"kubernetes_{latest_version.major}_{latest_version.minor}.json"
+latest_vars_file = repo_root / "vars" / "base" / latest_filename
+# If it does, we are done
+if latest_vars_file.exists():
+    exit()
+
+##
+## If we get to here, it is a new version that we haven't seen before
+##
+
+# Create the vars file
+data = {
+    "kubernetes_deb_version": f"{latest_version.format(prefix = False)}-00",
+    "kubernetes_rpm_version": f"{latest_version.format(prefix = False)}-0",
+    "kubernetes_semver": str(latest_version),
+    "kubernetes_series": f"{latest_version.prefix}{latest_version.major}.{latest_version.minor}",
+}
+with latest_vars_file.open("w") as fh:
+    json.dump(data, fh, indent = 4)
+
+# Create the env file
+env_file = (repo_root / "env" / "base" / latest_filename).with_suffix(".env")
+with env_file.open("w") as fh:
+    fh.write(f"PACKER_VAR_FILES=\"$PACKER_VAR_FILES,{latest_vars_file.relative_to(repo_root)}\"\n")
+
+# Add entries for focal and jammy builds
+yaml = ruamel.yaml.YAML(typ = "rt")
+yaml.preserve_quotes = True
+yaml.width = 1000000
+yaml.mapping_indent = 2
+yaml.sequence_indent = 2
+yaml.sequence_dash_offset = 0
+
+path = repo_root / ".github" / "builds.yaml"
+
+with path.open() as fh:
+    builds = yaml.load(fh)
+
+# Add a build for focal and a build for jammy
+builds.extend([
+    yaml.load(
+        BUILD_TEMPLATE.format(
+            distro = distro,
+            major = latest_version.major,
+            minor = latest_version.minor
+        )
+    )
+    for distro in ["focal", "jammy"]
+])
+
+with path.open("w") as fh:
+    yaml.dump(builds, fh)
