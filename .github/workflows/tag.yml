@@ -11,6 +11,11 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v3
 
+      - name: Install s3cmd
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y s3cmd
+
       - name: Download manifest for commit
         run: ./bin/download-manifest
         env:
