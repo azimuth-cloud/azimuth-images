@@ -39,7 +39,7 @@ jobs:
         with:
           token: ${{ steps.generate-app-token.outputs.token }}
           commit-message: ${{ fromJson(steps.base-image-update.outputs.pr).title }}
-          branch: update/kubernetes-patch
+          branch: update/ubuntu-${{ matrix.distro }}
           delete-branch: true
           title: ${{ fromJson(steps.base-image-update.outputs.pr).title }}
           body: ${{ fromJson(steps.base-image-update.outputs.pr).body }}
