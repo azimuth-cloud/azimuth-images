@@ -1,5 +1,6 @@
 name: Update Kubernetes versions
 on:
+  push:
   # Allow manual executions
   workflow_dispatch:
   # Run nightly
