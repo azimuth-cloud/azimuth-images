@@ -1,7 +1,5 @@
 name: Update base images
 on:
-  push:
-    branches: [feature/automate-base-images]
   # Allow manual executions
   workflow_dispatch:
   # Run nightly
