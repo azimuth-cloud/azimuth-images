@@ -90,6 +90,7 @@ def create_env_file(repo_root, version, vars_file):
 
 
 BUILD_TEMPLATE = """
+
 name: kubernetes-{major}-{minor}-{distro}
 template: kubernetes
 var-files: common,kvm,linux,ubuntu-{distro},kubernetes,kubernetes_{major}_{minor}
@@ -135,9 +136,11 @@ def add_build_entries(repo_root, version):
     # Add a build for focal and a build for jammy
     builds.extend([
         yaml.load(
-            BUILD_TEMPLATE
-                .format(distro = distro, major = version.major, minor = version.minor)
-                .strip()
+            BUILD_TEMPLATE.format(
+                distro = distro,
+                major = version.major,
+                minor = version.minor
+            )
         )
         for distro in ["focal", "jammy"]
     ])
