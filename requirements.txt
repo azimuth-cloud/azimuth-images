@@ -1,3 +1,4 @@
 ansible-core
 python-openstackclient
 pywinrm
+ruamel.yaml

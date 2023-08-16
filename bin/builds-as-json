@@ -7,7 +7,7 @@ import pathlib
 from ruamel.yaml import YAML
 
 
-repo_root = pathlib.Path(__file__).parent.parent.parent.resolve()
+repo_root = pathlib.Path(__file__).parent.parent.resolve()
 
 # Read the builds from the YAML file
 with (repo_root / ".github" / "builds.yaml") as fh:
