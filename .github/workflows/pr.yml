@@ -33,6 +33,9 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v3
 
+      - name: Install script dependencies
+        run: pip install -r .github/scripts/requirements.txt
+
       - name: Get builds as JSON
         id: builds-as-json
         run: .github/scripts/builds-as-json
