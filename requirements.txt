@@ -1,3 +1,6 @@
 ansible-core
+easysemver @ git+https://github.com/stackhpc/easysemver
 python-openstackclient
 pywinrm
+requests
+ruamel.yaml
