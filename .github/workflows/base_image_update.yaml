@@ -1,0 +1,46 @@
+name: Update base images
+on:
+  # Allow manual executions
+  workflow_dispatch:
+  # Run nightly
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  propose_base_image_update:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: [focal, jammy]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install script dependencies
+        run: pip install -r ./requirements.txt
+
+      - name: Check for base image updates
+        id: base-image-update
+        run: ./bin/base-image-update ${{ matrix.distro }}
+
+      - name: Generate app token for PR
+        uses: stackhpc/github-actions/generate-app-token@master
+        id: generate-app-token
+        with:
+          repository: ${{ github.repository }}
+          app-id: ${{ secrets.APP_ID }}
+          app-private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Propose changes via PR if required
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ steps.generate-app-token.outputs.token }}
+          commit-message: ${{ fromJson(steps.base-image-update.outputs.pr).title }}
+          branch: update/ubuntu-${{ matrix.distro }}
+          delete-branch: true
+          title: ${{ fromJson(steps.base-image-update.outputs.pr).title }}
+          body: ${{ fromJson(steps.base-image-update.outputs.pr).body }}
+          labels: |
+            automation
+            dependency-update
