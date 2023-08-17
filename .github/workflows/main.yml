@@ -6,7 +6,6 @@ on:
 
 jobs:
   read_builds:
-    needs: [fail_on_remote, fail_on_draft]
     runs-on: ubuntu-latest
     outputs:
       builds: ${{ steps.builds-as-json.outputs.builds }}
