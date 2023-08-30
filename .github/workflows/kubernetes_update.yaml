@@ -29,6 +29,7 @@ jobs:
           app-private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Propose changes via PR if required
+        if: ${{ steps.k8s-update.outputs.pr }}
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ steps.generate-app-token.outputs.token }}
@@ -63,6 +64,7 @@ jobs:
           app-private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Propose changes via PR if required
+        if: ${{ steps.k8s-next.outputs.pr }}
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ steps.generate-app-token.outputs.token }}
