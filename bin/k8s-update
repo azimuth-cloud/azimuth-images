@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+
+import json
+import os
+import pathlib
+
+import requests
+
+import easysemver
+
+
+#####
+# This script updates the known Kubernetes versions to the latest patch version
+#####
+
+
+RELEASES_URL = "https://api.github.com/repos/kubernetes/kubernetes/releases"
+
+
+def k8s_latest_version_for_series(series):
+    """
+    Returns the latest Kubernetes version for the given series.
+    """
+    # Using a tilde range allows flexibility in the patch version
+    range = easysemver.Range(f"~{series}.0")
+    # Return the first version that matches the range
+    next_url = RELEASES_URL
+    headers = { "Content-Type": "application/json" }
+    if "GITHUB_TOKEN" in os.environ:
+        headers["Authorization"] = f"Bearer {os.environ['GITHUB_TOKEN']}"
+    while next_url:
+        response = requests.get(next_url, headers = headers)
+        response.raise_for_status()
+        for release in response.json():
+            try:
+                version = easysemver.Version(release["tag_name"])
+            except TypeError:
+                continue
+            if version in range:
+                return version
+        next_url = response.links.get("next", {}).get("url")
+
+
+# Get the repository root
+repo_root = pathlib.Path(__file__).parent.parent.resolve()
+
+# Update the existing vars files to the most recent patch version
+# We collect the new versions as we go for reporting purposes
+next_versions = []
+vars_files_dir = repo_root / "vars" / "base"
+for vars_file in vars_files_dir.glob("kubernetes_*.json"):
+    with vars_file.open() as fh:
+        data = json.load(fh)
+    current_version = easysemver.Version(data["kubernetes_semver"])
+    # Get the latest version for the series and update the file
+    latest_version = k8s_latest_version_for_series(data["kubernetes_series"])
+    if latest_version > current_version:
+        data.update({
+            "kubernetes_deb_version": f"{latest_version.format(prefix = False)}-00",
+            "kubernetes_rpm_version": f"{latest_version.format(prefix = False)}-0",
+            "kubernetes_semver": str(latest_version),
+        })
+        with vars_file.open("w") as fh:
+            json.dump(data, fh, indent = 4)
+        next_versions.append(str(latest_version))
+
+if not next_versions:
+    exit()
+
+# Output the title and body for the PR as a JSON document
+pr = {
+    "title": "Update Kubernetes patch versions ({})".format(
+        ", ".join(str(v) for v in next_versions)
+    ),
+    "body": "\n".join([
+        (
+            "This PR was created automatically to update Kubernetes to the latest "
+            "patch version for each supported release:"
+        ),
+        "",
+        *[f"  * {version}" for version in next_versions]
+    ]),
+}
+
+# Output the new versions so they can be included in the PR
+output_path = os.environ.get("GITHUB_OUTPUT", "/dev/stdout")
+with open(output_path, "a") as fh:
+    print(f"pr={json.dumps(pr)}", file = fh)
