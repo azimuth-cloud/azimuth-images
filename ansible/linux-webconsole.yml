@@ -4,5 +4,3 @@
   become: yes
   roles:
     - linux-webconsole
-
-# Dummy change to trigger image build CI for debugging purposes
