@@ -92,6 +92,7 @@
       - requirements.yml
       - env/*/common.env
       - env/*/kvm.env
+      - env/*/linux.env
       - env/*/ubuntu-focal.env
       - vars/*/common.json
       - vars/*/kvm.json
