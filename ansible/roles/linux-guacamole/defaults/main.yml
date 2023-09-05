@@ -4,7 +4,7 @@ guacamole_image_prefix: docker.io/guacamole
 
 # Use 1.4.0 until 1.5.1 is released
 # This is due to https://issues.apache.org/jira/browse/GUACAMOLE-1741
-guacamole_version: 1.4.0
+guacamole_version: 1.5.3
 
 guacamole_server_image_name: guacd
 guacamole_server_image_tag: "{{ guacamole_version }}"
@@ -16,7 +16,7 @@ guacamole_client_image: "{{ guacamole_image_prefix }}/{{ guacamole_client_image_
 
 guacamole_nginx_image_prefix: docker.io
 guacamole_nginx_image_name: nginx
-guacamole_nginx_image_tag: 1.22.1
+guacamole_nginx_image_tag: 1.25.1
 guacamole_nginx_image: "{{ guacamole_nginx_image_prefix }}/{{ guacamole_nginx_image_name }}:{{ guacamole_nginx_image_tag }}"
 
 guacamole_mitm_log_level: notice
