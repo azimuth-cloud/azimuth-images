@@ -83,7 +83,7 @@
 
 - name: linux-rstudio
   template: linux-rstudio
-  var-files: common,kvm,linux,ubuntu-focal
+  var-files: common,kvm,linux,ubuntu-jammy
   path-filters: |
     paths:
       - .github/workflows/pr.yml
@@ -93,11 +93,11 @@
       - env/*/common.env
       - env/*/kvm.env
       - env/*/linux.env
-      - env/*/ubuntu-focal.env
+      - env/*/ubuntu-jammy.env
       - vars/*/common.json
       - vars/*/kvm.json
       - vars/*/linux.json
-      - vars/*/ubuntu-focal.json
+      - vars/*/ubuntu-jammy.json
       - packer/linux-rstudio.pkr.hcl
       - ansible/linux-rstudio.yml
       - ansible/roles/linux-rstudio/**
