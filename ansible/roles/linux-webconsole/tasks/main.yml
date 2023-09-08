@@ -64,6 +64,9 @@
         group: ubuntu
 
 - include_role:
+    name: linux-eessi
+
+- include_role:
     name: linux-guacamole
 
 - name: Write Guacamole ansible-init vars file
