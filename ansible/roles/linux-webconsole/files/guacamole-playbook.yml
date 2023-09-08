@@ -40,54 +40,23 @@
         key: "{{ guacamole_ssh_public_key }}"
 
     - block:
-        - name: Generate VNC password for Guacamole
+        - name: Generate password for Guacamole
           set_fact:
-            guacamole_vnc_password: "{{ lookup('community.general.random_string', length = 16, override_special = special_chars) }}"
+            guacamole_password: "{{ lookup('community.general.random_string', length = 16, override_special = special_chars) }}"
           vars:
             # Even though this string is within a CDATA tag, there's very small chance of
             # generating ]]>, which will still break XML. Therefore remove ">" from special
             # characters.
             special_chars: '!"#$%&()*+,-./:;<=?@[\]^_`{|}~'
         
-        - block:
-          - name: Get Guacamole user info
-            getent:
-              database: passwd
-              key: "{{ guacamole_user }}"
-
-          - name: Set Guacamole user home directory
-            set_fact:
-              guacamole_user_home: "{{ ansible_facts.getent_passwd[guacamole_user][4] }}"
-
-          - name: Generate VNC password
-            command: vncpasswd -f
-            args:
-              stdin: "{{ guacamole_vnc_password }}"
-            register: vncpassword
-
-          - name: Create VNC directory
-            file:
-              state: directory
-              path: "{{ guacamole_user_home }}/.vnc"
-              owner: "{{ guacamole_user }}"
-              group: "{{ guacamole_user }}"
-              mode: "0775"
-
-          - name: Create VNC password file
-            copy:
-              content: "{{ vncpassword.stdout }}"
-              dest: "{{ guacamole_user_home }}/.vnc/passwd"
-              owner: "{{ guacamole_user }}"
-              group: "{{ guacamole_user }}"
-              mode: "0600"
-          become: yes
-          become_user: "{{ guacamole_user }}"
-
-        - name: Start and enable VNC server
-          service:
-            name: vncserver@:1.service
-            state: started
-            enabled: yes
+        - name: Configure default user
+          ansible.builtin.user:
+            name: "{{ guacamole_user }}"
+            state: present
+            password: "{{ guacamole_password | password_hash('sha512') }}"
+            append: true
+            groups: ssl-cert
+          become: true
       when: desktop_enabled
 
     - name: Write Guacamole user mapping file
@@ -105,12 +74,11 @@
                   </connection>
           {% if desktop_enabled %}
                   <connection name="desktop">
-                      <protocol>vnc</protocol>
+                      <protocol>rdp</protocol>
                       <param name="hostname">{{ ansible_default_ipv4.address }}</param>
-                      <param name="port">5901</param>
-                      <param name="autoretry">3</param>
+                      <param name="port">3389</param>
                       <param name="username">{{ guacamole_user }}</param>
-                      <param name="password"><![CDATA[{{ guacamole_vnc_password }}]]></param>
+                      <param name="password"><![CDATA[{{ guacamole_password }}]]></param>
                   </connection>
           {% endif %}
               </authorize>

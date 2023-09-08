@@ -1,5 +1,3 @@
 ---
 
 desktop_environment_package: ubuntu-desktop-minimal
-
-tigervnc_server_packages: [tigervnc-standalone-server, tigervnc-xorg-extension, dbus-x11]

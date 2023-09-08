@@ -38,8 +38,19 @@
 
 - block:
     - include_tasks: desktop.yml
-    - include_tasks: vnc_server.yml
   when: desktop_enabled is defined and desktop_enabled
+
+- name: Install xrdp
+  apt:
+    name: xrdp
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install dbus-x11 package
+  apt:
+    name: dbus-x11
+    state: present
+  when: ansible_os_family == "Debian"
 
 - include_role:
     name: linux-ansible-init
