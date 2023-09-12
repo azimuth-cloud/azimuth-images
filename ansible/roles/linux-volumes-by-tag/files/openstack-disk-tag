@@ -1,0 +1,117 @@
+#!/usr/bin/env python3
+
+import argparse
+import contextlib
+import json
+import logging
+import pathlib
+import tempfile
+import subprocess
+
+
+logging.basicConfig(
+    filename = "/var/log/openstack-disk-tag.log",
+    level = logging.INFO,
+    format = "[%(asctime)s] [%(levelname)-8.8s] %(message)s"
+)
+
+
+logger = logging.getLogger(__name__)
+
+
+def run_cmd(*cmd):
+    logger.info(f"executing command - {' '.join(str(p) for p in cmd)}")
+    proc = subprocess.run(cmd, capture_output = True, check = True)
+    return proc.stdout.strip().decode()
+
+
+def get_config_device():
+    return pathlib.Path(
+        run_cmd(
+            "/usr/sbin/blkid",
+            "-t",
+            "LABEL=config-2",
+            "-o",
+            "device"
+        )
+    )
+
+
+@contextlib.contextmanager
+def temporary_directory(dir = None):
+    with tempfile.TemporaryDirectory(dir = dir) as mnt_dir:
+        yield pathlib.Path(mnt_dir)
+
+
+@contextlib.contextmanager
+def mount(device, mnt_dir):
+    run_cmd(
+        "/usr/bin/mount",
+        "--read-only",
+        device,
+        mnt_dir
+    )
+    try:
+        yield
+    finally:
+        run_cmd("/usr/bin/umount", mnt_dir)
+
+
+def get_instance_metadata(config_device):
+    # We mount the config device on a temporary directory
+    # Once it is mounted, we can extract the metadata
+    run_dir = pathlib.Path("/run/openstack-disk-tag")
+    run_dir.mkdir(mode = 0o755, parents = True, exist_ok = True)
+    with temporary_directory(run_dir) as mnt_dir:
+        with mount(config_device, mnt_dir):
+            metadata_path = mnt_dir / "openstack" / "latest" / "meta_data.json"
+            logger.info(f"loading metadata from {metadata_path}")
+            with metadata_path.open() as fd:
+                return json.load(fd)
+
+
+def find_device_for_serial(metadata, serial):
+    logger.info("locating device in instance metadata")
+    try:
+        return next(
+            d
+            for d in metadata.get("devices", [])
+            if d.get("serial", "").startswith(serial)
+        )
+    except StopIteration:
+        logger.warning("no metadata device for serial number")
+        return None
+
+
+def output_tag_for_device(device):
+    # We only output the first tag, in a format that udev IMPORT can consume
+    try:
+        tag = next(iter(device.get("tags", [])))
+        logger.info(f"found tag '{tag}' for device")
+        print(f"OPENSTACK_TAG={tag}")
+    except StopIteration:
+        logger.warning("device does not have any metadata tags")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description = "Discovers the tag for an attached OpenStack volume."
+    )
+    parser.add_argument("serial", help = "The serial number of the disk.")
+    args = parser.parse_args()
+
+    logger.info(f"running for device with serial number - {args.serial}")
+
+    config_device = get_config_device()
+    metadata = get_instance_metadata(config_device)
+    device = find_device_for_serial(metadata, args.serial)
+    if device:
+        output_tag_for_device(device)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except BaseException as exc:
+        logger.exception("exception occured during execution")
+        raise

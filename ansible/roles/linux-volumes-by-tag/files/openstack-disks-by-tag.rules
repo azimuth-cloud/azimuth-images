@@ -1,0 +1,13 @@
+# virtio-blk devices
+KERNEL=="vd*[!0-9]", \
+  ENV{ID_SERIAL}=="?*", \
+  IMPORT{program}="/usr/local/bin/openstack-disk-tag $env{ID_SERIAL}"
+
+# virtio-scsi devices
+KERNEL=="sd*[!0-9]", \
+  ENV{SCSI_IDENT_SERIAL}=="?*", \
+  IMPORT{program}="/usr/local/bin/openstack-disk-tag $env{SCSI_IDENT_SERIAL}"
+
+# Add /dev/disk/openstack/by-tag/<tag> link
+ENV{OPENSTACK_TAG}=="?*", \
+  SYMLINK+="disk/openstack/by-tag/$env{OPENSTACK_TAG}"
