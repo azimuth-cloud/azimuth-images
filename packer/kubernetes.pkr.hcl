@@ -382,7 +382,7 @@ build {
 
   provisioner "ansible" {
     galaxy_file = "${path.root}/../requirements.yml"
-    playbook_file = "${path.root}/../vendor/image-builder/images/capi/ansible/node.yml"
+    playbook_file = "${path.root}/../ansible/kubernetes.yml"
     use_proxy = false
     extra_arguments = [
       "-v",
