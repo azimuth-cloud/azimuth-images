@@ -8,6 +8,9 @@
   "crictl_url": "",
   "extra_debs": "nfs-common",
   "kubernetes_cni_http_checksum": "",
+  "kubernetes_deb_gpg_key": "",
+  "kubernetes_deb_repo": "",
+  "kubernetes_rpm_gpg_key": "",
   "kubernetes_rpm_repo": "",
   "python_path": ""
 }
