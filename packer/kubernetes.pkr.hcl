@@ -261,6 +261,10 @@ variable "kubernetes_semver" {
   type = string
 }
 
+variable "kubernetes_series" {
+  type = string
+}
+
 variable "kubernetes_source_type" {
   type = string
 }
@@ -335,7 +339,16 @@ locals {
     kubernetes_cni_http_checksum_default = "sha256:https://storage.googleapis.com/k8s-artifacts-cni/release/${var.kubernetes_cni_semver}/cni-plugins-linux-${var.kubernetes_cni_http_checksum_arch}-${var.kubernetes_cni_semver}.tgz.sha256"
     kubernetes_cni_http_checksum = element([for e in [var.kubernetes_cni_http_checksum, local.kubernetes_cni_http_checksum_default]: e if e != ""], 0)
 
-    kubernetes_rpm_repo_default = "https://packages.cloud.google.com/yum/repos/kubernetes-el7-${var.kubernetes_rpm_repo_arch}"
+    kubernetes_deb_gpg_key_default = "https://pkgs.k8s.io/core:/stable:/${var.kubernetes_series}/deb/Release.key"
+    kubernetes_deb_gpg_key = element([for e in [var.kubernetes_deb_gpg_key, local.kubernetes_deb_gpg_key_default]: e if e != ""], 0)
+
+    kubernetes_deb_repo_default = "https://pkgs.k8s.io/core:/stable:/${var.kubernetes_series}/deb/"
+    kubernetes_deb_repo = element([for e in [var.kubernetes_deb_repo, local.kubernetes_deb_repo_default]: e if e != ""], 0)
+
+    kubernetes_rpm_gpg_key_default = "https://pkgs.k8s.io/core:/stable:/${var.kubernetes_series}/rpm/repodata/repomd.xml.key"
+    kubernetes_rpm_gpg_key = element([for e in [var.kubernetes_rpm_gpg_key, local.kubernetes_rpm_gpg_key_default]: e if e != ""], 0)
+
+    kubernetes_rpm_repo_default = "https://pkgs.k8s.io/core:/stable:/${var.kubernetes_series}/rpm/"
     kubernetes_rpm_repo = element([for e in [var.kubernetes_rpm_repo, local.kubernetes_rpm_repo_default]: e if e != ""], 0)
 }
 
@@ -448,9 +461,9 @@ build {
       "--extra-vars",
       "kubernetes_container_registry=${var.kubernetes_container_registry}",
       "--extra-vars",
-      "kubernetes_deb_gpg_key=${var.kubernetes_deb_gpg_key}",
+      "kubernetes_deb_gpg_key=${local.kubernetes_deb_gpg_key}",
       "--extra-vars",
-      "kubernetes_deb_repo=${var.kubernetes_deb_repo}",
+      "kubernetes_deb_repo=${local.kubernetes_deb_repo}",
       "--extra-vars",
       "kubernetes_deb_version=${var.kubernetes_deb_version}",
       "--extra-vars",
@@ -460,7 +473,7 @@ build {
       "--extra-vars",
       "kubernetes_rpm_gpg_check=${var.kubernetes_rpm_gpg_check}",
       "--extra-vars",
-      "kubernetes_rpm_gpg_key=${var.kubernetes_rpm_gpg_key}",
+      "kubernetes_rpm_gpg_key=${local.kubernetes_rpm_gpg_key}",
       "--extra-vars",
       "kubernetes_rpm_repo=${local.kubernetes_rpm_repo}",
       "--extra-vars",
