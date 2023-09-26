@@ -70,8 +70,8 @@ if latest_vars_file.exists():
 
 # Create the vars file
 data = {
-    "kubernetes_deb_version": f"{latest_version.format(prefix = False)}-00",
-    "kubernetes_rpm_version": f"{latest_version.format(prefix = False)}-0",
+    "kubernetes_deb_version": f"{latest_version.format(prefix = False)}-1.1",
+    "kubernetes_rpm_version": f"{latest_version.format(prefix = False)}",
     "kubernetes_semver": str(latest_version),
     "kubernetes_series": f"{latest_version.prefix}{latest_version.major}.{latest_version.minor}",
 }
