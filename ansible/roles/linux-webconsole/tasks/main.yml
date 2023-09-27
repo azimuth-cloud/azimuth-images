@@ -19,7 +19,7 @@
 
 - name: Update apt cache
   apt:
-    update_cache: yes
+    update_cache: true
   when: ansible_os_family == "Debian"
 
 - name: Ensure up-to-date CA certificates
@@ -31,10 +31,20 @@
 # Using the apt module seems to work more reliably than package :-/
 - name: Install ACL package
   apt:
-    update_cache: yes
+    update_cache: true
     name: acl
     state: present
   when: ansible_os_family == "Debian"
+
+- name: Add apptainer repository
+  apt_repository:
+    repo: 'ppa:apptainer/ppa'
+    update_cache: true
+
+- name: Install apptainer
+  apt:
+    name: apptainer
+    state: present
 
 - block:
     - include_tasks: desktop.yml
