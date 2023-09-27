@@ -1,0 +1,28 @@
+name: Purge defunct images
+on:
+  # Allow manual executions
+  workflow_dispatch:
+  # Run nightly
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  purge_defunct_images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install script dependencies
+        run: pip install -r ./requirements.txt
+
+      - name: Run script to purge defunct images
+        run: |
+          source ./bin/env-vars
+          ./bin/purge-defunct
+        env:
+          REPO_ROOT: ${{ github.workspace }}
+          ENVIRONMENT: arcus
+          ENV_VAR_FILES: common
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
