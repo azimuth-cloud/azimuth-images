@@ -1,4 +1,5 @@
 ansible-core
+boto3
 easysemver @ git+https://github.com/stackhpc/easysemver
 python-openstackclient
 pywinrm

@@ -77,7 +77,9 @@ jobs:
             manifest-extra: ${{ steps.build-image.outputs.manifest-extra }}
 
   publish_manifest:
+    # this job should always run, but needs to run after the build matrix
     needs: [build_images]
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
@@ -111,29 +113,6 @@ jobs:
         run: ./bin/publish-manifest
         env:
           MANIFEST_FILE: ./manifest.json
-          ENVIRONMENT: arcus
-          ENV_VAR_FILES: common
-          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
-
-  purge_previous:
-    needs: [publish_manifest]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out the repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Install s3cmd
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y s3cmd
-
-      - name: Purge images from previous commit
-        run: ./bin/purge-previous
-        env:
           ENVIRONMENT: arcus
           ENV_VAR_FILES: common
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}

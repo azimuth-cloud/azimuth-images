@@ -1,0 +1,217 @@
+#!/usr/bin/env python3
+
+#####
+# This script purges defunct images from S3
+#
+# The images that we want to keep are:
+#
+#   1. Images from the latest commit to main, failed or not
+#   2. Images from the latest commit to main that built successfully - usually the same as 1, hopefully
+#   3. Images from commits that correspond to tags
+#####
+
+import argparse
+import json
+import os
+
+import boto3
+import requests
+
+
+class GitHubClient:
+    API_URL = "https://api.github.com"
+
+    def __init__(self, token, repo):
+        self.session = requests.Session()
+        self.session.headers["Content-Type"] = "application/json"
+        if token:
+            self.session.headers["Authorization"] = f"Bearer {token}"
+        self.repo = repo
+
+    def _one(self, url, **kwargs):
+        response = self.session.get(url, **kwargs)
+        response.raise_for_status()
+        return response.json()
+
+    def _iterate(self, url, **kwargs):
+        # Iterates over a collection, with pagination
+        while url:
+            response = self.session.get(url, **kwargs)
+            response.raise_for_status()
+            yield from response.json()
+            url = response.links.get("next", {}).get("url")
+
+    def latest_commits(self):
+        """
+        Returns a tuple of (latest commit, latest commit that built successfully).
+        """
+        commits_url = f"{self.API_URL}/repos/{self.repo}/commits"
+        default_branch = self._one(f"{self.API_URL}/repos/{self.repo}")["default_branch"]
+        latest_commit = None
+        latest_successful_commit = None
+        for commit in self._iterate(commits_url, params = {"sha": default_branch}):
+            if latest_commit is None:
+                latest_commit = commit["sha"]
+            # Get the check suite that corresponds to GitHub actions
+            check_suite = next(
+                cs
+                for cs in self._one(f"{commit['url']}/check-suites")["check_suites"]
+                if cs["app"]["slug"] == "github-actions"
+            )
+            # If it was successful, we are done
+            status, conclusion = check_suite["status"], check_suite["conclusion"]
+            if status == "completed" and conclusion == "success":
+                latest_successful_commit = commit["sha"]
+                break
+        return latest_commit, latest_successful_commit
+
+    def tagged_commits(self):
+        """
+        Returns a mapping of commit shas to the associated tags.
+        """
+        tagged_commits = {}
+        for tag in self._iterate(f"{self.API_URL}/repos/{self.repo}/tags"):
+            tagged_commits.setdefault(tag["commit"]["sha"], []).append(tag["name"])
+        return tagged_commits
+
+
+class S3Bucket:
+    def __init__(self, endpoint, access_key, secret_key, bucket):
+        self.s3 = boto3.client(
+            "s3",
+            endpoint_url = f"https://{endpoint}",
+            aws_access_key_id = access_key,
+            aws_secret_access_key = secret_key
+        )
+        self.bucket = bucket
+
+    def list_keys(self):
+        """
+        Iterates over the keys in a bucket, respecting pagination if required.
+        """
+        token = None
+        while True:
+            params = {"Bucket": self.bucket}
+            if token:
+                params["ContinuationToken"] = token
+            next_objects = self.s3.list_objects_v2(**params)
+            for object in next_objects["Contents"]:
+                yield object["Key"]
+            if next_objects["IsTruncated"]:
+                token = next_objects["NextContinuationToken"]
+            else:
+                break
+
+    def fetch_key(self, key):
+        """
+        Fetches the data for a key.
+        """
+        return self.s3.get_object(Bucket = self.bucket, Key = key)["Body"].read()
+
+    def delete_key(self, key):
+        """
+        Deletes a key in the bucket.
+        """
+        self.s3.delete_object(Bucket = self.bucket, Key = key)
+
+
+def argparse_add_argument_with_envvar(parser, arg, envvar, **kwargs):
+    envvar_value = os.environ.get(envvar) or None
+    if envvar_value is not None:
+        kwargs.update(default = envvar_value, required = False)
+    parser.add_argument(arg, **kwargs)
+
+
+def main():
+    parser = argparse.ArgumentParser(description = "Purges defunct images from S3.")
+    argparse_add_argument_with_envvar(
+        parser,
+        "--s3-host",
+        "S3_HOST",
+        help = "The S3 host to use.",
+        required = True
+    )
+    argparse_add_argument_with_envvar(
+        parser,
+        "--s3-access-key",
+        "S3_ACCESS_KEY",
+        help = "The S3 access key to use.",
+        required = True
+    )
+    argparse_add_argument_with_envvar(
+        parser,
+        "--s3-secret-key",
+        "S3_SECRET_KEY",
+        help = "The S3 secret key to use.",
+        required = True
+    )
+    argparse_add_argument_with_envvar(
+        parser,
+        "--s3-bucket",
+        "S3_BUCKET",
+        help = "The S3 bucket to use.",
+        required = True
+    )
+    argparse_add_argument_with_envvar(
+        parser,
+        "--github-token",
+        "GITHUB_TOKEN",
+        help = "The GitHub token to use."
+    )
+    argparse_add_argument_with_envvar(
+        parser,
+        "--github-repository",
+        "GITHUB_REPOSITORY",
+        help = "The name of the GitHub repository."
+    )
+    args = parser.parse_args()
+
+    # Initialise the S3 client
+    print("[INFO ] initialising S3 client")
+    s3 = S3Bucket(args.s3_host, args.s3_access_key, args.s3_secret_key, args.s3_bucket)
+
+    print("[INFO ] initialising GitHub client")
+    gh = GitHubClient(args.github_token, args.github_repository)
+
+    print("[INFO ] fetching latest commit info")
+    latest_commit, latest_successful_commit = gh.latest_commits()
+    print(f"[INFO ]   latest -> {latest_commit}")
+    print(f"[INFO ]   latest with successful build -> {latest_successful_commit}")
+
+    print("[INFO ] fetching tagged commits")
+    tagged_commits = gh.tagged_commits()
+    for commit, tags in tagged_commits.items():
+        for tag in tags:
+            print(f"[INFO ]   {tag} -> {commit}")
+
+    print("[INFO ] fetching current manifests")
+    manifest_keys = [k for k in s3.list_keys() if k.endswith(".manifest")]
+
+    for manifest_key in manifest_keys:
+        print(f"[INFO ] processing {manifest_key}")
+        manifest_commit = manifest_key.removesuffix(".manifest")
+
+        if manifest_commit == latest_commit:
+            print("[INFO ]   manifest is for latest commit - keeping")
+            continue
+        elif manifest_commit == latest_successful_commit:
+            print("[INFO ]   manifest is for latest successful build - keeping")
+            continue
+        elif manifest_commit in tagged_commits:
+            tag = tagged_commits[manifest_commit][0]
+            print(f"[INFO ]   manifest corresponds to tag {tag} - keeping")
+            continue
+
+        # If we get to here, the manifest needs purging
+        print("[INFO ]   manifest is no longer required - purging")
+        print("[INFO ]   fetching manifest data")
+        for image in json.loads(s3.fetch_key(manifest_key)).values():
+            image_key = f"{image['name']}.qcow2"
+            print(f"[INFO ]   deleting {image_key}")
+            s3.delete_key(image_key)
+        print("[INFO ]   deleting manifest")
+        s3.delete_key(manifest_key)
+
+
+if __name__ == "__main__":
+    main()
