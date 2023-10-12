@@ -57,7 +57,7 @@
 
 - name: jupyter-repo2docker
   template: jupyter-repo2docker
-  var-files: common,kvm,linux,ubuntu-focal
+  var-files: common,kvm,linux,ubuntu-jammy
   path-filters: |
     paths:
       - .github/workflows/pr.yml
@@ -67,11 +67,11 @@
       - env/*/common.env
       - env/*/kvm.env
       - env/*/linux.env
-      - env/*/ubuntu-focal.env
+      - env/*/ubuntu-jammy.env
       - vars/*/common.json
       - vars/*/kvm.json
       - vars/*/linux.json
-      - vars/*/ubuntu-focal.json
+      - vars/*/ubuntu-jammy.json
       - packer/jupyter-repo2docker.pkr.hcl
       - ansible/jupyter-repo2docker.yml
       - ansible/roles/jupyter-repo2docker/**
