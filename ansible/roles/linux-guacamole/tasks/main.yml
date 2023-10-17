@@ -7,6 +7,8 @@
   vars:
     podman_service_name: guacamole
     podman_service_type: pod
+    podman_service_wants:
+      - user-runtime-dir@1001
 
 - name: Pull image for guacamole server
   containers.podman.podman_image:
