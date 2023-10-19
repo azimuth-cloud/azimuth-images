@@ -1,0 +1,54 @@
+---
+
+- name: Ensure R repo apt key is downloaded
+  ansible.builtin.get_url:
+    url: https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc
+    dest: /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+
+- name: Ensure R apt repository is present
+  ansible.builtin.apt_repository:
+    repo: deb https://cloud.r-project.org/bin/linux/ubuntu {{ ansible_distribution_release }}-cran40/
+    state: present
+
+- name: Ensure required system packages are installed
+  ansible.builtin.apt:
+    package:
+      - r-base
+      # Required by `deb` option in R-Studio Server install task
+      - xz-utils
+      # To allow non-root rstudio user to manage a python venv
+      # (https://support.posit.co/hc/en-us/articles/360023654474-Installing-and-Configuring-Python-with-RStudio)
+      - python3-venv
+      - python3-pip
+    update_cache: true
+    state: present
+
+- name: Ensure R-Studio Server is installed
+  ansible.builtin.apt:
+    deb: https://download2.rstudio.org/server/{{ ansible_distribution_release }}/amd64/rstudio-server-2023.06.1-524-amd64.deb
+    state: present
+
+- name: Ensure rstudio user exists
+  ansible.builtin.user:
+    name: rstudio
+    password: "{{ 'rstudio' | password_hash('sha512', 'irrelevant') }}"
+
+- name: Ensure rstudio user has passwordless sudo permissions
+  community.general.sudoers:
+    name: rstudio
+    user: rstudio
+    commands: ALL
+
+- name: Ensure auth is disabled in rstudio config file
+  ansible.builtin.blockinfile:
+    block: |
+      auth-none=1
+    path: /etc/rstudio/rserver.conf
+
+- name: Ensure rstudio-server systemd override file is populated
+  ansible.builtin.blockinfile:
+    path: /etc/systemd/system/rstudio-server.service.d/override.conf
+    create: true
+    block: |
+      [Service]
+      Environment=USER=rstudio

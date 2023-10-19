@@ -81,6 +81,32 @@
       - ansible/roles/linux-monitoring/**
       - ansible/roles/linux-zenith-client/**
 
+- name: linux-rstudio
+  template: linux-rstudio
+  var-files: common,kvm,linux,ubuntu-jammy
+  path-filters: |
+    paths:
+      - .github/workflows/pr.yml
+      - bin/*
+      - config.pkr.hcl
+      - requirements.yml
+      - env/*/common.env
+      - env/*/kvm.env
+      - env/*/linux.env
+      - env/*/ubuntu-jammy.env
+      - vars/*/common.json
+      - vars/*/kvm.json
+      - vars/*/linux.json
+      - vars/*/ubuntu-jammy.json
+      - packer/linux-rstudio.pkr.hcl
+      - ansible/linux-rstudio.yml
+      - ansible/roles/linux-rstudio/**
+      - ansible/roles/linux-ansible-init/**
+      - ansible/roles/linux-monitoring/**
+      - ansible/roles/linux-podman/**
+      - ansible/roles/linux-data-volumes/**
+      - ansible/roles/linux-zenith-client/**
+
 # For now, we build Kubernetes images for focal _and_ jammy
 - name: kubernetes-1-25-focal
   template: kubernetes
