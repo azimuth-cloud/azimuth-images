@@ -45,6 +45,7 @@
     name: podman
     home: /var/lib/podman
     uid: "{{ podman_user_id }}"
+    group: "{{ podman_user_id }}"
 
 - name: Enable linger for podman user
   command: "loginctl enable-linger podman"
