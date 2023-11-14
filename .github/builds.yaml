@@ -29,31 +29,31 @@
       - ansible/roles/linux-monitoring/**
       - ansible/roles/linux-zenith-client/**
 
-- name: ubuntu-rdp-gateway
-  template: linux-rdp-gateway
-  var-files: common,kvm,linux,ubuntu-focal
-  path-filters: |
-    paths:
-      - .github/workflows/pr.yml
-      - bin/*
-      - config.pkr.hcl
-      - requirements.yml
-      - env/*/common.env
-      - env/*/kvm.env
-      - env/*/linux.env
-      - env/*/ubuntu-focal.env
-      - vars/*/common.json
-      - vars/*/kvm.json
-      - vars/*/linux.json
-      - vars/*/ubuntu-focal.json
-      - packer/linux-rdp-gateway.pkr.hcl
-      - ansible/linux-rdp-gateway.yml
-      - ansible/roles/linux-rdp-gateway/**
-      - ansible/roles/linux-ansible-init/**
-      - ansible/roles/linux-podman/**
-      - ansible/roles/linux-data-volumes/**
-      - ansible/roles/linux-guacamole/**
-      - ansible/roles/linux-zenith-client/**
+# - name: ubuntu-rdp-gateway
+#   template: linux-rdp-gateway
+#   var-files: common,kvm,linux,ubuntu-focal
+#   path-filters: |
+#     paths:
+#       - .github/workflows/pr.yml
+#       - bin/*
+#       - config.pkr.hcl
+#       - requirements.yml
+#       - env/*/common.env
+#       - env/*/kvm.env
+#       - env/*/linux.env
+#       - env/*/ubuntu-focal.env
+#       - vars/*/common.json
+#       - vars/*/kvm.json
+#       - vars/*/linux.json
+#       - vars/*/ubuntu-focal.json
+#       - packer/linux-rdp-gateway.pkr.hcl
+#       - ansible/linux-rdp-gateway.yml
+#       - ansible/roles/linux-rdp-gateway/**
+#       - ansible/roles/linux-ansible-init/**
+#       - ansible/roles/linux-podman/**
+#       - ansible/roles/linux-data-volumes/**
+#       - ansible/roles/linux-guacamole/**
+#       - ansible/roles/linux-zenith-client/**
 
 - name: jupyter-repo2docker
   template: jupyter-repo2docker
