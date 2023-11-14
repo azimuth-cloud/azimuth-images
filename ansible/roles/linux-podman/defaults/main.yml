@@ -11,4 +11,6 @@ podman_unqualified_search_registries:
   - "docker.io"
   - "quay.io"
 # Pick ID that should (hopefully) never clash with others
-podman_user_id: 1600987
+# but also not once that clashes with systemd ranges
+# https://systemd.io/UIDS-GIDS/
+podman_user_id: 56780
