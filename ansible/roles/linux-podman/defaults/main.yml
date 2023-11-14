@@ -10,3 +10,5 @@ podman_service_group: "{{ podman_service_user }}"
 podman_unqualified_search_registries:
   - "docker.io"
   - "quay.io"
+# Pick ID that should (hopefully) never clash with others
+podman_user_id: 1600987
