@@ -10,8 +10,7 @@ ExecStart=/usr/bin/vncserver %i \
     -fg \
     -localhost no \
     -rfbauth ${VNCSERVER_PASSWD_FILE} \
-    -MaxCutText 99999999 \
-    -xstartup /etc/vnc/xstartup
+    -MaxCutText 99999999
 ExecStop=/usr/bin/vncserver -kill %i
 
 [Install]
