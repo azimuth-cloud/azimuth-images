@@ -17,6 +17,7 @@ After={{ service }}.service
 Environment=PODMAN_SYSTEMD_UNIT=%n
 Type=simple
 Restart=always
+RestartSec=5
 User={{ podman_service_user }}
 Group={{ podman_service_group }}
 ExecStart=/usr/bin/podman run \
