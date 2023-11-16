@@ -83,7 +83,7 @@ env_file = (repo_root / "env" / "base" / latest_filename).with_suffix(".env")
 with env_file.open("w") as fh:
     fh.write(f"PACKER_VAR_FILES=\"$PACKER_VAR_FILES,{latest_vars_file.relative_to(repo_root)}\"\n")
 
-# Add entries for focal and jammy builds
+# Add the entry to the build file
 yaml = ruamel.yaml.YAML(typ = "rt")
 yaml.preserve_quotes = True
 yaml.width = 1000000
@@ -96,17 +96,15 @@ path = repo_root / ".github" / "builds.yaml"
 with path.open() as fh:
     builds = yaml.load(fh)
 
-# Add a build for focal and a build for jammy
-builds.extend([
+builds.append(
     yaml.load(
         BUILD_TEMPLATE.format(
-            distro = distro,
+            distro = "jammy",
             major = latest_version.major,
             minor = latest_version.minor
         )
     )
-    for distro in ["focal", "jammy"]
-])
+)
 
 with path.open("w") as fh:
     yaml.dump(builds, fh)
