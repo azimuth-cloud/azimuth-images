@@ -8,7 +8,10 @@
   path-filters: |
     paths:
       - .github/workflows/pr.yml
-      - bin/*
+      - bin/build-image
+      - bin/builds-as-json
+      - bin/env-vars
+      - bin/setup
       - config.pkr.hcl
       - requirements.yml
       - env/*/common.env
@@ -35,7 +38,10 @@
 #   path-filters: |
 #     paths:
 #       - .github/workflows/pr.yml
-#       - bin/*
+#       - bin/build-image
+#       - bin/builds-as-json
+#       - bin/env-vars
+#       - bin/setup
 #       - config.pkr.hcl
 #       - requirements.yml
 #       - env/*/common.env
@@ -61,7 +67,10 @@
   path-filters: |
     paths:
       - .github/workflows/pr.yml
-      - bin/*
+      - bin/build-image
+      - bin/builds-as-json
+      - bin/env-vars
+      - bin/setup
       - config.pkr.hcl
       - requirements.yml
       - env/*/common.env
@@ -87,7 +96,10 @@
   path-filters: |
     paths:
       - .github/workflows/pr.yml
-      - bin/*
+      - bin/build-image
+      - bin/builds-as-json
+      - bin/env-vars
+      - bin/setup
       - config.pkr.hcl
       - requirements.yml
       - env/*/common.env
@@ -113,7 +125,10 @@
   path-filters: |
     paths:
       - .github/workflows/pr.yml
-      - bin/*
+      - bin/build-image
+      - bin/builds-as-json
+      - bin/env-vars
+      - bin/setup
       - config.pkr.hcl
       - requirements.yml
       - env/*/common.env
@@ -137,7 +152,10 @@
   path-filters: |
     paths:
       - .github/workflows/pr.yml
-      - bin/*
+      - bin/build-image
+      - bin/builds-as-json
+      - bin/env-vars
+      - bin/setup
       - config.pkr.hcl
       - requirements.yml
       - env/*/common.env
@@ -161,7 +179,10 @@
   path-filters: |
     paths:
       - .github/workflows/pr.yml
-      - bin/*
+      - bin/build-image
+      - bin/builds-as-json
+      - bin/env-vars
+      - bin/setup
       - config.pkr.hcl
       - requirements.yml
       - env/*/common.env
