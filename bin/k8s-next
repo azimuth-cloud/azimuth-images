@@ -15,7 +15,7 @@ import easysemver
 #####
 
 
-LATEST_RELEASE_URL = "https://api.github.com/repos/kubernetes/kubernetes/releases/latest"
+RELEASES_URL = "https://api.github.com/repos/kubernetes/kubernetes/releases"
 
 # The leading new line is important to get a nice layout in builds.yaml!
 BUILD_TEMPLATE = """
@@ -26,7 +26,10 @@ var-files: common,kvm,linux,ubuntu-{distro},kubernetes,kubernetes_{major}_{minor
 path-filters: |
   paths:
     - .github/workflows/pr.yml
-    - bin/*
+    - bin/build-image
+    - bin/builds-as-json
+    - bin/env-vars
+    - bin/setup
     - config.pkr.hcl
     - requirements.yml
     - env/*/common.env
@@ -46,16 +49,33 @@ path-filters: |
 """
 
 
+def k8s_latest_stable_release():
+    """
+    Returns the latest stable Kubernetes version.
+    """
+    # Return the first version without a prerelease part
+    next_url = RELEASES_URL
+    headers = { "Content-Type": "application/json" }
+    if "GITHUB_TOKEN" in os.environ:
+        headers["Authorization"] = f"Bearer {os.environ['GITHUB_TOKEN']}"
+    while next_url:
+        response = requests.get(next_url, headers = headers)
+        response.raise_for_status()
+        for release in response.json():
+            try:
+                version = easysemver.Version(release["tag_name"])
+            except TypeError:
+                continue
+            if not version.prerelease:
+                return version
+        next_url = response.links.get("next", {}).get("url")
+
+
 # Get the repository root
 repo_root = pathlib.Path(__file__).parent.parent.resolve()
 
 # Get the latest Kubernetes version
-headers = { "Content-Type": "application/json" }
-if "GITHUB_TOKEN" in os.environ:
-    headers["Authorization"] = f"Bearer {os.environ['GITHUB_TOKEN']}"
-response = requests.get(LATEST_RELEASE_URL, headers = headers)
-response.raise_for_status()
-latest_version = easysemver.Version(response.json()["tag_name"])
+latest_version = k8s_latest_stable_release()
 
 # Check if a vars file exists for it
 latest_filename = f"kubernetes_{latest_version.major}_{latest_version.minor}.json"
