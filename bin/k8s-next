@@ -23,29 +23,6 @@ BUILD_TEMPLATE = """
 name: kubernetes-{major}-{minor}-{distro}
 template: kubernetes
 var-files: common,kvm,linux,ubuntu-{distro},kubernetes,kubernetes_{major}_{minor}
-path-filters: |
-  paths:
-    - .github/workflows/pr.yml
-    - bin/build-image
-    - bin/builds-as-json
-    - bin/env-vars
-    - bin/setup
-    - config.pkr.hcl
-    - requirements.yml
-    - env/*/common.env
-    - env/*/kvm.env
-    - env/*/linux.env
-    - env/*/ubuntu-{distro}.env
-    - env/*/kubernetes.env
-    - env/*/kubernetes_{major}_{minor}.env
-    - vars/*/common.json
-    - vars/*/kvm.json
-    - vars/*/linux.json
-    - vars/*/ubuntu-{distro}.json
-    - vars/*/kubernetes.json
-    - vars/*/kubernetes_{major}_{minor}.json
-    - packer/kubernetes.pkr.hcl
-    - vendor/image-builder/**
 """
 
 

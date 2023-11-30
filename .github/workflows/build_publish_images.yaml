@@ -1,8 +1,16 @@
 name: Build and publish images
+
 on:
+  # This action executes on every push to main
   push:
     branches:
       - main
+  # But can also be executed as a reusable workflow
+  workflow_call:
+    outputs:
+      manifest-url:
+        description: The URL of the manifest for the published images.
+        value: ${{ jobs.publish_manifest.outputs.manifest-url }}
 
 jobs:
   read_builds:
@@ -81,6 +89,8 @@ jobs:
     needs: [build_images]
     if: ${{ always() }}
     runs-on: ubuntu-latest
+    outputs:
+      manifest-url: ${{ steps.publish-manifest.outputs.manifest-url }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v3
@@ -110,6 +120,7 @@ jobs:
           sudo apt-get install -y s3cmd
 
       - name: Publish manifest to S3
+        id: publish-manifest
         run: ./bin/publish-manifest
         env:
           MANIFEST_FILE: ./manifest.json

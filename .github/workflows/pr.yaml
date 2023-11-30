@@ -1,0 +1,93 @@
+name: Build and test PR
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - ready_for_review
+      - reopened
+    branches:
+      - main
+
+jobs:
+  # This job exists so that PRs from outside the main repo are rejected
+  fail_on_remote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: PR must be from a branch in the stackhpc/azimuth-images repo
+        run: exit ${{ github.repository == 'stackhpc/azimuth-images' && '0' || '1' }}
+
+  # Build and publish the images and manifest
+  build_publish_images:
+    needs: [fail_on_remote]
+    # Don't build draft PRs
+    if: ${{ !github.event.pull_request.draft }}
+    uses: ./.github/workflows/build_publish_images.yaml
+    secrets: inherit
+
+  # We want jobs to wait in a queue for a slot to run, so as not to overload the test infra
+  # GitHub concurrency _almost_ does this, except the queue length is one :-(
+  # There is a feature request for what we need https://github.com/orgs/community/discussions/12835
+  # Until that is implemented, the only other viable option is a busy wait
+  wait_in_queue:
+    needs: [build_publish_images]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for an available slot
+        uses: stackhpc/github-actions/workflow-concurrency@master
+        with:
+          max-concurrency: 1
+
+  run_azimuth_tests:
+    needs: [build_publish_images, wait_in_queue]
+    runs-on: ubuntu-latest
+    steps:
+      # Check out the configuration repository
+      - name: Set up Azimuth environment
+        uses: stackhpc/azimuth-config/.github/actions/setup@main
+        with:
+          os-clouds: ${{ secrets.OS_CLOUDS }}
+          environment-prefix: api-ci
+          # Use the manifest that we just built
+          # We want to run all the CaaS tests except Slurm
+          # We want to run the Kubernetes tests _for all Kubernetes versions_
+          # We don't need to run the apps tests
+          extra-vars: |
+            community_images_azimuth_images_manifest_url: ${{ needs.build_publish_images.outputs.manifest-url }}
+            generate_tests_caas_test_case_slurm_enabled: false
+            generate_tests_kubernetes_test_cases_latest_only: false
+            generate_tests_kubernetes_apps_suite_enabled: false
+
+      - name: Provision Azimuth
+        uses: stackhpc/azimuth-config/.github/actions/provision@main
+
+      - name: Run Azimuth tests
+        uses: stackhpc/azimuth-config/.github/actions/test@main
+
+      - name: Destroy Azimuth
+        uses: stackhpc/azimuth-config/.github/actions/destroy@main
+        if: ${{ always() }}
+
+  # Purge the images that we just tested
+  purge_images:
+    needs: [run_azimuth_tests]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install script dependencies
+        run: pip install -r ./requirements.txt
+
+      - name: Purge images for manifest
+        run: |
+          source ./bin/env-vars
+          ./bin/purge-manifest "${GITHUB_SHA}.manifest"
+        env:
+          REPO_ROOT: ${{ github.workspace }}
+          ENVIRONMENT: arcus
+          ENV_VAR_FILES: common
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}

@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+
+#####
+# This script purges a single manifest and all its images from S3
+#####
+
+import argparse
+import json
+import os
+
+import boto3
+
+
+class S3Bucket:
+    def __init__(self, endpoint, access_key, secret_key, bucket):
+        self.s3 = boto3.client(
+            "s3",
+            endpoint_url = f"https://{endpoint}",
+            aws_access_key_id = access_key,
+            aws_secret_access_key = secret_key
+        )
+        self.bucket = bucket
+
+    def list_keys(self):
+        """
+        Iterates over the keys in a bucket, respecting pagination if required.
+        """
+        token = None
+        while True:
+            params = {"Bucket": self.bucket}
+            if token:
+                params["ContinuationToken"] = token
+            next_objects = self.s3.list_objects_v2(**params)
+            for object in next_objects["Contents"]:
+                yield object["Key"]
+            if next_objects["IsTruncated"]:
+                token = next_objects["NextContinuationToken"]
+            else:
+                break
+
+    def fetch_key(self, key):
+        """
+        Fetches the data for a key.
+        """
+        return self.s3.get_object(Bucket = self.bucket, Key = key)["Body"].read()
+
+    def delete_key(self, key):
+        """
+        Deletes a key in the bucket.
+        """
+        self.s3.delete_object(Bucket = self.bucket, Key = key)
+
+
+def argparse_add_argument_with_envvar(parser, arg, envvar, **kwargs):
+    envvar_value = os.environ.get(envvar) or None
+    if envvar_value is not None:
+        kwargs.update(default = envvar_value, required = False)
+    parser.add_argument(arg, **kwargs)
+
+
+def main():
+    parser = argparse.ArgumentParser(description = "Purge specified manifest from S3.")
+    argparse_add_argument_with_envvar(
+        parser,
+        "--s3-host",
+        "S3_HOST",
+        help = "The S3 host to use.",
+        required = True
+    )
+    argparse_add_argument_with_envvar(
+        parser,
+        "--s3-access-key",
+        "S3_ACCESS_KEY",
+        help = "The S3 access key to use.",
+        required = True
+    )
+    argparse_add_argument_with_envvar(
+        parser,
+        "--s3-secret-key",
+        "S3_SECRET_KEY",
+        help = "The S3 secret key to use.",
+        required = True
+    )
+    argparse_add_argument_with_envvar(
+        parser,
+        "--s3-bucket",
+        "S3_BUCKET",
+        help = "The S3 bucket to use.",
+        required = True
+    )
+    parser.add_argument("manifest_key")
+    args = parser.parse_args()
+
+    # Initialise the S3 client
+    print("[INFO ] initialising S3 client")
+    s3 = S3Bucket(args.s3_host, args.s3_access_key, args.s3_secret_key, args.s3_bucket)
+
+    print("[INFO ] fetching manifest data")
+    for image in json.loads(s3.fetch_key(args.manifest_key)).values():
+        image_key = f"{image['name']}.qcow2"
+        print(f"[INFO ] deleting {image_key}")
+        s3.delete_key(image_key)
+    print("[INFO ] deleting manifest")
+    s3.delete_key(args.manifest_key)
+
+
+if __name__ == "__main__":
+    main()
