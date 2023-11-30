@@ -76,6 +76,47 @@ jobs:
           ENVIRONMENT: arcus
           PACKER_TEMPLATE: ${{ matrix.template }}
           ENV_VAR_FILES: ${{ matrix.var-files }}
-          # For PRs, we don't need to save images
-          PKR_VAR_skip_create_image: "true"
         if: ${{ steps.changes.outputs.paths == 'true' }}
+
+      - name: Write matrix outputs
+        uses: cloudposse/github-action-matrix-outputs-write@0.4.2
+        with:
+          matrix-step-name: ${{ github.job }}
+          matrix-key: ${{ matrix.name }}
+          outputs: |-
+            id: ${{ steps.build-image.outputs.image-id }}
+            manifest-extra: ${{ steps.build-image.outputs.manifest-extra }}
+        if: ${{ steps.changes.outputs.paths == 'true' }}
+
+  read_matrix_outputs:
+    needs: [build_images]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read matrix outputs
+        id: matrix-outputs
+        uses: cloudposse/github-action-matrix-outputs-read@0.1.1
+        with:
+          matrix-step-name: build_images
+    outputs:
+      result: ${{ steps.matrix-outputs.outputs.result }}
+
+  delete_images:
+    needs: [read_matrix_outputs]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        id: ${{ fromJson(needs.read_matrix_outputs.outputs.result).id.* }}
+    steps:
+      - name: Write OpenStack credentials
+        run: echo "$CLOUDS_YAML_B64" | base64 -d > ./clouds.yaml
+        env:
+          CLOUDS_YAML_B64: ${{ secrets.CLOUDS_YAML_B64 }}
+
+      - name: Install OpenStack client
+        run: pip install python-openstackclient
+
+      - name: Delete image
+        run: openstack image delete ${{ matrix.id }}
