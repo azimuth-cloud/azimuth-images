@@ -120,3 +120,5 @@ jobs:
 
       - name: Delete image
         run: openstack image delete ${{ matrix.id }}
+        env:
+          OS_CLOUD: openstack
