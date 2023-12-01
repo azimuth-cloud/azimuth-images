@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #####
-# This script purges a single manifest and it's images from S3
+# This script purges images from OpenStack after a CI run
 #####
 
 set -eo pipefail
@@ -21,9 +21,6 @@ echo "[INFO] fetching manifest - $1"
 manifest="$(s3cmd get --no-progress "s3://$S3_BUCKET/$1" -)"
 
 for name in $(jq -r '.[] | .name' <<< "$manifest"); do
-  echo "[INFO] removing image - $name.qcow2"
-  s3cmd del "s3://$S3_BUCKET/$name.qcow2"
+  echo "[INFO] purging image from OpenStack - $name"
+  openstack image delete "$name"
 done
-
-echo "[INFO] removing manifest"
-s3cmd del "s3://$S3_BUCKET/$1"

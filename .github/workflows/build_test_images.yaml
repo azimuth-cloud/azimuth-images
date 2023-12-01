@@ -1,4 +1,4 @@
-name: Build and publish images
+name: Build, publish and test images
 
 on:
   # This action executes on every push to main
@@ -7,10 +7,6 @@ on:
       - main
   # But can also be executed as a reusable workflow
   workflow_call:
-    outputs:
-      manifest-url-encoded:
-        description: The GPG-encoded URL of the manifest for the published images.
-        value: ${{ jobs.publish_manifest.outputs.manifest-url-encoded }}
 
 jobs:
   read_builds:
@@ -142,3 +138,80 @@ jobs:
         env:
           PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           INPUT: ${{ steps.publish-manifest.outputs.manifest-url }}
+
+  run_azimuth_tests:
+    needs: [publish_manifest]
+    runs-on: ubuntu-latest
+    steps:
+      # The manifest URL that publish-manifest outputs is a signed URL
+      # This means that it contains the S3 access key which, although it does not necessarily need
+      # to be kept secret, is provided using a GitHub secret
+      # GitHub does not allow outputs that include secrets to be transferred between jobs
+      # To get around this, the manifest URL is encrypted using GPG that we must now decrypt to use
+      - name: Decode manifest URL using GPG
+        id: decode-manifest-url
+        run: |
+          result=$(gpg --decrypt --quiet --batch --passphrase "${PASSPHRASE}" --output - <(echo "${INPUT}" | base64 -d))
+          echo "decoded=${result}" >> $GITHUB_OUTPUT
+        env:
+          PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          INPUT: ${{ needs.publish_manifest.outputs.manifest-url-encoded }}
+
+      # Check out the configuration repository
+      - name: Set up Azimuth environment
+        uses: stackhpc/azimuth-config/.github/actions/setup@main
+        with:
+          os-clouds: ${{ secrets.OS_CLOUDS }}
+          environment-prefix: images-ci
+          # Use the manifest that we just built
+          # We want to run all the CaaS tests except Slurm
+          # We want to run the Kubernetes tests _for all Kubernetes versions_
+          # We don't need to run the apps tests
+          extra-vars: |
+            community_images_azimuth_images_manifest_url: ${{ steps.decode-manifest-url.outputs.decoded }}
+            generate_tests_caas_test_case_slurm_enabled: false
+            generate_tests_kubernetes_test_cases_latest_only: false
+            generate_tests_kubernetes_apps_suite_enabled: false
+
+      - name: Provision Azimuth
+        uses: stackhpc/azimuth-config/.github/actions/provision@main
+
+      - name: Run Azimuth tests
+        uses: stackhpc/azimuth-config/.github/actions/test@main
+
+      - name: Destroy Azimuth
+        uses: stackhpc/azimuth-config/.github/actions/destroy@main
+        if: ${{ always() }}
+
+  # Purge the images that we just tested from OpenStack
+  purge_images:
+    needs: [run_azimuth_tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install s3cmd
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y s3cmd
+
+      - name: Install script dependencies
+        run: pip install -r ./requirements.txt
+
+      - name: Write OpenStack credentials
+        run: echo "$OS_CLOUDS" > ./clouds.yaml
+        env:
+          OS_CLOUDS: ${{ secrets.OS_CLOUDS }}
+
+      - name: Purge images for manifest
+        run: |
+          source ./bin/env-vars
+          ./bin/purge-images "${GITHUB_SHA}.manifest"
+        env:
+          REPO_ROOT: ${{ github.workspace }}
+          OS_CLOUD: openstack
+          ENVIRONMENT: arcus
+          ENV_VAR_FILES: common
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
