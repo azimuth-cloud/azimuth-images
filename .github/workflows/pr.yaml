@@ -86,7 +86,6 @@ jobs:
   # Purge the images that we just tested
   purge_images:
     needs: [run_azimuth_tests]
-    if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
