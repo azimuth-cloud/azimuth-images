@@ -9,6 +9,8 @@ set -eo pipefail
 REPO_ROOT="$(dirname $(dirname $(realpath ${BASH_SOURCE[0]:-${(%):-%x}})))"
 source "$REPO_ROOT/bin/env-vars"
 
+set -x
+
 cat <<EOF > ~/.s3cfg
 host_base = ${S3_HOST}
 host_bucket = ${S3_HOST_BUCKET:-"$S3_HOST"}
@@ -17,10 +19,7 @@ secret_key = ${S3_SECRET_KEY}
 use_https = True
 EOF
 
-echo "[INFO] fetching manifest - $1"
 manifest="$(s3cmd get --no-progress "s3://$S3_BUCKET/$1" -)"
-
 for name in $(jq -r '.[] | .name' <<< "$manifest"); do
-  echo "[INFO] purging image from OpenStack - $name"
   openstack image delete "$name"
 done
