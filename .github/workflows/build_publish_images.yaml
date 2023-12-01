@@ -8,9 +8,9 @@ on:
   # But can also be executed as a reusable workflow
   workflow_call:
     outputs:
-      manifest-url:
-        description: The URL of the manifest for the published images.
-        value: ${{ jobs.publish_manifest.outputs.manifest-url }}
+      manifest-url-encoded:
+        description: The GPG-encoded URL of the manifest for the published images.
+        value: ${{ jobs.publish_manifest.outputs.manifest-url-encoded }}
 
 jobs:
   read_builds:
@@ -43,9 +43,9 @@ jobs:
           submodules: recursive
 
       - name: Write OpenStack credentials
-        run: echo "$CLOUDS_YAML_B64" | base64 -d > ./clouds.yaml
+        run: echo "$OS_CLOUDS" > ./clouds.yaml
         env:
-          CLOUDS_YAML_B64: ${{ secrets.CLOUDS_YAML_B64 }}
+          OS_CLOUDS: ${{ secrets.OS_CLOUDS }}
 
       - name: Set up Packer environment
         run: ./bin/setup
@@ -90,7 +90,7 @@ jobs:
     if: ${{ always() }}
     runs-on: ubuntu-latest
     outputs:
-      manifest-url: ${{ steps.publish-manifest.outputs.manifest-url }}
+      manifest-url-encoded: ${{ steps.encode-manifest-url.outputs.encoded }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v3
@@ -128,3 +128,17 @@ jobs:
           ENV_VAR_FILES: common
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+
+      # The manifest URL that publish-manifest outputs is a signed URL
+      # This means that it contains the S3 access key which, although it does not necessarily need
+      # to be kept secret, is provided using a GitHub secret
+      # GitHub does not allow outputs that include secrets to be transferred between jobs
+      # To get around this, we encrypt the manifest URL using GPG and use that as the output of this workflow
+      - name: Encode manifest URL using GPG
+        id: encode-manifest-url
+        run: |
+          result=$(gpg --symmetric --batch --passphrase "${PASSPHRASE}" --output - <(echo "${INPUT}") | base64 -w0)
+          echo "encoded=${result}" >> $GITHUB_OUTPUT
+        env:
+          PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          INPUT: ${{ steps.publish-manifest.outputs.manifest-url }}
