@@ -36,7 +36,7 @@ jobs:
     needs: [wait_in_queue]
     # Don't build draft PRs
     if: ${{ !github.event.pull_request.draft }}
-    uses: ./.github/workflows/build_publish_images.yaml
+    uses: ./.github/workflows/build_test_images.yaml
     secrets: inherit
 
   # Purge the manifest and images that we just tested from S3
