@@ -1,14 +1,14 @@
 collections:
   - name: ansible.posix
     version: 1.5.4
-  - name: ansible.windows
-    version: 1.10.0
-  - name: chocolatey.chocolatey
-    version: 1.2.0
+  # - name: ansible.windows
+  #   version: 1.10.0
+  # - name: chocolatey.chocolatey
+  #   version: 1.2.0
   - name: community.general
     version: 7.4.0
-  - name: community.windows
-    version: 1.10.0
+  # - name: community.windows
+  #   version: 1.10.0
   - name: containers.podman
     version: 1.10.1
   - name: prometheus.prometheus
