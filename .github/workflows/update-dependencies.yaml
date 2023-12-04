@@ -1,0 +1,120 @@
+# This workflow proposes updates to the dependencies that dependabot cannot
+name: Update dependencies
+
+on:
+  # Allow manual executions
+  workflow_dispatch:
+  # Run nightly
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  propose_github_release_updates:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - key: ansible.posix
+            path: ./requirements.yml
+            repository: ansible-collections/ansible.posix
+            tags: "yes"
+            version_jsonpath: collections[0].version
+            component: ansible
+
+          - key: community.general
+            path: ./requirements.yml
+            repository: ansible-collections/community.general
+            version_jsonpath: collections[1].version
+            component: ansible
+
+          - key: containers.podman
+            path: ./requirements.yml
+            repository: containers/ansible-podman-collections
+            tags: "yes"
+            version_jsonpath: collections[2].version
+            component: ansible
+
+          - key: prometheus.prometheus
+            path: ./requirements.yml
+            repository: prometheus-community/ansible
+            version_jsonpath: collections[3].version
+            component: ansible
+
+          - key: grafana
+            path: ./ansible/roles/linux-monitoring/defaults/main.yml
+            repository: grafana/grafana
+            version_jsonpath: grafana_version
+            component: monitoring
+
+          - key: guacamole
+            path: ./ansible/roles/linux-guacamole/defaults/main.yml
+            repository: apache/guacamole-server
+            tags: "yes"
+            version_jsonpath: guacamole_version
+            component: guacamole
+
+          - key: nginx
+            path: ./ansible/roles/linux-guacamole/defaults/main.yml
+            repository: nginxinc/docker-nginx
+            tags: "yes"
+            version_jsonpath: guacamole_nginx_image_tag
+            component: guacamole
+
+          - key: prometheus
+            path: ./ansible/roles/linux-monitoring/defaults/main.yml
+            repository: prometheus/prometheus
+            version_jsonpath: prometheus_version
+            component: monitoring
+
+          - key: zenith-client
+            path: ./ansible/roles/linux-zenith-client/defaults/main.yml
+            repository: stackhpc/zenith
+            prereleases: "yes"
+            version_jsonpath: zenith_client_image_tag
+            component: zenith-client
+
+    name: ${{ matrix.key }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check for most recent GitHub release
+        id: next
+        uses: stackhpc/github-actions/github-latest-release@master
+        with:
+          repository: ${{ matrix.repository }}
+          tags: ${{ matrix.tags || 'no' }}
+          prereleases: ${{ matrix.prereleases || 'no' }}
+
+      - name: Update dependency key
+        uses: stackhpc/github-actions/config-update@master
+        with:
+          path: ${{ matrix.path }}
+          updates: |
+            ${{ matrix.version_jsonpath }}=${{ steps.next.outputs.version }}
+
+      - name: Generate app token for PR
+        uses: stackhpc/github-actions/generate-app-token@master
+        id: generate-app-token
+        with:
+          repository: ${{ github.repository }}
+          app-id: ${{ secrets.APP_ID }}
+          app-private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Propose changes via PR if required
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ steps.generate-app-token.outputs.token }}
+          commit-message: >-
+            Bump ${{ matrix.key }} to ${{ steps.next.outputs.version }}
+          branch: update-dependency/${{ matrix.key }}
+          delete-branch: true
+          title: >-
+            Bump ${{ matrix.key }} to ${{ steps.next.outputs.version }}
+          body: >
+            This PR was created automatically to update
+            ${{ matrix.key }} to ${{ steps.next.outputs.version }}.
+          labels: |
+            automation
+            dependency-update
+            ${{ matrix.component }}

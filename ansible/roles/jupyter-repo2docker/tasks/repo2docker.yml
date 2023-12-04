@@ -14,11 +14,7 @@
   pip:
     name:
       - jupyter-repo2docker
-
-- name: Install repo2podman
-  pip:
-    name:
-      - git+https://github.com/manics/repo2podman@{{ repo2podman_version }}
+      - repo2podman
 
 - name: Install systemd unit for repo2docker pod
   include_role: 
