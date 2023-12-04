@@ -1,11 +1,6 @@
 name: Build, publish and test images
 
 on:
-  # This action executes on every push to main
-  push:
-    branches:
-      - main
-  # But can also be executed as a reusable workflow
   workflow_call:
 
 jobs:

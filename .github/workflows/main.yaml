@@ -1,0 +1,27 @@
+name: Build and test main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # We want jobs to wait in a queue for a slot to run, so as not to overload the test infra
+  # GitHub concurrency _almost_ does this, except the queue length is one :-(
+  # There is a feature request for what we need https://github.com/orgs/community/discussions/12835
+  # Until that is implemented, the only other viable option is a busy wait
+  # This should also mean that jobs execute in the order they were merged to main
+  wait_in_queue:
+    needs: [fail_on_remote]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for an available slot
+        uses: stackhpc/github-actions/workflow-concurrency@master
+        with:
+          max-concurrency: 1
+
+  # Build, publish and test the images
+  build_test_images:
+    needs: [wait_in_queue]
+    uses: ./.github/workflows/build_test_images.yaml
+    secrets: inherit
