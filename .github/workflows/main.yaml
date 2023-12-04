@@ -12,7 +12,6 @@ jobs:
   # Until that is implemented, the only other viable option is a busy wait
   # This should also mean that jobs execute in the order they were merged to main
   wait_in_queue:
-    needs: [fail_on_remote]
     runs-on: ubuntu-latest
     steps:
       - name: Wait for an available slot
