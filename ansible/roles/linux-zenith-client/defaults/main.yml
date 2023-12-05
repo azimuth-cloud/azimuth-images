@@ -2,7 +2,7 @@
 
 zenith_client_image_prefix: ghcr.io/stackhpc
 zenith_client_image_name: zenith-client
-zenith_client_image_tag: 98d45a9
+zenith_client_image_tag: 0.2.0-rc.1
 zenith_client_image: "{{ zenith_client_image_prefix }}/{{ zenith_client_image_name }}:{{ zenith_client_image_tag }}"
 
 zenith_client_wants: []
