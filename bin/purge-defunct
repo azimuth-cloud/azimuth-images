@@ -53,16 +53,20 @@ class GitHubClient:
             if latest_commit is None:
                 latest_commit = commit["sha"]
             # Get the check suite that corresponds to GitHub actions
-            check_suite = next(
-                cs
-                for cs in self._one(f"{commit['url']}/check-suites")["check_suites"]
-                if cs["app"]["slug"] == "github-actions"
-            )
-            # If it was successful, we are done
-            status, conclusion = check_suite["status"], check_suite["conclusion"]
-            if status == "completed" and conclusion == "success":
-                latest_successful_commit = commit["sha"]
-                break
+            try:
+                check_suite = next(
+                    cs
+                    for cs in self._one(f"{commit['url']}/check-suites")["check_suites"]
+                    if cs["app"]["slug"] == "github-actions"
+                )
+            except StopIteration:
+                pass
+            else:
+                # If it was successful, we are done
+                status, conclusion = check_suite["status"], check_suite["conclusion"]
+                if status == "completed" and conclusion == "success":
+                    latest_successful_commit = commit["sha"]
+                    break
         return latest_commit, latest_successful_commit
 
     def tagged_commits(self):
