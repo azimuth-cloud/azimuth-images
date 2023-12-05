@@ -13,4 +13,4 @@ collections:
   - name: containers.podman
     version: 1.10.1
   - name: prometheus.prometheus
-    version: 0.3.1
+    version: 0.8.1
