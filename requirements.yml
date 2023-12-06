@@ -11,6 +11,6 @@ collections:
   # - name: community.windows
   #   version: 1.10.0
   - name: containers.podman
-    version: 1.10.1
+    version: 1.11.0
   - name: prometheus.prometheus
     version: 0.8.1
