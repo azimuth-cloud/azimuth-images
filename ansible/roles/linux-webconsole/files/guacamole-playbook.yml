@@ -5,7 +5,15 @@
   become: true
   vars_files:
     - /etc/ansible-init/vars/guacamole.yml
+  vars:
+    os_metadata: "{{ lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json }}"
+    os_user_metadata: "{{ os_metadata.get('meta', {}) }}"
   tasks:
+    # Allow the guacamole user to be overridden using metadata
+    - name: Set Guacamole user fact
+      set_fact:
+        guacamole_user: "{{ os_user_metadata.get('guacamole_user', default_guacamole_user) }}"
+
     - name: Generate SSH keypair for Guacamole
       # Guacamole requires that the key is PEM-formatted
       # See https://issues.apache.org/jira/browse/GUACAMOLE-745
@@ -48,18 +56,19 @@
             # generating ]]>, which will still break XML. Therefore remove ">" from special
             # characters.
             special_chars: '!"#$%&()*+,-./:;<=?@[\]^_`{|}~'
+
+        - name: Get guacamole user info
+          user:
+            name: "{{ guacamole_user }}"
+            state: present
+          register: guacamole_user_info
+
+        - name: Set VNC server user facts for guacamole user
+          set_fact:
+            guacamole_user_vnc_config_dir: "{{ guacamole_user_info.home }}/.vnc"
         
         - block:
-          - name: Get Guacamole user info
-            getent:
-              database: passwd
-              key: "{{ guacamole_user }}"
-
-          - name: Set Guacamole user home directory
-            set_fact:
-              guacamole_user_home: "{{ ansible_facts.getent_passwd[guacamole_user][4] }}"
-
-          - name: Generate VNC password
+          - name: Encode VNC password
             command: vncpasswd -f
             args:
               stdin: "{{ guacamole_vnc_password }}"
@@ -68,7 +77,7 @@
           - name: Create VNC directory
             file:
               state: directory
-              path: "{{ guacamole_user_home }}/.vnc"
+              path: "{{ guacamole_user_vnc_config_dir }}"
               owner: "{{ guacamole_user }}"
               group: "{{ guacamole_user }}"
               mode: "0775"
@@ -76,12 +85,25 @@
           - name: Create VNC password file
             copy:
               content: "{{ vncpassword.stdout }}"
-              dest: "{{ guacamole_user_home }}/.vnc/passwd"
+              dest: "{{ guacamole_user_vnc_config_dir }}/passwd"
               owner: "{{ guacamole_user }}"
               group: "{{ guacamole_user }}"
               mode: "0600"
           become: yes
           become_user: "{{ guacamole_user }}"
+
+        - name: Ensure systemd overrides directory exists
+          file:
+            path: /etc/systemd/system/vncserver@:1.service.d
+            state: directory
+
+        - name: Configure user for systemd unit
+          copy:
+            dest: /etc/systemd/system/vncserver@:1.service.d/user.conf
+            content: |
+              [Service]
+              Environment=VNCSERVER_PASSWD_FILE={{ guacamole_user_vnc_config_dir }}/passwd
+              User={{ guacamole_user }}
 
         - name: Start and enable VNC server
           service:

@@ -86,7 +86,7 @@
   vars:
     guacamole_init_vars:
       desktop_enabled: "{{ desktop_enabled }}"
-      guacamole_user: "{{ guacamole_user }}"
+      default_guacamole_user: "{{ default_guacamole_user }}"
 
 - name: Install Guacamole ansible-init playbook
   copy:
