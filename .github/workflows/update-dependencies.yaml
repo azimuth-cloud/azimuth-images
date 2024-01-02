@@ -45,6 +45,7 @@ jobs:
             repository: grafana/grafana
             version_jsonpath: grafana_version
             component: monitoring
+            regex: "\d+\.\d+\.\d+"
 
           - key: guacamole
             path: ./ansible/roles/linux-guacamole/defaults/main.yml
@@ -83,6 +84,7 @@ jobs:
         uses: stackhpc/github-actions/github-latest-release@master
         with:
           repository: ${{ matrix.repository }}
+          regex: ${{ matrix.regex || '' }}
           tags: ${{ matrix.tags || 'no' }}
           prereleases: ${{ matrix.prereleases || 'no' }}
 
