@@ -45,7 +45,7 @@ jobs:
             repository: grafana/grafana
             version_jsonpath: grafana_version
             component: monitoring
-            regex: "\d+\.\d+\.\d+"
+            regex: "\\d+\\.\\d+\\.\\d+"
 
           - key: guacamole
             path: ./ansible/roles/linux-guacamole/defaults/main.yml
