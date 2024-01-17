@@ -1,0 +1,12 @@
+---
+
+- name: Install openstack-disk-tag script
+  copy:
+    src: openstack-disk-tag
+    dest: /usr/local/bin/openstack-disk-tag
+    mode: u=rwx,g=rx,o=rx
+
+- name: Install openstack-disks-by-tag udev rule
+  copy:
+    src: openstack-disks-by-tag.rules
+    dest: /etc/udev/rules.d/80-openstack-disks-by-tag.rules
