@@ -2,11 +2,12 @@
 
 import argparse
 import contextlib
+import io
 import json
 import logging
-import pathlib
-import tempfile
 import subprocess
+
+import pycdlib
 
 
 logging.basicConfig(
@@ -19,55 +20,42 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def run_cmd(*cmd):
-    logger.info(f"executing command - {' '.join(str(p) for p in cmd)}")
-    proc = subprocess.run(cmd, capture_output = True, check = True)
-    return proc.stdout.strip().decode()
-
-
 def get_config_device():
-    return pathlib.Path(
-        run_cmd(
+    logger.info("attempting to locate config device")
+    proc = subprocess.run(
+        [
             "/usr/sbin/blkid",
             "-t",
             "LABEL=config-2",
             "-o",
             "device"
-        )
+        ],
+        capture_output = True
     )
+    if proc.returncode == 0:
+        return proc.stdout.decode().strip()
+    else:
+        logger.warn("failed to locate config device")
+        return None
 
 
 @contextlib.contextmanager
-def temporary_directory(dir = None):
-    with tempfile.TemporaryDirectory(dir = dir) as mnt_dir:
-        yield pathlib.Path(mnt_dir)
-
-
-@contextlib.contextmanager
-def mount(device, mnt_dir):
-    run_cmd(
-        "/usr/bin/mount",
-        "--read-only",
-        device,
-        mnt_dir
-    )
-    try:
-        yield
-    finally:
-        run_cmd("/usr/bin/umount", mnt_dir)
+def iso_open(path):
+    with open(path, "rb") as fp:
+        iso = pycdlib.PyCdlib()
+        iso.open_fp(fp)
+        try:
+            yield iso
+        finally:
+            iso.close()
 
 
 def get_instance_metadata(config_device):
-    # We mount the config device on a temporary directory
-    # Once it is mounted, we can extract the metadata
-    run_dir = pathlib.Path("/run/openstack-disk-tag")
-    run_dir.mkdir(mode = 0o755, parents = True, exist_ok = True)
-    with temporary_directory(run_dir) as mnt_dir:
-        with mount(config_device, mnt_dir):
-            metadata_path = mnt_dir / "openstack" / "latest" / "meta_data.json"
-            logger.info(f"loading metadata from {metadata_path}")
-            with metadata_path.open() as fd:
-                return json.load(fd)
+    logger.info(f"loading instance metadata from config device - {config_device}")
+    with iso_open(config_device) as iso:
+        data = io.BytesIO()
+        iso.get_file_from_iso_fp(data, iso_path = "/openstack/latest/meta_data.json;1")
+        return json.loads(data.getvalue())
 
 
 def find_device_for_serial(metadata, serial):
@@ -103,6 +91,8 @@ def main():
     logger.info(f"running for device with serial number - {args.serial}")
 
     config_device = get_config_device()
+    if not config_device:
+        return
     metadata = get_instance_metadata(config_device)
     device = find_device_for_serial(metadata, args.serial)
     if device:

@@ -1,5 +1,16 @@
 ---
 
+- name: Install pip
+  apt:
+    name: python3-pip
+    update_cache: yes
+
+- name: Install pycdlib
+  pip:
+    name: pycdlib
+    # Install into the distribution packages so that udev picks it up
+    extra_args: "--target /usr/lib/python3/dist-packages"
+
 - name: Install openstack-disk-tag script
   copy:
     src: openstack-disk-tag
