@@ -67,6 +67,20 @@ source "openstack" "linux-desktop" {
   communicator = "ssh"
   ssh_username = var.ssh_username
   ssh_clear_authorized_keys = true
+
+  user_data = <<-EOF
+  #cloud-config
+  users:
+  - default
+  # create a new default-type user matching Slurm platform:
+  - name: azimuth
+    uid: 1005
+    lock_passwd: true
+    gecos: Azimuth User
+    groups: [adm, systemd-journal]
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    shell: /bin/bash
+  EOF
 }
 
 build {
@@ -82,18 +96,6 @@ build {
       "desktop_enabled=yes",
     ]
     ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10"]
-    user_data = <<-EOF
-      #cloud-config
-      # create a new default-type user matching Slurm platform:
-      users:
-        name: azimuth
-        uid: 1005
-        lock_passwd: true
-        gecos: Azimuth User
-        groups: [adm, systemd-journal]
-        sudo: ["ALL=(ALL) NOPASSWD:ALL"]
-        shell: /bin/bash
-    EOF
   }
 
   post-processor "manifest" { }
