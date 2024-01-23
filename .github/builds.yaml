@@ -6,6 +6,10 @@
   template: linux-desktop
   var-files: common,kvm,linux,ubuntu-jammy
 
+- name: ubuntu-desktop-manila
+  template: linux-desktop
+  var-files: common,kvm,linux,ubuntu-jammy
+
 - name: jupyter-repo2docker
   template: jupyter-repo2docker
   var-files: common,kvm,linux,ubuntu-jammy
