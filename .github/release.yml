@@ -1,0 +1,27 @@
+---
+
+changelog:
+  categories:
+    - title: Breaking changes
+      labels:
+        - breaking
+
+    - title: New features and enhancements
+      labels:
+        - "*"
+      exclude:
+        labels:
+          - bug
+          - automation
+
+    - title: Bugs fixed
+      labels:
+        - bug
+
+    - title: Kubernetes versions
+      labels:
+        - kubernetes-version
+
+    - title: Dependency updates
+      labels:
+        - automation
