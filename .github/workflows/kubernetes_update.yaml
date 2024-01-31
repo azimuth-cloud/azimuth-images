@@ -40,7 +40,7 @@ jobs:
           body: ${{ fromJson(steps.k8s-update.outputs.pr).body }}
           labels: |
             automation
-            dependency-update
+            kubernetes-version
 
   propose_next_version:
     runs-on: ubuntu-latest
@@ -75,7 +75,7 @@ jobs:
           body: ${{ fromJson(steps.k8s-next.outputs.pr).body }}
           labels: |
             automation
-            dependency-update
+            kubernetes-version
 
   propose_image_builder:
     runs-on: ubuntu-latest
