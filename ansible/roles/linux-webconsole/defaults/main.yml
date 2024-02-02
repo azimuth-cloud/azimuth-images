@@ -3,5 +3,5 @@
 # By default, the desktop is not enabled
 desktop_enabled: no
 
-# By default, use the connecting user to run the guacamole services
-guacamole_user: "{{ ansible_user }}"
+# By default, use the azimuth user to run the guacamole services
+guacamole_user: azimuth

@@ -74,6 +74,10 @@
         group: ubuntu
 
 - include_role:
+    name: stackhpc.os-manila-mount
+    tasks_from: install.yml
+
+- include_role:
     name: linux-eessi
 
 - include_role:
