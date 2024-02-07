@@ -1,7 +1,9 @@
 {
   "containerd_additional_settings": "",
   "containerd_arch": "amd64",
+  "containerd_sha256": "9be621c0206b5c20a1dea05fae12fc698e5083cc81f65c9d918c644090696d19",
   "containerd_url": "",
+  "containerd_version": "1.7.13",
   "containerd_wasm_shims_arch": "x86_64",
   "containerd_wasm_shims_url": "",
   "crictl_sha256": "",
