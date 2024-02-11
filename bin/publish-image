@@ -27,7 +27,7 @@ else
     "${IMAGE_NAME}.qcow2"
 fi
 
-cosign sign-blob "${IMAGE_NAME}.qcow2" --bundle "${IMAGE_NAME}.cosign.bundle"
+cosign sign-blob "${IMAGE_NAME}.qcow2" --bundle "${IMAGE_NAME}.cosign.bundle" -y
 
 # Upload the compressed image to S3
 cat <<EOF > ~/.s3cfg
