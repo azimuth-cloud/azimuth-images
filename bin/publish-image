@@ -26,6 +26,8 @@ else
     "$IMAGE_SOURCE_FILE" \
     "${IMAGE_NAME}.qcow2"
 fi
+# output the image size for debug reasons
+ls -alh "${IMAGE_NAME}.qcow2"
 
 # create signature
 cosign sign-blob "${IMAGE_NAME}.qcow2" --bundle "${IMAGE_NAME}.cosign.bundle" -y
