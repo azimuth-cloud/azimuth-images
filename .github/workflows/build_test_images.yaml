@@ -2,6 +2,7 @@ name: Build, publish and test images
 
 on:
   workflow_call:
+  pull: # temp hack!!
 
 jobs:
   read_builds:
@@ -25,7 +26,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJson(needs.read_builds.outputs.builds) }}
+        #include: ${{ fromJson(needs.read_builds.outputs.builds) }}
+        include: ${{ [fromJson(needs.read_builds.outputs.builds)[0]] }}
     name: ${{ matrix.name }}
     permissions:
       contents: read
