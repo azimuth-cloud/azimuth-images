@@ -27,7 +27,7 @@ jobs:
       fail-fast: false
       matrix:
         #include: ${{ fromJson(needs.read_builds.outputs.builds) }}
-        include: ${{ [fromJson(needs.read_builds.outputs.builds)[0]] }}
+        include: ${{ fromJson(needs.read_builds.outputs.builds) }}
     name: ${{ matrix.name }}
     permissions:
       contents: read
