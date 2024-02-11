@@ -27,6 +27,10 @@ else
     "${IMAGE_NAME}.qcow2"
 fi
 
+# first xip the file
+gzip -c "${IMAGE_NAME}.qcow2" > "${IMAGE_NAME}.qcow2.gz"
+ls -alh "${IMAGE_NAME}.qcow2"*
+
 # create signature
 cosign sign-blob "${IMAGE_NAME}.qcow2" --bundle "${IMAGE_NAME}.cosign.bundle" -y
 
@@ -45,16 +49,16 @@ use_https = True
 signurl_use_https = True
 EOF
 s3cmd mb "s3://$S3_BUCKET"
-s3cmd put "${IMAGE_NAME}.qcow2" "s3://$S3_BUCKET"
+s3cmd put "${IMAGE_NAME}.qcow2.gz" "s3://$S3_BUCKET"
 s3cmd put "${IMAGE_NAME}.cosign.bundle" "s3://$S3_BUCKET"
 
 # Make a signed link that lasts for one year
-IMAGE_URL="$(s3cmd signurl "s3://$S3_BUCKET/${IMAGE_NAME}.qcow2" +31536000)"
+IMAGE_URL="$(s3cmd signurl "s3://$S3_BUCKET/${IMAGE_NAME}.qcow2.gz" +31536000)"
 
 COSIGN_BUNDLE_URL="$(s3cmd signurl "s3://$S3_BUCKET/${IMAGE_NAME}.cosign.bundle" +31536000)"
 
 # Get the checksum of the image
-IMAGE_CHECKSUM="sha256:$(sha256sum "${IMAGE_NAME}.qcow2" | awk '{ print $1 }')"
+IMAGE_CHECKSUM="sha256:$(sha256sum "${IMAGE_NAME}.qcow2.gz" | awk '{ print $1 }')"
 
 # Produce outputs
 echo "image-name=$IMAGE_NAME" >> "${GITHUB_OUTPUT:-/dev/stdout}"

@@ -2,6 +2,7 @@ name: Build, publish and test images
 
 on:
   workflow_call:
+  pull_request: # temp hack!
 
 jobs:
   read_builds:
