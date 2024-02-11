@@ -2,7 +2,6 @@ name: Build, publish and test images
 
 on:
   workflow_call:
-  pull_request: # temp hack!!
 
 jobs:
   read_builds:
@@ -26,7 +25,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        #include: ${{ fromJson(needs.read_builds.outputs.builds) }}
         include: ${{ fromJson(needs.read_builds.outputs.builds) }}
     name: ${{ matrix.name }}
     permissions:
@@ -82,7 +80,7 @@ jobs:
             name: ${{ steps.publish-image.outputs.image-name }}
             url: ${{ steps.publish-image.outputs.image-url }}
             checksum: ${{ steps.publish-image.outputs.image-checksum }}
-            cosign-bundle: ${{ steps.publish-image.outputs.cosign-bundle }}
+            cosign-bundle-url: ${{ steps.publish-image.outputs.cosign-bundle-url }}
             manifest-extra: ${{ steps.build-image.outputs.manifest-extra }}
 
   publish_manifest:
