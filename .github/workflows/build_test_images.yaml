@@ -68,7 +68,7 @@ jobs:
         uses: docker/setup-qemu-action@v3
 
       - name: mount qcow2 file
-        shell: |
+        run: |
           sudo apt-get -y install libguestfs-tools
           sudo mkdir -p /mnt/${{ steps.publish-image.outputs.image-name }}
           sudo guestmount -a ${{ steps.publish-image.outputs.image-name }}.qcow2 -i /mnt/${{ steps.publish-image.outputs.image-name }}
