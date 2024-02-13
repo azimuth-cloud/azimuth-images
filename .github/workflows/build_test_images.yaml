@@ -64,11 +64,20 @@ jobs:
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: mount qcow2 file
+        shell: |
+          sudo apt-get -y install libguestfs-tools
+          sudo mkdir -p /mnt/${{ steps.publish-image.outputs.image-name }}
+          sudo guestmount -a ${{ steps.publish-image.outputs.image-name }}.qcow2 -i /mnt/${{ steps.publish-image.outputs.image-name }}
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.17.0
         with:
-          scan-type: vm
-          scan-ref: ${{ steps.publish-image.outputs.image-name }}.qcow2
+          scan-type: fs
+          scan-ref: "/mnt/${{ steps.publish-image.outputs.image-name }}"
           format: sarif
           output: trivy-results.sarif
           ignore-unfixed: true
