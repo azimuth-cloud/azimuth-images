@@ -20,3 +20,6 @@ ansible-galaxy install -f -r "$REPO_ROOT/requirements.yml"
 
 # Initialise Packer plugins
 packer init "$REPO_ROOT/config.pkr.hcl"
+
+# Add package to help mount qcow2 files
+sudo apt-get -y install libguestfs-tools
