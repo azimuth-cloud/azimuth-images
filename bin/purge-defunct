@@ -188,33 +188,42 @@ def main():
         for tag in tags:
             print(f"[INFO ]   {tag} -> {commit}")
 
-    print("[INFO ] fetching current manifests")
-    manifest_keys = [k for k in s3.list_keys() if k.endswith(".manifest")]
+    # Work out which keys we want to purge
+    # Start with all of the keys, then remove manifest files, images and cosign bundles
+    # for the commits that we want to keep
+    print("[INFO ] fetching current S3 keys")
+    purge_keys = set(s3.list_keys())
+    initial_key_count = len(purge_keys)
+    print(f"[INFO ]   found {initial_key_count} keys")
 
+    manifest_keys = [k for k in purge_keys if k.endswith(".manifest")]
     for manifest_key in manifest_keys:
         print(f"[INFO ] processing {manifest_key}")
         manifest_commit = manifest_key.removesuffix(".manifest")
 
         if manifest_commit == latest_commit:
             print("[INFO ]   manifest is for latest commit - keeping")
-            continue
         elif manifest_commit == latest_successful_commit:
             print("[INFO ]   manifest is for latest successful build - keeping")
-            continue
         elif manifest_commit in tagged_commits:
             tag = tagged_commits[manifest_commit][0]
             print(f"[INFO ]   manifest corresponds to tag {tag} - keeping")
+        else:
+            print(f"[WARN]   manifest and corresponding images and bundles will be purged")
             continue
 
-        # If we get to here, the manifest needs purging
-        print("[INFO ]   manifest is no longer required - purging")
-        print("[INFO ]   fetching manifest data")
+        print("[INFO ]   removing manifest files from keys to purge")
+        purge_keys.discard(manifest_key)
         for image in json.loads(s3.fetch_key(manifest_key)).values():
-            image_key = f"{image['name']}.qcow2"
-            print(f"[INFO ]   deleting {image_key}")
-            s3.delete_key(image_key)
-        print("[INFO ]   deleting manifest")
-        s3.delete_key(manifest_key)
+            purge_keys.discard(f"{image['name']}.qcow2")
+            purge_keys.discard(f"{image['name']}.cosign.bundle")
+
+    print(f"[INFO ] keeping {initial_key_count - len(purge_keys)} keys")
+
+    print(f"[INFO ] purging {len(purge_keys)} keys")
+    for key in purge_keys:
+        print(f"[INFO ]   deleting {key}")
+        s3.delete_key(key)
 
 
 if __name__ == "__main__":
