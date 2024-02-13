@@ -64,6 +64,19 @@ jobs:
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
 
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.17.0
+        with:
+          scan-type: vm
+          image-ref: ${{ steps.publish-image.outputs.image-name }}.qcow2
+          format: sarif
+          output: trivy-results.sarif
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+
       - name: Write matrix outputs
         uses: cloudposse/github-action-matrix-outputs-write@0.4.2
         with:
