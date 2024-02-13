@@ -68,9 +68,10 @@ jobs:
         uses: aquasecurity/trivy-action@0.17.0
         with:
           scan-type: vm
-          image-ref: ${{ steps.publish-image.outputs.image-name }}.qcow2
+          scan-ref: ${{ steps.publish-image.outputs.image-name }}.qcow2
           format: sarif
           output: trivy-results.sarif
+          ignore-unfixed: true
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
