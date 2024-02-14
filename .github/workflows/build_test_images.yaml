@@ -71,16 +71,16 @@ jobs:
         run: sudo apt-get -y install libguestfs-tools
 
       - name: mkdir for mount
-        run: sudo mkdir -p /mnt/${{ steps.publish-image.outputs.image-name }}
+        run: sudo mkdir -p './${{ steps.publish-image.outputs.image-name }}'
 
       - name: mount qcow2 file
-        run: sudo guestmount -a ${{ steps.publish-image.outputs.image-name }}.qcow2 -i --ro -o allow_other /mnt/${{ steps.publish-image.outputs.image-name }}
+        run: sudo guestmount -a ${{ steps.publish-image.outputs.image-name }}.qcow2 -i --ro -o allow_other './${{ steps.publish-image.outputs.image-name }}'
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.17.0
         with:
           scan-type: fs
-          scan-ref: "/mnt/${{ steps.publish-image.outputs.image-name }}"
+          scan-ref: "./${{ steps.publish-image.outputs.image-name }}"
           format: sarif
           output: "${{ steps.publish-image.outputs.image-name }}.sarif"
           ignore-unfixed: true
