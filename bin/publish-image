@@ -26,6 +26,16 @@ else
     "$IMAGE_SOURCE_FILE" \
     "${IMAGE_NAME}.qcow2"
 fi
+# output the image size for debug reasons
+ls -alh "${IMAGE_NAME}.qcow2"
+
+# create signature
+cosign sign-blob "${IMAGE_NAME}.qcow2" --bundle "${IMAGE_NAME}.cosign.bundle" -y
+
+# test the bundle works validates
+cosign verify-blob "${IMAGE_NAME}.qcow2" --bundle "${IMAGE_NAME}.cosign.bundle" \
+  --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
+  --certificate-identity-regexp="https://github.com/stackhpc/azimuth-images/.github/.*"
 
 # Upload the compressed image to S3
 cat <<EOF > ~/.s3cfg
@@ -38,9 +48,12 @@ signurl_use_https = True
 EOF
 s3cmd mb "s3://$S3_BUCKET"
 s3cmd put "${IMAGE_NAME}.qcow2" "s3://$S3_BUCKET"
+s3cmd put "${IMAGE_NAME}.cosign.bundle" "s3://$S3_BUCKET"
 
 # Make a signed link that lasts for one year
 IMAGE_URL="$(s3cmd signurl "s3://$S3_BUCKET/${IMAGE_NAME}.qcow2" +31536000)"
+
+COSIGN_BUNDLE_URL="$(s3cmd signurl "s3://$S3_BUCKET/${IMAGE_NAME}.cosign.bundle" +31536000)"
 
 # Get the checksum of the image
 IMAGE_CHECKSUM="sha256:$(sha256sum "${IMAGE_NAME}.qcow2" | awk '{ print $1 }')"
@@ -49,3 +62,4 @@ IMAGE_CHECKSUM="sha256:$(sha256sum "${IMAGE_NAME}.qcow2" | awk '{ print $1 }')"
 echo "image-name=$IMAGE_NAME" >> "${GITHUB_OUTPUT:-/dev/stdout}"
 echo "image-url=$IMAGE_URL" >> "${GITHUB_OUTPUT:-/dev/stdout}"
 echo "image-checksum=$IMAGE_CHECKSUM" >> "${GITHUB_OUTPUT:-/dev/stdout}"
+echo "cosign-bundle-url=$COSIGN_BUNDLE_URL" >> "${GITHUB_OUTPUT:-/dev/stdout}"
