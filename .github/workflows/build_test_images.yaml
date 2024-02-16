@@ -27,6 +27,10 @@ jobs:
       matrix:
         include: ${{ fromJson(needs.read_builds.outputs.builds) }}
     name: ${{ matrix.name }}
+    permissions:
+      contents: read
+      packages: write
+      id-token: write # needed for signing the images with GitHub OIDC Token
     steps:
       - name: Check out the repository
         uses: actions/checkout@v3
@@ -52,6 +56,9 @@ jobs:
           ENVIRONMENT: arcus
           PACKER_TEMPLATE: ${{ matrix.template }}
           ENV_VAR_FILES: ${{ matrix.var-files }}
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3.4.0
 
       - name: Publish image
         id: publish-image
@@ -112,6 +119,7 @@ jobs:
             name: ${{ steps.publish-image.outputs.image-name }}
             url: ${{ steps.publish-image.outputs.image-url }}
             checksum: ${{ steps.publish-image.outputs.image-checksum }}
+            cosign-bundle-url: ${{ steps.publish-image.outputs.cosign-bundle-url }}
             manifest-extra: ${{ steps.build-image.outputs.manifest-extra }}
 
   publish_manifest:
