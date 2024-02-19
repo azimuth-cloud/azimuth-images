@@ -97,7 +97,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: "${{ steps.publish-image.outputs.image-name }}.sarif"
-          category: "${{ steps.publish-image.outputs.image-name }}"
+          category: "${{ matrix.name }}"
 
       - name: Fail if scan has CRITICAL vulnerabilities
         uses: aquasecurity/trivy-action@0.16.1
