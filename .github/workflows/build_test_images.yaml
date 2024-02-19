@@ -30,7 +30,8 @@ jobs:
     permissions:
       contents: read
       packages: write
-      id-token: write # needed for signing the images with GitHub OIDC Token
+      id-token: write         # required to get an OIDC token for signing
+      security-events: write  # required to upload SARIF files
     steps:
       - name: Check out the repository
         uses: actions/checkout@v3
