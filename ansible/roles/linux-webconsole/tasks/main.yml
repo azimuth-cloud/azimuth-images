@@ -70,8 +70,8 @@
       - metadata_var: data_volume_id
         mountpoint: /data
         opts: "defaults,nofail"
-        owner: ubuntu
-        group: ubuntu
+        owner: azimuth
+        group: azimuth
 
 - include_role:
     name: stackhpc.os-manila-mount
