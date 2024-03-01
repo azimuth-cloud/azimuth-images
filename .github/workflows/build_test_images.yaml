@@ -52,7 +52,7 @@ jobs:
         id: build-image
         run: ./bin/build-image
         env:
-          OS_CLOUD: openstack
+          OS_CLOUD: arcus
           PACKER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ENVIRONMENT: arcus
           PACKER_TEMPLATE: ${{ matrix.template }}
@@ -65,7 +65,7 @@ jobs:
         id: publish-image
         run: ./bin/publish-image
         env:
-          OS_CLOUD: openstack
+          OS_CLOUD: arcus
           ENVIRONMENT: arcus
           ENV_VAR_FILES: ${{ matrix.var-files }}
           IMAGE_ID: ${{ steps.build-image.outputs.image-id }}
@@ -253,7 +253,7 @@ jobs:
           ./bin/purge-images "${GITHUB_SHA}.manifest"
         env:
           REPO_ROOT: ${{ github.workspace }}
-          OS_CLOUD: openstack
+          OS_CLOUD: arcus
           ENVIRONMENT: arcus
           ENV_VAR_FILES: common
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
