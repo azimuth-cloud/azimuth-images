@@ -4,7 +4,45 @@ on:
   workflow_call:
 
 jobs:
+  # Acquire the same CI lock as is used by the Azimuth CI
+  # That way, Azimuth CI runs don't happen while we are doing builds
+  # The lock is reentrant, so when the Azimuth tests start the timestamp is just updated
+  acquire_lock:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure S3 lock
+        id: s3-lock-config
+        run: |
+          set -e
+          source ./bin/env-vars
+          if [ -z "$S3_HOST" ]; then
+            echo "S3_HOST not set - no lock will be used"
+            exit
+          elif [ -z "$CI_S3_LOCK_BUCKET" ]; then
+            echo "CI_S3_LOCK_BUCKET not set - no lock will be used"
+            exit
+          fi
+          echo "host=${S3_HOST}" >> "$GITHUB_OUTPUT"
+          echo "bucket=${CI_S3_LOCK_BUCKET}" >> "$GITHUB_OUTPUT"
+        env:
+          ENVIRONMENT: arcus
+          ENV_VAR_FILES: common
+
+      - name: Acquire S3 lock
+        uses: stackhpc/github-actions/s3-lock@master
+        with:
+          host: ${{ steps.s3-lock-config.outputs.host }}
+          access-key: ${{ secrets.S3_ACCESS_KEY }}
+          secret-key: ${{ secrets.S3_SECRET_KEY }}
+          bucket: ${{ steps.s3-lock-config.outputs.bucket }}
+          action: acquire
+        if: ${{ steps.s3-lock-config.outputs.host != '' }}
+
   read_builds:
+    needs: [acquire_lock]
     runs-on: ubuntu-latest
     outputs:
       builds: ${{ steps.builds-as-json.outputs.builds }}
@@ -258,3 +296,42 @@ jobs:
           ENV_VAR_FILES: common
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+
+  # Release the same CI lock as is used by the Azimuth CI
+  # If the Azimuth tests run the lock will already have been released, in which case
+  # this is a no-op, but we need to make sure it is released if the builds fail
+  release_lock:
+    needs: [purge_images]
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure S3 lock
+        id: s3-lock-config
+        run: |
+          set -e
+          source ./bin/env-vars
+          if [ -z "$S3_HOST" ]; then
+            echo "S3_HOST not set - no lock was used"
+            exit
+          elif [ -z "$CI_S3_LOCK_BUCKET" ]; then
+            echo "CI_S3_LOCK_BUCKET not set - no lock was used"
+            exit
+          fi
+          echo "host=${S3_HOST}" >> "$GITHUB_OUTPUT"
+          echo "bucket=${CI_S3_LOCK_BUCKET}" >> "$GITHUB_OUTPUT"
+        env:
+          ENVIRONMENT: arcus
+          ENV_VAR_FILES: common
+
+      - name: Release S3 lock
+        uses: stackhpc/github-actions/s3-lock@master
+        with:
+          host: ${{ steps.s3-lock-config.outputs.host }}
+          access-key: ${{ secrets.S3_ACCESS_KEY }}
+          secret-key: ${{ secrets.S3_SECRET_KEY }}
+          bucket: ${{ steps.s3-lock-config.outputs.bucket }}
+          action: release
+        if: ${{ steps.s3-lock-config.outputs.host != '' }}
