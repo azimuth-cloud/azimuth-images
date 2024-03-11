@@ -1,4 +1,7 @@
 echo "Importing environment variables..."
+
+REPO_ROOT="${REPO_ROOT:-"$PWD"}"
+
 IFS="," read -ra ENV_VAR_FILES_ARR <<< "$ENV_VAR_FILES"
 for FILE in "${ENV_VAR_FILES_ARR[@]}"; do
     BASE_FILE="$REPO_ROOT/env/base/$FILE.env"
@@ -8,6 +11,7 @@ for FILE in "${ENV_VAR_FILES_ARR[@]}"; do
         set +a
     fi
 done
+
 for FILE in "${ENV_VAR_FILES_ARR[@]}"; do
     ENVIRONMENT_FILE="$REPO_ROOT/env/$ENVIRONMENT/$FILE.env"
     if [ -f "$ENVIRONMENT_FILE" ]; then

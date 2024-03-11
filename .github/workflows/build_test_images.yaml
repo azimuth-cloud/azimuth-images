@@ -16,7 +16,7 @@ jobs:
       - name: Configure S3 lock
         id: s3-lock-config
         run: |
-          set -ex
+          set -e
           source ./bin/env-vars
           if [ -z "$S3_HOST" ]; then
             echo "S3_HOST not set - no lock will be used"
