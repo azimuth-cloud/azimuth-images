@@ -15,6 +15,7 @@ jobs:
         shell: bash
         run: |
           set -e
+          source ./bin/env-vars
           if [ -z "$S3_HOST" ]; then
             echo "S3_HOST not set - no lock will be used"
             exit
@@ -24,6 +25,9 @@ jobs:
           fi
           echo "host=${S3_HOST}" >> "$GITHUB_OUTPUT"
           echo "bucket=${CI_S3_LOCK_BUCKET}" >> "$GITHUB_OUTPUT"
+        env:
+          ENVIRONMENT: arcus
+          ENV_VAR_FILES: common
 
       - name: Acquire S3 lock
         uses: stackhpc/github-actions/s3-lock@master
@@ -304,6 +308,7 @@ jobs:
         shell: bash
         run: |
           set -e
+          source ./bin/env-vars
           if [ -z "$S3_HOST" ]; then
             echo "S3_HOST not set - no lock was used"
             exit
@@ -313,6 +318,9 @@ jobs:
           fi
           echo "host=${S3_HOST}" >> "$GITHUB_OUTPUT"
           echo "bucket=${CI_S3_LOCK_BUCKET}" >> "$GITHUB_OUTPUT"
+        env:
+          ENVIRONMENT: arcus
+          ENV_VAR_FILES: common
 
       - name: Release S3 lock
         uses: stackhpc/github-actions/s3-lock@master
