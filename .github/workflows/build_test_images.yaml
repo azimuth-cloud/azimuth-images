@@ -39,6 +39,10 @@ jobs:
           secret-key: ${{ secrets.S3_SECRET_KEY }}
           bucket: ${{ steps.s3-lock-config.outputs.bucket }}
           action: acquire
+        # GitHub terminates jobs after 6 hours
+        # We don't want jobs to acquire the lock then get timed out before they can finish
+        # So wait a maximum of 3 hours to acquire the lock, leaving 3 hours for other tasks in the workflow
+        timeout-minutes: 180
         if: ${{ steps.s3-lock-config.outputs.host != '' }}
 
   read_builds:
@@ -253,6 +257,10 @@ jobs:
             generate_tests_caas_test_case_slurm_enabled: false
             generate_tests_kubernetes_test_cases_latest_only: false
             generate_tests_kubernetes_apps_suite_enabled: false
+        # GitHub terminates jobs after 6 hours
+        # We don't want jobs to acquire the lock then get timed out before they can finish
+        # So wait a maximum of 3 hours to acquire the lock, leaving 3 hours for other tasks in the job
+        timeout-minutes: 180
 
       - name: Provision Azimuth
         uses: stackhpc/azimuth-config/.github/actions/provision@devel
