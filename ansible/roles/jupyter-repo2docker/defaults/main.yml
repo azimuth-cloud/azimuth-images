@@ -2,3 +2,6 @@
 
 podman_service_user: "podman"
 jupyter_data_volume: "/data/jupyter"
+
+repo2docker_version: 2023.06.0
+repo2podman_version: 0.2.0
