@@ -56,7 +56,7 @@ for vars_file in vars_files_dir.glob("kubernetes_*.json"):
     latest_version = k8s_latest_version_for_series(data["kubernetes_series"])
     if latest_version > current_version:
         data.update({
-            "kubernetes_deb_version": f"{latest_version.format(prefix = False)}-1.1",
+            "kubernetes_deb_version": f"{latest_version.format(prefix = False)}-*",
             "kubernetes_rpm_version": f"{latest_version.format(prefix = False)}",
             "kubernetes_semver": str(latest_version),
         })
