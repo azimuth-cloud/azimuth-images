@@ -1,5 +1,5 @@
 {
-    "kubernetes_deb_version": "1.27.13-1.1",
+    "kubernetes_deb_version": "1.27.13-*",
     "kubernetes_rpm_version": "1.27.13",
     "kubernetes_semver": "v1.27.13",
     "kubernetes_series": "v1.27"
