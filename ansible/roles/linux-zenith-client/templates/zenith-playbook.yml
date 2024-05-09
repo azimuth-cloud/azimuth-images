@@ -61,8 +61,6 @@
           --volume /etc/zenith/ssh/{{ zenith_client_name }}:/home/zenith/.ssh
           {{ zenith_client_image }}
           zenith-client init
-      register: zenith_client_init
-      changed_when: zenith_client_init.rc == 0
       creates: "{{ zenith_ssh_identity_file_path }}"
       become: yes
       become_user: podman
