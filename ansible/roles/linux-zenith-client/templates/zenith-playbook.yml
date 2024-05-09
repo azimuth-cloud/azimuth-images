@@ -10,6 +10,7 @@
     os_metadata: "{{ lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json }}"
     os_user_metadata: "{{ os_metadata.get('meta', {}) }}"
     os_project_id: "{{ os_metadata.project_id }}"
+    zenith_ssh_identity_file_path: /home/zenith/.ssh/id_zenith
   tasks:
     - name: Ensure Zenith SSH directory exists
       file:
@@ -30,7 +31,7 @@
     - name: Write the Zenith client configuration
       copy:
         content: |
-          ssh_identity_path: /home/zenith/.ssh/id_zenith
+          ssh_identity_path: {{ zenith_ssh_identity_file_path }}
 
           # Init options
           registrar_url: {{ zenith_client_registrar_url }}
@@ -62,9 +63,7 @@
           zenith-client init
       register: zenith_client_init
       changed_when: zenith_client_init.rc == 0
-      failed_when:
-        - zenith_client_init.rc != 0
-        - '"token has already been used" not in zenith_client_init.stderr'
+      creates: "{{ zenith_ssh_identity_file_path }}"
       become: yes
       become_user: podman
 
