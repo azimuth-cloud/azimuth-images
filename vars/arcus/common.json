@@ -1,4 +1,4 @@
 {
   "network": "97ed78b5-156c-441c-9fcb-5a26c8a4ed26",
-  "flavor": "vm.ska.cpu.general.small"
+  "flavor": "vm.azimuth.ci.ec1.medium"
 }
