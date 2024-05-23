@@ -18,4 +18,4 @@ collections:
 roles:
   - src: https://github.com/stackhpc/ansible-role-os-manila-mount.git
     name: stackhpc.os-manila-mount
-    version: v24.1.1
+    version: feat/more-versions # TODO UPDATE
