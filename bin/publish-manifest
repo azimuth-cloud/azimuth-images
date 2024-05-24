@@ -15,7 +15,6 @@ secret_key = ${S3_SECRET_KEY}
 use_https = True
 signurl_use_https = True
 EOF
-s3cmd mb "s3://$S3_BUCKET"
 
 # Copy the manifest to a file named after the commit SHA before uploading
 cp "$MANIFEST_FILE" "${GITHUB_SHA}.manifest"

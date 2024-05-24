@@ -46,7 +46,6 @@ secret_key = ${S3_SECRET_KEY}
 use_https = True
 signurl_use_https = True
 EOF
-s3cmd mb "s3://$S3_BUCKET"
 s3cmd put "${IMAGE_NAME}.qcow2" "s3://$S3_BUCKET"
 s3cmd put "${IMAGE_NAME}.cosign.bundle" "s3://$S3_BUCKET"
 
