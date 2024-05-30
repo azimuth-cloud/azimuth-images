@@ -1,6 +1,7 @@
 ansible-core
 boto3
 easysemver
+passlib
 python-openstackclient
 pywinrm
 requests
