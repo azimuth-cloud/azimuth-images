@@ -317,6 +317,14 @@ variable "sysusrlocal_prefix" {
   type = string
 }
 
+variable "ubuntu_repo" {
+  type = string
+}
+
+variable "ubuntu_security_repo" {
+  type = string
+}
+
 #####
 # Locals
 #####
@@ -506,6 +514,10 @@ build {
       "sysusr_prefix=${var.sysusr_prefix}",
       "--extra-vars",
       "sysusrlocal_prefix=${var.sysusrlocal_prefix}",
+      "--extra-vars",
+      "ubuntu_repo=${var.ubuntu_repo}",
+      "--extra-vars",
+      "ubuntu_security_repo=${var.ubuntu_security_repo}",
     ]
     ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10"]
   }
