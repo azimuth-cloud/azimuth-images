@@ -48,7 +48,8 @@
     dest: /etc/modules-load.d/modules.conf
   become: true
 
-# Netplan as a default renderer does not support InfiniBand devices
+# The cloud-init netplan renderer is default for ubuntu
+# but does not support InfiniBand devices
 - name: Switch cloud-init to alternative network renderer
   lineinfile:
     path: /etc/cloud/cloud.cfg
