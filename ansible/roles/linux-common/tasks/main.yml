@@ -3,6 +3,7 @@
   ansible.builtin.apt:
     name: linux-generic
     state: latest
+    update_cache: yes
   when: ansible_os_family == "Debian"
   become: true
 
@@ -18,3 +19,17 @@
     src: modules.conf.j2
     dest: /etc/modules-load.d/modules.conf
   become: true
+
+- name: Switch cloud-init to alternative network renderer
+  lineinfile:
+    path: /etc/cloud/cloud.cfg
+    regexp: "^    renderers:.*"
+    line: "    renderers: ['sysconfig', 'network-manager', 'networkd']"
+    state: present
+  when: ansible_os_family == "Debian"
+  become: true
+
+- name: Clean up after ourselves
+  ansible.builtin.apt:
+    clean: yes
+  become: yes
