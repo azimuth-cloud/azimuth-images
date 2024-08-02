@@ -45,11 +45,29 @@ response.raise_for_status()
 user_metadata = response.json().get("meta", {})
 
 
-logger.info("extracting collections and playbooks from metadata")
-collections = assemble_list(user_metadata, "ansible_init_coll_")
-playbooks = assemble_list(user_metadata, "ansible_init_pb_")
-logger.info(f"  found {len(collections)} collections")
-logger.info(f"  found {len(playbooks)} playbooks")
+logger.info("extracting user collections, playbooks and exclusions from metadata")
+user_collections = assemble_list(user_metadata, "ansible_init_coll_")
+user_playbooks = assemble_list(user_metadata, "ansible_init_pb_")
+user_exclusions = assemble_list(user_metadata, "ansible_init_xpb_")
+
+
+logger.info("listing system playbooks and exclusions")
+playbooks = sorted(pathlib.Path("/etc/ansible-init/playbooks").glob("*.yml"))
+exclusions = (
+    {}
+    if len(user_exclusions) == 0
+    else [
+        pathlib.Path("/etc/ansible-init/playbooks/" + playbook)
+        for v in user_exclusions.values()
+        for playbook in [v.get("name")]
+    ]
+)
+
+
+logger.info(f"  found {len(playbooks)} baked-in playbooks")
+logger.info(f"  found {len(exclusions)} excluded playbooks")
+logger.info(f"  found {len(user_collections)} user collections")
+logger.info(f"  found {len(user_playbooks)} user playbooks")
 
 
 logger.info("installing collections")
@@ -60,12 +78,12 @@ ansible_exec(
     "--force",
     "--requirements-file",
     "/dev/stdin",
-    input = json.dumps({ "collections": collections }).encode()
+    input = json.dumps({ "collections": user_collections }).encode()
 )
 
 
 logger.info("executing remote playbooks for stage - pre")
-for playbook in playbooks:
+for playbook in user_playbooks:
     if playbook.get("stage", "post") == "pre":
         logger.info(f"  executing playbook - {playbook['name']}")
         ansible_exec(
@@ -79,7 +97,7 @@ for playbook in playbooks:
 
 
 logger.info("executing playbooks from /etc/ansible-init/playbooks")
-for playbook in sorted(pathlib.Path("/etc/ansible-init/playbooks").glob("*.yml")):
+for playbook in [x for x in playbooks if x not in exclusions]:
     logger.info(f"  executing playbook - {playbook}")
     ansible_exec(
         "playbook",
@@ -92,7 +110,7 @@ for playbook in sorted(pathlib.Path("/etc/ansible-init/playbooks").glob("*.yml")
 
 
 logger.info("executing remote playbooks for stage - post")
-for playbook in playbooks:
+for playbook in user_playbooks:
     if playbook.get("stage", "post") == "post":
         logger.info(f"  executing playbook - {playbook['name']}")
         ansible_exec(
