@@ -8,7 +8,6 @@ import subprocess
 
 import requests
 
-
 logging.basicConfig(level = logging.INFO, format = "[%(levelname)s] %(message)s")
 
 
@@ -57,7 +56,7 @@ exclusions = (
     {}
     if len(user_exclusions) == 0
     else [
-        pathlib.Path("/etc/ansible-init/playbooks/" + playbook)
+        playbook
         for v in user_exclusions.values()
         for playbook in [v.get("name")]
     ]
@@ -78,7 +77,7 @@ ansible_exec(
     "--force",
     "--requirements-file",
     "/dev/stdin",
-    input = json.dumps({ "collections": user_collections }).encode()
+    input=json.dumps({ "collections": user_collections }).encode()
 )
 
 
@@ -97,7 +96,7 @@ for playbook in user_playbooks:
 
 
 logger.info("executing playbooks from /etc/ansible-init/playbooks")
-for playbook in [x for x in playbooks if x not in exclusions]:
+for playbook in [x for x in playbooks if x.name not in exclusions]:
     logger.info(f"  executing playbook - {playbook}")
     ansible_exec(
         "playbook",
