@@ -32,7 +32,7 @@ jobs:
           ENV_VAR_FILES: common
 
       - name: Acquire S3 lock
-        uses: stackhpc/github-actions/s3-lock@master
+        uses: azimuth-cloud/github-actions/s3-lock@master
         with:
           host: ${{ steps.s3-lock-config.outputs.host }}
           access-key: ${{ secrets.S3_ACCESS_KEY }}
@@ -335,7 +335,7 @@ jobs:
           ENV_VAR_FILES: common
 
       - name: Release S3 lock
-        uses: stackhpc/github-actions/s3-lock@master
+        uses: azimuth-cloud/github-actions/s3-lock@master
         with:
           host: ${{ steps.s3-lock-config.outputs.host }}
           access-key: ${{ secrets.S3_ACCESS_KEY }}
