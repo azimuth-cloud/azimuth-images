@@ -1,7 +1,7 @@
 # azimuth-images
 
 This repository contains [Packer](https://www.packer.io/) template definitions
-for building images for use with [Azimuth](https://github.com/stackhpc/azimuth).
+for building images for use with [Azimuth](https://github.com/azimuth-cloud/azimuth).
 
 The templates work by provisioning machines in an [OpenStack](https://www.openstack.org/)
 project and configuring them using [Ansible](https://www.ansible.com/) before
