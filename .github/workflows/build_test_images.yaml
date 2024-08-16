@@ -4,49 +4,7 @@ on:
   workflow_call:
 
 jobs:
-  # Acquire the same CI lock as is used by the Azimuth CI
-  # That way, Azimuth CI runs don't happen while we are doing builds
-  # The lock is reentrant, so when the Azimuth tests start the timestamp is just updated
-  acquire_lock:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Configure S3 lock
-        id: s3-lock-config
-        run: |
-          set -e
-          source ./bin/env-vars
-          if [ -z "$S3_HOST" ]; then
-            echo "S3_HOST not set - no lock will be used"
-            exit
-          elif [ -z "$CI_S3_LOCK_BUCKET" ]; then
-            echo "CI_S3_LOCK_BUCKET not set - no lock will be used"
-            exit
-          fi
-          echo "host=${S3_HOST}" >> "$GITHUB_OUTPUT"
-          echo "bucket=${CI_S3_LOCK_BUCKET}" >> "$GITHUB_OUTPUT"
-        env:
-          ENVIRONMENT: arcus
-          ENV_VAR_FILES: common
-
-      - name: Acquire S3 lock
-        uses: azimuth-cloud/github-actions/s3-lock@master
-        with:
-          host: ${{ steps.s3-lock-config.outputs.host }}
-          access-key: ${{ secrets.S3_ACCESS_KEY }}
-          secret-key: ${{ secrets.S3_SECRET_KEY }}
-          bucket: ${{ steps.s3-lock-config.outputs.bucket }}
-          action: acquire
-        # GitHub terminates jobs after 6 hours
-        # We don't want jobs to acquire the lock then get timed out before they can finish
-        # So wait a maximum of 3 hours to acquire the lock, leaving 3 hours for other tasks in the workflow
-        timeout-minutes: 180
-        if: ${{ steps.s3-lock-config.outputs.host != '' }}
-
   read_builds:
-    needs: [acquire_lock]
     runs-on: ubuntu-latest
     outputs:
       builds: ${{ steps.builds-as-json.outputs.builds }}
@@ -94,9 +52,10 @@ jobs:
         id: build-image
         run: ./bin/build-image
         env:
-          OS_CLOUD: arcus
           PACKER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ENVIRONMENT: arcus
+          # Build the image on the target cloud
+          OS_CLOUD: ${{ vars.TARGET_CLOUD }}
+          ENVIRONMENT: ${{ vars.TARGET_CLOUD }}
           PACKER_TEMPLATE: ${{ matrix.template }}
           ENV_VAR_FILES: ${{ matrix.var-files }}
 
@@ -107,10 +66,12 @@ jobs:
         id: publish-image
         run: ./bin/publish-image
         env:
-          OS_CLOUD: arcus
-          ENVIRONMENT: arcus
-          ENV_VAR_FILES: ${{ matrix.var-files }}
-          IMAGE_ID: ${{ steps.build-image.outputs.image-id }}
+          IMAGE_NAME: ${{ steps.build-image.outputs.image-name }}
+          IMAGE_DISK_FORMAT: ${{ steps.build-image.outputs.image-disk-format }}
+          IMAGE_SOURCE_FILE: ${{ steps.build-image.outputs.image-source-file }}
+          # Upload images to a fixed S3 host
+          S3_HOST: ${{ vars.S3_HOST }}
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
 
@@ -205,8 +166,8 @@ jobs:
         run: ./bin/publish-manifest
         env:
           MANIFEST_FILE: ./manifest.json
-          ENVIRONMENT: arcus
-          ENV_VAR_FILES: common
+          S3_HOST: ${{ vars.S3_HOST }}
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
 
@@ -247,6 +208,7 @@ jobs:
         uses: azimuth-cloud/azimuth-config/.github/actions/setup@devel
         with:
           os-clouds: ${{ secrets.OS_CLOUDS }}
+          target-cloud: ${{ vars.TARGET_CLOUD }}
           environment-prefix: images-ci
           # Use the manifest that we just built
           # We want to run all the CaaS tests except Slurm
@@ -294,52 +256,11 @@ jobs:
           OS_CLOUDS: ${{ secrets.OS_CLOUDS }}
 
       - name: Purge images for manifest
-        run: |
-          source ./bin/env-vars
-          ./bin/purge-images "${GITHUB_SHA}.manifest"
+        run: ./bin/purge-images "${GITHUB_SHA}.manifest"
         env:
           REPO_ROOT: ${{ github.workspace }}
-          OS_CLOUD: arcus
-          ENVIRONMENT: arcus
-          ENV_VAR_FILES: common
+          OS_CLOUD: ${{ vars.TARGET_CLOUD }}
+          S3_HOST: ${{ vars.S3_HOST }}
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
-
-  # Release the same CI lock as is used by the Azimuth CI
-  # If the Azimuth tests run the lock will already have been released, in which case
-  # this is a no-op, but we need to make sure it is released if the builds fail
-  release_lock:
-    needs: [purge_images]
-    runs-on: ubuntu-latest
-    if: ${{ always() }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Configure S3 lock
-        id: s3-lock-config
-        run: |
-          set -e
-          source ./bin/env-vars
-          if [ -z "$S3_HOST" ]; then
-            echo "S3_HOST not set - no lock was used"
-            exit
-          elif [ -z "$CI_S3_LOCK_BUCKET" ]; then
-            echo "CI_S3_LOCK_BUCKET not set - no lock was used"
-            exit
-          fi
-          echo "host=${S3_HOST}" >> "$GITHUB_OUTPUT"
-          echo "bucket=${CI_S3_LOCK_BUCKET}" >> "$GITHUB_OUTPUT"
-        env:
-          ENVIRONMENT: arcus
-          ENV_VAR_FILES: common
-
-      - name: Release S3 lock
-        uses: azimuth-cloud/github-actions/s3-lock@master
-        with:
-          host: ${{ steps.s3-lock-config.outputs.host }}
-          access-key: ${{ secrets.S3_ACCESS_KEY }}
-          secret-key: ${{ secrets.S3_SECRET_KEY }}
-          bucket: ${{ steps.s3-lock-config.outputs.bucket }}
-          action: release
-        if: ${{ steps.s3-lock-config.outputs.host != '' }}

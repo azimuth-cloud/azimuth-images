@@ -22,6 +22,10 @@ variable "security_groups" {
   type = list(string)
 }
 
+variable "volume_type" {
+  type = string
+}
+
 variable "volume_size" {
   type = number
   default = 10
@@ -379,6 +383,7 @@ source "openstack" "kubernetes" {
   floating_ip = var.floating_ip
 
   use_blockstorage_volume = true
+  volume_type = var.volume_type
   volume_size = var.volume_size
 
   communicator = "ssh"

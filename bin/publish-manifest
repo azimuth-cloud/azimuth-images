@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
-
-REPO_ROOT="$(dirname $(dirname $(realpath ${BASH_SOURCE[0]:-${(%):-%x}})))"
-source "$REPO_ROOT/bin/env-vars"
-
-set -x
+set -euxo pipefail
 
 cat <<EOF > ~/.s3cfg
 host_base = ${S3_HOST}
