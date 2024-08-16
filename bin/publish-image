@@ -1,20 +1,6 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
-
-REPO_ROOT="$(dirname $(dirname $(realpath ${BASH_SOURCE[0]:-${(%):-%x}})))"
-source "$REPO_ROOT/bin/env-vars"
-
-set -x
-
-IMAGE_NAME="$(openstack image show -f value -c name $IMAGE_ID)"
-IMAGE_DISK_FORMAT="$(openstack image show -f value -c disk_format $IMAGE_ID)"
-
-# Download the image
-IMAGE_SOURCE_FILE="${IMAGE_NAME}.source.${IMAGE_DISK_FORMAT}"
-openstack image save --file "$IMAGE_SOURCE_FILE" "$IMAGE_ID"
-# Once we have downloaded the image, we can delete it
-openstack image delete "$IMAGE_ID"
+set -euxo pipefail
 
 # Convert the image to QCOW2 if required
 if [ "$IMAGE_DISK_FORMAT" = "qcow2" ]; then
