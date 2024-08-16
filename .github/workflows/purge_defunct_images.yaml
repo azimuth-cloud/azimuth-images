@@ -17,12 +17,9 @@ jobs:
         run: pip install -r ./requirements.txt
 
       - name: Run script to purge defunct images
-        run: |
-          source ./bin/env-vars
-          ./bin/purge-defunct
+        run: ./bin/purge-defunct
         env:
-          REPO_ROOT: ${{ github.workspace }}
-          ENVIRONMENT: arcus
-          ENV_VAR_FILES: common
+          S3_HOST: ${{ vars.S3_HOST }}
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}

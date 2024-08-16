@@ -59,10 +59,19 @@ packer build \
   $PACKER_EXTRA_ARGS \
   "$REPO_ROOT/packer/$PACKER_TEMPLATE.pkr.hcl"
 
-# Output the image id from the Packer build, if an image was built
 if [ -f "./packer-manifest.json" ]; then
+  # Download the image that we built and remove it from OpenStack
   IMAGE_ID="$(jq -r '.builds[-1].artifact_id' ./packer-manifest.json)"
+  IMAGE_NAME="$(openstack image show -f value -c name $IMAGE_ID)"
+  IMAGE_DISK_FORMAT="$(openstack image show -f value -c disk_format $IMAGE_ID)"
+  IMAGE_SOURCE_FILE="${IMAGE_NAME}.source.${IMAGE_DISK_FORMAT}"
+  openstack image save --file "$IMAGE_SOURCE_FILE" "$IMAGE_ID"
+  openstack image delete "$IMAGE_ID"
+
+  # Output the name, format and filename for the downloaded image, and the manifest extra
   MANIFEST_EXTRA="$(jq -c -r '.builds[-1].custom_data // {}' ./packer-manifest.json)"
-  echo "image-id=$IMAGE_ID" >> "${GITHUB_OUTPUT:-/dev/stdout}"
+  echo "image-name=$IMAGE_NAME" >> "${GITHUB_OUTPUT:-/dev/stdout}"
+  echo "image-disk-format=$IMAGE_DISK_FORMAT" >> "${GITHUB_OUTPUT:-/dev/stdout}"
+  echo "image-source-file=$IMAGE_SOURCE_FILE" >> "${GITHUB_OUTPUT:-/dev/stdout}"
   echo "manifest-extra=$MANIFEST_EXTRA" >> "${GITHUB_OUTPUT:-/dev/stdout}"
 fi
