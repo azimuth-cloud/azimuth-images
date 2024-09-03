@@ -14,6 +14,9 @@ collections:
     version: 1.15.4
   - name: prometheus.prometheus
     version: 0.17.1
+  - name: https://github.com/azimuth-cloud/ansible-collection-image-utils
+    type: git
+    version: 0.2.0
 
 roles:
   - src: https://github.com/stackhpc/ansible-role-os-manila-mount.git
