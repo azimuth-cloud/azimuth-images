@@ -3,6 +3,6 @@
 - hosts: all
   become: yes
   roles:
-    - linux-volumes-by-tag
+    - linux-common
 
 - import_playbook: ../vendor/image-builder/images/capi/ansible/node.yml
