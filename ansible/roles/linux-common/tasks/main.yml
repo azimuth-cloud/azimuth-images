@@ -26,3 +26,6 @@
 # Enables volumes to be referred to by tag for setting up mounts in cloud-config
 - include_role:
     name: linux-volumes-by-tag
+
+# Install the Broadcom network driver for NetXtreme-E Ethernet
+- include_role: linux-broadcom
