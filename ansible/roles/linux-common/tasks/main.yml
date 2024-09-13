@@ -1,4 +1,32 @@
 ---
+- name: Update apt cache
+  apt:
+    update_cache: true
+  when: ansible_os_family == "Debian"
+
+- name: Ensure up-to-date CA certificates
+  package:
+    name: ca-certificates
+    state: latest
+
+# Required for become to an unprivileged user to work
+# Using the apt module seems to work more reliably than package :-/
+- name: Install ACL package
+  apt:
+    update_cache: true
+    name: acl
+    state: present
+  when: ansible_os_family == "Debian"
+
+# Enables the ansible-init system, but does not install any default playbooks
+- include_role:
+    name: azimuth_cloud.image_utils.linux_ansible_init
+
+# Enables volumes to be referred to by tag for setting up mounts in cloud-config
+- include_role:
+    name: linux-volumes-by-tag
+
+# Use linux-generic to track linux-modules-extra
 - name: Install InfiniBand support (deb based)
   ansible.builtin.apt:
     name: linux-generic
@@ -20,6 +48,7 @@
     dest: /etc/modules-load.d/modules.conf
   become: true
 
+# Netplan as a default renderer does not support InfiniBand devices
 - name: Switch cloud-init to alternative network renderer
   lineinfile:
     path: /etc/cloud/cloud.cfg
