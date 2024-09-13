@@ -1,27 +1,5 @@
 ---
 
-- name: Update apt cache
-  apt:
-    update_cache: yes
-  when: ansible_os_family == "Debian"
-
-- name: Ensure up-to-date CA certificates
-  package:
-    name: ca-certificates
-    state: latest
-
-# Required for become to an unprivileged user to work
-# Using the apt module seems to work more reliably than package :-/
-- name: Install ACL package
-  apt:
-    update_cache: yes
-    name: acl
-    state: present
-  when: ansible_os_family == "Debian"
-
-- include_role:
-    name: azimuth_cloud.image_utils.linux_ansible_init
-
 - include_role: 
     name: linux-podman
     tasks_from: install.yml
