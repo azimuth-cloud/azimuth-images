@@ -25,24 +25,26 @@ jobs:
     if: ${{ !github.event.pull_request.draft }}
     uses: ./.github/workflows/build_test_images.yaml
     secrets: inherit
+    with:
+      ref: ${{ github.event.pull_request.head.sha }}
 
   # Purge the manifest and images that we just tested from S3
-  purge_images:
-    needs: [build_test_images]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  # purge_images:
+  #   needs: [build_test_images]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Install s3cmd
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y s3cmd
+  #     - name: Install s3cmd
+  #       run: |
+  #         sudo apt-get update -y
+  #         sudo apt-get install -y s3cmd
 
-      - name: Purge tested images from S3
-        run: ./bin/purge-manifest "${GITHUB_SHA}.manifest"
-        env:
-          S3_HOST: ${{ vars.S3_HOST }}
-          S3_BUCKET: ${{ vars.S3_BUCKET }}
-          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+  #     - name: Purge tested images from S3
+  #       run: ./bin/purge-manifest "${GITHUB_SHA}.manifest"
+  #       env:
+  #         S3_HOST: ${{ vars.S3_HOST }}
+  #         S3_BUCKET: ${{ vars.S3_BUCKET }}
+  #         S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+  #         S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
