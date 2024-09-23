@@ -27,6 +27,7 @@ jobs:
     secrets: inherit
     with:
       ref: ${{ github.event.pull_request.head.sha }}
+      sha: ${{ github.event.pull_request.head.sha }}
 
   # Purge the manifest and images that we just tested from S3
   # purge_images:
