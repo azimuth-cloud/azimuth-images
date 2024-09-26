@@ -28,4 +28,5 @@
     name: linux-volumes-by-tag
 
 # Install the Broadcom network driver for NetXtreme-E Ethernet
-- include_role: linux-broadcom
+- include_role:
+    name: linux-broadcom
