@@ -186,7 +186,7 @@ jobs:
           S3_BUCKET: ${{ vars.S3_BUCKET }}
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
-          GITHUB_SHA: ${{ inputs.sha || github.sha }}
+          MANIFEST_SHA: ${{ inputs.sha || github.sha }}
 
       # The manifest URL that publish-manifest outputs is a signed URL
       # This means that it contains the S3 access key which, although it does not necessarily need
