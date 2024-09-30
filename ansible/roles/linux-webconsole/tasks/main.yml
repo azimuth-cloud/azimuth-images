@@ -39,6 +39,7 @@
 - include_role:
     name: linux-data-volumes
   vars:
+    create_user: true
     data_volumes:
       - metadata_var: zenith_volume_id
         mountpoint: /etc/zenith/ssh

@@ -9,6 +9,15 @@
   set_fact:
     data_volume_id: "{{ openstack_metadata[data_volume.metadata_var] }}"
 
+- name: Get Azimuth user metadata
+  set_fact:
+    azimuth_username: "{{ openstack_metadata['azimuth_workstation_username'] }}"
+    azimuth_uid: "{{ openstack_metadata['azimuth_workstation_uid'] }}"
+    azimuth_gid: "{{ openstack_metadata['azimuth_workstation_gid'] }}"
+    azimuth_is_sudo: "{{ openstack_metadata['azimuth_workstation_is_sudo'] }}"
+    azimuth_user_data: "{{ openstack_userdata }}"
+  when: create_user | bool
+
 # Use the same discovery logic as CSI Cinder, so that we succeed and fail on the same clouds
 # https://github.com/kubernetes/cloud-provider-openstack/blob/34f5f980f523e191285c568a8a77a2ca683272be/pkg/util/mount/mount.go#L152
 
@@ -67,6 +76,39 @@
     state: mounted
     fstype: "{{ data_volume.get('fs_type', 'ext4') }}"
     opts: "{{ data_volume.get('opts', omit) }}"
+
+- name: Ensure the Azimuth user is created
+  ansible.builtin.user:
+    name: "{{ azimuth_username }}"
+    uid: "{{ azimuth_uid }}"
+    gid: "{{ azimuth_gid }}"
+    home: "{{ data_volume.mountpoint }}/{{ azimuth_username }}-home"
+  when: create_user | bool
+
+- name: Setup public key for the Azimuth user
+  ansible.posix.authorized_key:
+    user: "{{ azimuth_username }}"
+    state: present
+    key: "{{ item.ssh_authorized_keys[0] }}"
+  with_items: "{{ azimuth_user_data }}"
+  when: create_user | bool
+
+- name: Add the Azimuth user to sudoers
+  ansible.builtin.user:
+    name: "{{ azimuth_username }}"
+    groups: sudo
+  when: 
+    - create_user | bool
+    - azimuth_is_sudo | bool
+
+- name: Make sudo without password for users
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/80-ansible-sudo-user
+    content: "{{ azimuth_username }} ALL=(ALL) NOPASSWD:ALL"
+    mode: 0440
+  when: 
+    - create_user | bool
+    - azimuth_is_sudo | bool
 
 - name: Ensure mountpoint permissions
   ansible.builtin.file:

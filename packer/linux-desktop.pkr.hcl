@@ -72,20 +72,6 @@ source "openstack" "linux-desktop" {
   communicator = "ssh"
   ssh_username = var.ssh_username
   ssh_clear_authorized_keys = true
-
-  user_data = <<-EOF
-  #cloud-config
-  users:
-  - default
-  # create a new default-type user matching Slurm platform:
-  - name: azimuth
-    uid: 1005
-    lock_passwd: true
-    gecos: Azimuth User
-    groups: [adm, systemd-journal]
-    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
-    shell: /bin/bash
-  EOF
 }
 
 build {
