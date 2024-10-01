@@ -11,7 +11,7 @@
 
 - name: Get Azimuth user metadata
   set_fact:
-    azimuth_username: "{{ openstack_metadata['azimuth_workstation_username'] }}"
+    azimuth_username: "azimuth"
     azimuth_uid: "{{ openstack_metadata['azimuth_workstation_uid'] }}"
     azimuth_gid: "{{ openstack_metadata['azimuth_workstation_gid'] }}"
     azimuth_is_sudo: "{{ openstack_metadata['azimuth_workstation_is_sudo'] }}"
