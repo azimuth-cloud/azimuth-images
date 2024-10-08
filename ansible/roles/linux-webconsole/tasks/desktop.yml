@@ -24,9 +24,6 @@
 - name: Set graphical environment as default systemd target
   command: systemctl set-default graphical.target
 
-- name: Set current systemd runlevel to graphical environment
-  command: systemctl isolate graphical.target
-
 - name: Create user dconf profile
   lineinfile:
     line: "{{ item }}"

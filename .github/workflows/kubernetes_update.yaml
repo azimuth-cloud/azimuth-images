@@ -85,8 +85,19 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Check for most recent image-builder release
+        id: next
+        uses: azimuth-cloud/github-actions/github-latest-release@master
+        with:
+          repository: kubernetes-sigs/image-builder
+
+      - name: Fetch tags for image-builder submodule
+        run: git fetch --tags
+        working-directory: ./vendor/image-builder
+
       - name: Update image-builder submodule
-        run: git submodule update --remote vendor/image-builder
+        run: git checkout ${{ steps.next.outputs.version }}
+        working-directory: ./vendor/image-builder
 
       - name: Generate app token for PR
         uses: azimuth-cloud/github-actions/generate-app-token@master
@@ -100,13 +111,15 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ steps.generate-app-token.outputs.token }}
-          commit-message: Update Kubernetes image-builder submodule
+          commit-message: >-
+            Update image-builder submodule to ${{ steps.next.outputs.version }}
           branch: update/kubernetes-image-builder
           delete-branch: true
-          title: Update Kubernetes image-builder submodule
+          title: >-
+            Update image-builder submodule to ${{ steps.next.outputs.version }}
           body: |
             This PR was created automatically to update the Kubernetes image-builder
-            submodule to `HEAD`.
+            submodule to ${{ steps.next.outputs.version }}.
           labels: |
             automation
             dependency-update
