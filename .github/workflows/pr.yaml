@@ -15,8 +15,8 @@ jobs:
   fail_on_remote:
     runs-on: ubuntu-latest
     steps:
-      - name: PR must be from a branch in the azimuth-cloud/azimuth-images repo
-        run: exit ${{ github.repository == 'azimuth-cloud/azimuth-images' && '0' || '1' }}
+      - name: PR must be from a branch in the RSE-Cambridge/azimuth-images repo
+        run: exit ${{ github.repository == 'RSE-Cambridge/azimuth-images' && '0' || '1' }}
 
   # Build, publish and test the images
   build_test_images:
