@@ -15,6 +15,7 @@
     azimuth_uid: "{{ openstack_metadata['azimuth_workstation_uid'] }}"
     azimuth_gid: "{{ openstack_metadata['azimuth_workstation_gid'] }}"
     azimuth_is_sudo: "{{ openstack_metadata['azimuth_workstation_is_sudo'] }}"
+    azimuth_user_data: "{{ openstack_userdata }}"
   when: create_user | bool
 
 # Use the same discovery logic as CSI Cinder, so that we succeed and fail on the same clouds
@@ -80,13 +81,16 @@
   ansible.builtin.user:
     name: "{{ azimuth_username }}"
     uid: "{{ azimuth_uid }}"
+    gid: "{{ azimuth_gid }}"
     home: "{{ data_volume.mountpoint }}/{{ azimuth_username }}-home"
   when: create_user | bool
 
-- name: Ensure the Azimuth group has the correct GID
-  ansible.builtin.group:
-    name: "{{ azimuth_username }}"
-    gid: "{{ azimuth_gid }}"
+- name: Setup public key for the Azimuth user
+  ansible.posix.authorized_key:
+    user: "{{ azimuth_username }}"
+    state: present
+    key: "{{ item.ssh_authorized_keys[0] }}"
+  with_items: "{{ azimuth_user_data }}"
   when: create_user | bool
 
 - name: Add the Azimuth user to sudoers
