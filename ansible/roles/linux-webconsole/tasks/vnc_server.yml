@@ -29,25 +29,7 @@
     - start_order.conf
     - restart.conf
 
-- name: Get guacamole user info
-  user:
-    name: "{{ guacamole_user }}"
-    state: present
-  register: guacamole_user_info
-
-- name: Set VNC server user facts for guacamole user
-  set_fact:
-    guacamole_user_vnc_config_dir: "{{ guacamole_user_info.home }}/.vnc"
-
 - name: Ensure systemd overrides directory exists
   file:
     path: /etc/systemd/system/vncserver@:1.service.d
     state: directory
-
-- name: Configure user for systemd unit
-  copy:
-    dest: /etc/systemd/system/vncserver@:1.service.d/user.conf
-    content: |
-      [Service]
-      Environment=VNCSERVER_PASSWD_FILE={{ guacamole_user_vnc_config_dir }}/passwd
-      User={{ guacamole_user }}

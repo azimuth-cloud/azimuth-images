@@ -27,15 +27,6 @@
     name: apptainer
     state: present
 
-- block:
-    - include_tasks: desktop.yml
-    - include_tasks: vnc_server.yml
-  when: desktop_enabled is defined and desktop_enabled
-
-- include_role: 
-    name: linux-podman
-    tasks_from: install.yml
-
 - include_role:
     name: linux-data-volumes
   vars:
@@ -51,6 +42,15 @@
         opts: "defaults,nofail"
         owner: azimuth
         group: azimuth
+
+- block:
+    - include_tasks: desktop.yml
+    - include_tasks: vnc_server.yml
+  when: desktop_enabled is defined and desktop_enabled
+
+- include_role: 
+    name: linux-podman
+    tasks_from: install.yml
 
 - include_role:
     name: stackhpc.os-manila-mount
