@@ -1,5 +1,4 @@
 ---
-
 - name: Update apt cache
   apt:
     update_cache: true
@@ -26,3 +25,52 @@
 # Enables volumes to be referred to by tag for setting up mounts in cloud-config
 - include_role:
     name: linux-volumes-by-tag
+
+# Use linux-generic to track linux-modules-extra
+- name: Install InfiniBand support (deb based)
+  ansible.builtin.apt:
+    name: linux-generic
+    state: latest
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+  become: true
+
+- name: Install InfiniBand support (rpm based)
+  ansible.builtin.dnf:
+    name: "@infiniband support"
+    state: present
+  when: ansible_os_family == "RedHat"
+  become: true
+
+- name: Load relevant kernel modules
+  template:
+    src: modules.conf.j2
+    dest: /etc/modules-load.d/modules.conf
+  become: true
+
+# The cloud-init netplan renderer is default for ubuntu
+# but does not support InfiniBand devices
+- name: Switch cloud-init to alternative network renderer
+  lineinfile:
+    path: /etc/cloud/cloud.cfg
+    regexp: "^    renderers:.*"
+    line: "    renderers: ['networkd', 'network-manager']"
+    state: present
+  when: ansible_os_family == "Debian"
+  become: true
+
+- name: Switch cloud-init to alternative network activator
+  lineinfile:
+    path: /etc/cloud/cloud.cfg
+    regexp: "^    activators:.*"
+    line: "    activators: ['networkd', 'eni', 'network-manager']"
+    state: present
+  when: ansible_os_family == "Debian"
+  become: true
+
+
+
+- name: Clean up after ourselves
+  ansible.builtin.apt:
+    clean: yes
+  become: yes
