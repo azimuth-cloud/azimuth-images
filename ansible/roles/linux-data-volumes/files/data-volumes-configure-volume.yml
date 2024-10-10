@@ -89,11 +89,12 @@
     gid: "{{ azimuth_gid }}"
   when: data_volume.azimuth_home | default(false) | bool
 
-- name: Setup public key for the Azimuth user
+- name: Setup public keys for the Azimuth user
   ansible.posix.authorized_key:
     user: "{{ azimuth_username }}"
     state: present
-    key: "{{ openstack_userdata.azimuth_users[0].ssh_authorized_keys }}"
+    key: "{{ item }}"
+  with_items: "{{ openstack_userdata.azimuth_users[0].ssh_authorized_keys }}"
   when: data_volume.azimuth_home | default(false) | bool
 
 - name: Add the Azimuth user to sudoers
