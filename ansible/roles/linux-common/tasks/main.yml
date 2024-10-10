@@ -54,10 +54,21 @@
   lineinfile:
     path: /etc/cloud/cloud.cfg
     regexp: "^    renderers:.*"
-    line: "    renderers: ['sysconfig', 'network-manager', 'networkd']"
+    line: "    renderers: ['networkd', 'network-manager']"
     state: present
   when: ansible_os_family == "Debian"
   become: true
+
+- name: Switch cloud-init to alternative network activator
+  lineinfile:
+    path: /etc/cloud/cloud.cfg
+    regexp: "^    activators:.*"
+    line: "    activators: ['networkd', 'eni', 'network-manager']"
+    state: present
+  when: ansible_os_family == "Debian"
+  become: true
+
+
 
 - name: Clean up after ourselves
   ansible.builtin.apt:
