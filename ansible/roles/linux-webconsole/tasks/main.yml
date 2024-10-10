@@ -42,6 +42,7 @@
         opts: "defaults,nofail"
         owner: azimuth
         group: azimuth
+        azimuth_home: true
 
 - block:
     - include_tasks: desktop.yml

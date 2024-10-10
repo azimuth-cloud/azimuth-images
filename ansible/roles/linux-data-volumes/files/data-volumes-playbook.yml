@@ -5,10 +5,9 @@
   become: true
   vars:
     openstack_metadata: "{{ (lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json).get('meta', {}) }}"
-    openstack_userdata: "{{ (lookup('url', 'http://169.254.169.254/openstack/latest/user_data.json') | from_json).get('user', {}) }}"
+    openstack_userdata: "{{ (lookup('url', 'http://169.254.169.254/openstack/latest/user_data', split_lines=false) | from_yaml) }}"
   vars_files:
     - /etc/ansible-init/vars/data-volumes.yml
-    - /etc/ansible-init/vars/user.yml
   tasks:
     - include_tasks: /etc/ansible-init/includes/data-volumes-configure-volume.yml
       loop: "{{ data_volumes }}"
