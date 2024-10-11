@@ -1,22 +1,16 @@
 ---
-- name: Update apt cache
-  apt:
-    update_cache: true
-  when: ansible_os_family == "Debian"
-
-- name: Ensure up-to-date CA certificates
-  package:
-    name: ca-certificates
-    state: latest
-
-# Required for become to an unprivileged user to work
-# Using the apt module seems to work more reliably than package :-/
+# ACL Required for become to an unprivileged user to work
+# Ensure up-to-date CA certificates
+# Use linux-generic to track linux-modules-extra (IB)
 - name: Install ACL package
   apt:
     update_cache: true
     name: acl
-    state: present
-  when: ansible_os_family == "Debian"
+    pkg:
+    - acl
+    - ca-certificates
+    - linux-generic
+    state: latest
 
 # Enables the ansible-init system, but does not install any default playbooks
 - include_role:
@@ -26,27 +20,10 @@
 - include_role:
     name: linux-volumes-by-tag
 
-# Use linux-generic to track linux-modules-extra
-- name: Install InfiniBand support (deb based)
-  ansible.builtin.apt:
-    name: linux-generic
-    state: latest
-    update_cache: yes
-  when: ansible_os_family == "Debian"
-  become: true
-
-- name: Install InfiniBand support (rpm based)
-  ansible.builtin.dnf:
-    name: "@infiniband support"
-    state: present
-  when: ansible_os_family == "RedHat"
-  become: true
-
 - name: Load relevant kernel modules
   template:
     src: modules.conf.j2
     dest: /etc/modules-load.d/modules.conf
-  become: true
 
 # The cloud-init netplan renderer is default for ubuntu
 # but does not support InfiniBand devices
@@ -56,8 +33,6 @@
     regexp: "^    renderers:.*"
     line: "    renderers: ['networkd', 'network-manager']"
     state: present
-  when: ansible_os_family == "Debian"
-  become: true
 
 - name: Switch cloud-init to alternative network activator
   lineinfile:
@@ -65,12 +40,7 @@
     regexp: "^    activators:.*"
     line: "    activators: ['networkd', 'eni', 'network-manager']"
     state: present
-  when: ansible_os_family == "Debian"
-  become: true
-
-
 
 - name: Clean up after ourselves
   ansible.builtin.apt:
     clean: yes
-  become: yes
