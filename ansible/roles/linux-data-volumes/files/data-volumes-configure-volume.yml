@@ -76,6 +76,21 @@
     fstype: "{{ data_volume.get('fs_type', 'ext4') }}"
     opts: "{{ data_volume.get('opts', omit) }}"
 
+- name: Setup Azimuth home directory
+  ansible.builtin.file:
+    path: "{{ data_volume.mountpoint }}/{{ azimuth_username }}-home"
+    state: directory
+  when: data_volume.azimuth_home | default(false) | bool
+
+- name: Setup bind mount for Azimuth home directory
+  ansible.posix.mount:
+    src: "{{ data_volume.mountpoint }}/{{ azimuth_username }}-home"
+    path: "/home/{{ azimuth_username }}"
+    opts: bind
+    fstype: none
+    state: mounted
+  when: data_volume.azimuth_home | default(false) | bool
+
 - name: Ensure the Azimuth user is created
   ansible.builtin.user:
     name: "{{ azimuth_username }}"
@@ -87,6 +102,16 @@
   ansible.builtin.group:
     name: "{{ azimuth_username }}"
     gid: "{{ azimuth_gid }}"
+  when: data_volume.azimuth_home | default(false) | bool
+
+- name: Ensure Azimuth home directory has the correct permissions
+  ansible.builtin.file:
+    path: "{{ data_volume.mountpoint }}/{{ azimuth_username }}-home"
+    state: directory
+    owner: "{{ azimuth_username }}"
+    group: "{{ azimuth_username }}"
+    mode: '750'
+  become: true
   when: data_volume.azimuth_home | default(false) | bool
 
 - name: Setup public keys for the Azimuth user
