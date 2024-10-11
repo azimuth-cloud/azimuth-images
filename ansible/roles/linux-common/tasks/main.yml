@@ -5,7 +5,6 @@
 - name: Install ACL package
   apt:
     update_cache: true
-    name: acl
     pkg:
     - acl
     - ca-certificates
