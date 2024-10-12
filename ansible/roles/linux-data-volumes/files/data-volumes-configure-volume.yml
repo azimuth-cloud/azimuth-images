@@ -9,14 +9,6 @@
   set_fact:
     data_volume_id: "{{ openstack_metadata[data_volume.metadata_var] }}"
 
-- name: Get Azimuth user metadata
-  set_fact:
-    azimuth_username: "azimuth"
-    azimuth_uid: "{{ openstack_metadata['azimuth_workstation_uid'] }}"
-    azimuth_gid: "{{ openstack_metadata['azimuth_workstation_gid'] }}"
-    azimuth_is_sudo: "{{ openstack_metadata['azimuth_workstation_is_sudo'] }}"
-  when: data_volume.azimuth_home | default(false) | bool
-
 # Use the same discovery logic as CSI Cinder, so that we succeed and fail on the same clouds
 # https://github.com/kubernetes/cloud-provider-openstack/blob/34f5f980f523e191285c568a8a77a2ca683272be/pkg/util/mount/mount.go#L152
 
@@ -76,73 +68,10 @@
     fstype: "{{ data_volume.get('fs_type', 'ext4') }}"
     opts: "{{ data_volume.get('opts', omit) }}"
 
-- name: Setup Azimuth home directory
-  ansible.builtin.file:
-    path: "{{ data_volume.mountpoint }}/{{ azimuth_username }}-home"
-    state: directory
-  when: data_volume.azimuth_home | default(false) | bool
-
-- name: Setup bind mount for Azimuth home directory
-  ansible.posix.mount:
-    src: "{{ data_volume.mountpoint }}/{{ azimuth_username }}-home"
-    path: "/home/{{ azimuth_username }}"
-    opts: bind
-    fstype: none
-    state: mounted
-  when: data_volume.azimuth_home | default(false) | bool
-
-- name: Ensure the Azimuth user is created
-  ansible.builtin.user:
-    name: "{{ azimuth_username }}"
-    uid: "{{ azimuth_uid }}"
-    home: "{{ data_volume.mountpoint }}/{{ azimuth_username }}-home"
-  when: data_volume.azimuth_home | default(false) | bool
-
-- name: Ensure the Azimuth group has the correct GID
-  ansible.builtin.group:
-    name: "{{ azimuth_username }}"
-    gid: "{{ azimuth_gid }}"
-  when: data_volume.azimuth_home | default(false) | bool
-
-- name: Ensure Azimuth home directory has the correct permissions
-  ansible.builtin.file:
-    path: "{{ data_volume.mountpoint }}/{{ azimuth_username }}-home"
-    state: directory
-    owner: "{{ azimuth_username }}"
-    group: "{{ azimuth_username }}"
-    mode: '750'
-  become: true
-  when: data_volume.azimuth_home | default(false) | bool
-
-- name: Setup public keys for the Azimuth user
-  ansible.posix.authorized_key:
-    user: "{{ azimuth_username }}"
-    state: present
-    key: "{{ item }}"
-  with_items: "{{ openstack_userdata.azimuth_users[0].ssh_authorized_keys }}"
-  when: data_volume.azimuth_home | default(false) | bool
-
-- name: Add the Azimuth user to sudoers
-  ansible.builtin.user:
-    name: "{{ azimuth_username }}"
-    groups: sudo
-  when: 
-    - data_volume.azimuth_home | default(false) | bool
-    - azimuth_is_sudo | bool
-
-- name: Make sudo without password for users
-  ansible.builtin.copy:
-    dest: /etc/sudoers.d/80-ansible-sudo-user
-    content: "{{ azimuth_username }} ALL=(ALL) NOPASSWD:ALL"
-    mode: 0440
-  when: 
-    - data_volume.azimuth_home | default(false) | bool
-    - azimuth_is_sudo | bool
-
 - name: Ensure mountpoint permissions
   ansible.builtin.file:
     state: directory
-    owner: "{{ data_volume.owner }}"
-    group: "{{ data_volume.group }}"
+    owner: "{{ data_volume.owner | default('root') }}"
+    group: "{{ data_volume.group | default('root') }}"
     path: "{{ data_volume.mountpoint }}"
-    mode: "{{ data_volume.get('mode', '0755') }}"
+    mode: "{{ data_volume.get('mode', '0755') | default('0755') }}"
