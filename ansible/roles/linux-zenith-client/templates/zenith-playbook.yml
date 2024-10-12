@@ -11,6 +11,14 @@
     os_user_metadata: "{{ os_metadata.get('meta', {}) }}"
     os_project_id: "{{ os_metadata.project_id }}"
   tasks:
+    - name: Ensure Zenith SSH mount has the correct permissions
+      file:
+        path: "/etc/zenith/ssh/"
+        state: directory
+        owner: "podman"
+        group: "podman"
+        mode: '0755'
+
     - name: Ensure Zenith SSH directory exists
       file:
         path: /etc/zenith/ssh/{{ zenith_client_name }}

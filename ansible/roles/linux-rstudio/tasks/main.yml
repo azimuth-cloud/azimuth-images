@@ -11,13 +11,9 @@
       - metadata_var: zenith_volume_id
         mountpoint: /etc/zenith/ssh
         opts: "defaults,nofail"
-        owner: podman
-        group: podman
       - metadata_var: data_volume_id
         mountpoint: /data
         opts: "defaults,nofail"
-        owner: podman
-        group: podman
 
 - include_tasks: rstudio.yml
 
