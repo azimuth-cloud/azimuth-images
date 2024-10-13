@@ -9,13 +9,6 @@
     - playbooks
     - vars
 
-- name: Install task includes
-  copy:
-    src: "{{ item }}"
-    dest: /etc/ansible-init/includes/{{ item }}
-  loop:
-    - data-volumes-configure-volume.yml
-
 - name: Install ansible-init vars for users
   copy:
     content: "{{ { 'user_mountpoint': user_mountpoint } | to_nice_yaml }}"
