@@ -9,8 +9,18 @@
   vars:
     os_metadata: "{{ lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json }}"
     os_user_metadata: "{{ os_metadata.get('meta', {}) }}"
-    os_project_id: "{{ os_metadata.project_id }}"
   tasks:
+    # We end the play rather than failing if the required metadata is not available
+    # From the outside, this has the same effect as failing, i.e. the service never comes up
+    # However subsequent playbooks are able to proceed, meaning Zenith services can be optional
+    - name: End play if required metadata items are not available
+      meta: end_play
+      when: >-
+        "zenith_registrar_url" not in os_user_metadata or
+        "zenith_sshd_host" not in os_user_metadata or
+        "zenith_sshd_port" not in os_user_metadata or
+        zenith_registrar_token_metadata_key not in os_user_metadata
+
     - name: Ensure Zenith SSH mount has the correct permissions
       file:
         path: "/etc/zenith/ssh/"
@@ -19,13 +29,6 @@
         group: "podman"
         mode: '0755'
 
-    - name: Ensure Zenith SSH directory exists
-      file:
-        path: /etc/zenith/ssh/{{ zenith_client_name }}
-        state: directory
-        owner: podman
-        group: podman
-
     - name: Set Zenith facts
       set_fact:
         zenith_client_registrar_url: "{{ os_user_metadata.zenith_registrar_url }}"
@@ -33,7 +36,13 @@
         zenith_client_registrar_verify_ssl: false
         zenith_client_sshd_host: "{{ os_user_metadata.zenith_sshd_host }}"
         zenith_client_sshd_port: "{{ os_user_metadata.zenith_sshd_port }}"
-        azimuth_cloud_name: "{{ os_user_metadata.get('azimuth_cloud_name', '') }}"
+
+    - name: Ensure Zenith SSH directory exists
+      file:
+        path: /etc/zenith/ssh/{{ zenith_client_name }}
+        state: directory
+        owner: podman
+        group: podman
 
     - name: Write the Zenith client configuration
       copy:
@@ -51,9 +60,9 @@
           forward_to_host: {{ ansible_default_ipv4.address if zenith_forward_to_host == 'HOST_IP' else zenith_forward_to_host }}
           forward_to_port: {{ zenith_forward_to_port }}
 
-          auth_params:
-            cloud-name: {{ azimuth_cloud_name }}
-            tenancy-id: {{ os_project_id }}
+          {% if zenith_client_config_extra -%}
+          {{ zenith_client_config_extra | to_nice_yaml }}
+          {%- endif %}
         dest: /etc/zenith/{{ zenith_client_name }}/client.yaml
 
     # The podman_container module doesn't re-run the container every time

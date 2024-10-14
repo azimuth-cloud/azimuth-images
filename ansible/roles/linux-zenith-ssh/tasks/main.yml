@@ -1,0 +1,25 @@
+---
+
+- name: Install systemd unit for SSH pod
+  include_role: 
+    name: linux-podman
+    tasks_from: systemd-unit.yml
+  vars:
+    podman_service_name: "{{ zenith_ssh_service_name }}"
+    podman_service_type: pod
+
+- name: Configure SSH Zenith client
+  include_role:
+    name: linux-zenith-client
+  vars:
+    zenith_client_name: "{{ zenith_ssh_service_name }}-client"
+    zenith_client_pod: "{{ zenith_ssh_service_name }}"
+    zenith_forward_to_host: HOST_IP
+    zenith_forward_to_port: "22"
+    zenith_registrar_token_metadata_key: "zenith_registrar_token_{{ zenith_ssh_metadata_name }}"
+    zenith_client_playbook_priority: "{{ zenith_ssh_playbook_priority }}"
+    # Use an internal tunnel with the SSH protocol
+    zenith_client_config_extra:
+      backend_protocol: ssh
+      internal: true
+      skip_auth: true
