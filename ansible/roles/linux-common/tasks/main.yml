@@ -2,7 +2,7 @@
 # ACL Required for become to an unprivileged user to work
 # Ensure up-to-date CA certificates
 # Use linux-generic to track linux-modules-extra (IB)
-- name: Install ACL package
+- name: Install common packages
   apt:
     update_cache: true
     pkg:
