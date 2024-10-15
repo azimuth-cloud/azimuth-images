@@ -21,7 +21,7 @@ cosign sign-blob "${IMAGE_NAME}.qcow2" --bundle "${IMAGE_NAME}.cosign.bundle" -y
 # test the bundle works validates
 cosign verify-blob "${IMAGE_NAME}.qcow2" --bundle "${IMAGE_NAME}.cosign.bundle" \
   --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
-  --certificate-identity-regexp="https://github.com/azimuth-cloud/azimuth-images/.github/.*"
+  --certificate-identity-regexp="https://github.com/RSE-Cambridge/azimuth-images/.github/.*"
 
 # Upload the compressed image to S3
 cat <<EOF > ~/.s3cfg
