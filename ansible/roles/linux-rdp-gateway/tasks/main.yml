@@ -11,8 +11,6 @@
       - metadata_var: zenith_volume_id
         mountpoint: /etc/zenith/ssh
         opts: "defaults,nofail"
-        owner: podman
-        group: podman
 
 - include_role:
     name: linux-guacamole

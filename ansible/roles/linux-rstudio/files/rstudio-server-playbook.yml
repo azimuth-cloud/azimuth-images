@@ -6,6 +6,14 @@
     os_user_metadata: "{{ os_metadata.get('meta', {}) }}"
     os_project_id: "{{ os_metadata.project_id }}"
   tasks:
+  - name: Ensure data mount has the correct permissions
+    file:
+      path: "/data"
+      state: directory
+      owner: "podman"
+      group: "podman"
+      mode: '0755'
+
   - name: Ensure rstudio-server service is enabled and started
     service:
       name: rstudio-server
