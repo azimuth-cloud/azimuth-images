@@ -73,3 +73,17 @@
         content: "{{ azimuth_username }} ALL=(ALL) NOPASSWD:ALL"
         mode: 0440
       when: azimuth_is_sudo | bool
+
+    - name: Setup MOTD for user
+      ansible.builtin.blockinfile:
+        path: /etc/motd
+        create: true
+        block: |
+          This Azimuth user is mounted at {{ user_mountpoint }}/{{ azimuth_username }}-home
+
+          Note that this user storage is EPHEMERAL and is removed on platform deletion, use
+          /platform for persistent storage between workstations.
+
+          More information is available in the Azimuth user documentation:
+          https://azimuth-cloud.github.io/azimuth-user-docs/platforms/linux-workstation/
+      become: true
