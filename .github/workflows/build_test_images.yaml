@@ -95,9 +95,9 @@ jobs:
           scanners: "vuln"
           format: sarif
           output: "${{ steps.publish-image.outputs.image-name }}.sarif"
-          # limit to medium and higher as we get too many results for GH security otherwise
+          # limit to high and critical as we get too many results for GH security otherwise
           limit-severities-for-sarif: 'true'
-          severity: 'MEDIUM,HIGH,CRITICAL'
+          severity: 'HIGH,CRITICAL'
         env:
           TRIVY_DB_REPOSITORY: ghcr.io/azimuth-cloud/trivy-db:2
 
