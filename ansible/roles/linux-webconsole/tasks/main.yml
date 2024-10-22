@@ -40,8 +40,6 @@
 
 - include_role:
     name: linux-user
-  vars:
-    user_mountpoint: /data
 
 - block:
     - include_tasks: desktop.yml

@@ -11,8 +11,11 @@
 
 - name: Install ansible-init vars for users
   copy:
-    content: "{{ { 'user_mountpoint': user_mountpoint } | to_nice_yaml }}"
+    content: "{{ user_init_vars | to_nice_yaml }}"
     dest: /etc/ansible-init/vars/user.yml
+  vars:
+    user_init_vars:
+      user_mountpoint: /data
 
 - name: Install ansible-init playbook
   copy:
