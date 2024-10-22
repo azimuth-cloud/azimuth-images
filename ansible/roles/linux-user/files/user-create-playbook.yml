@@ -78,6 +78,7 @@
       ansible.builtin.blockinfile:
         path: /etc/motd
         create: true
+        marker: ""
         block: |
           This Azimuth user is mounted at {{ user_mountpoint }}/{{ azimuth_username }}-home
 
