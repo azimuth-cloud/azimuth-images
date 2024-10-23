@@ -10,7 +10,6 @@
   tasks:
     - name: Get Azimuth user metadata
       ansible.builtin.set_fact:
-        azimuth_username: "azimuth"
         azimuth_uid: "{{ openstack_metadata['azimuth_workstation_uid'] | default('1006') }}"
         azimuth_gid: "{{ openstack_metadata['azimuth_workstation_gid'] | default('1006') }}"
         azimuth_is_sudo: "{{ openstack_metadata['azimuth_workstation_is_sudo'] | default(true) }}"
@@ -18,14 +17,14 @@
 
     - name: Setup Azimuth home directory
       ansible.builtin.file:
-        path: "{{ user_mountpoint }}/{{ azimuth_username }}-home"
+        path: "{{ user_mountpoint }}/azimuth-home"
         state: directory
       become: true
 
     - name: Setup bind mount for Azimuth home directory
       ansible.posix.mount:
-        src: "{{ user_mountpoint }}/{{ azimuth_username }}-home"
-        path: "/home/{{ azimuth_username }}"
+        src: "{{ user_mountpoint }}/azimuth-home"
+        path: "/home/azimuth"
         opts: bind
         fstype: none
         state: mounted
@@ -33,14 +32,14 @@
 
     - name: Ensure the Azimuth user is created
       ansible.builtin.user:
-        name: "{{ azimuth_username }}"
+        name: "azimuth"
         uid: "{{ azimuth_uid }}"
         shell: "/bin/bash"
       become: true
 
     - name: Ensure the Azimuth group has the correct GID
       ansible.builtin.group:
-        name: "{{ azimuth_username }}"
+        name: "azimuth"
         gid: "{{ azimuth_gid }}"
       become: true
 
@@ -48,29 +47,29 @@
       ansible.builtin.file:
         path: "{{ user_mountpoint }}"
         state: directory
-        owner: "{{ azimuth_username }}"
-        group: "{{ azimuth_username }}"
+        owner: "azimuth"
+        group: "azimuth"
         mode: '750'
         recurse: true
       become: true
 
     - name: Setup public keys for the Azimuth user
       ansible.posix.authorized_key:
-        user: "{{ azimuth_username }}"
+        user: "azimuth"
         state: present
         key: "{{ item }}"
       with_items: "{{ azimuth_ssh_keys }}"
 
     - name: Add the Azimuth user to sudoers
       ansible.builtin.user:
-        name: "{{ azimuth_username }}"
+        name: "azimuth"
         groups: sudo
       when: azimuth_is_sudo | bool
 
     - name: Make sudo without password for users
       ansible.builtin.copy:
         dest: /etc/sudoers.d/80-ansible-sudo-user
-        content: "{{ azimuth_username }} ALL=(ALL) NOPASSWD:ALL"
+        content: "azimuth ALL=(ALL) NOPASSWD:ALL"
         mode: 0440
       when: azimuth_is_sudo | bool
 
@@ -80,7 +79,7 @@
         create: true
         marker: ""
         block: |
-          This Azimuth user is mounted at {{ user_mountpoint }}/{{ azimuth_username }}-home
+          This Azimuth user is mounted at {{ user_mountpoint }}/azimuth-home
 
           Note that this user storage is EPHEMERAL and is removed on platform deletion, use
           /platform for persistent storage between workstations.
