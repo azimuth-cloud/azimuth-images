@@ -6,6 +6,14 @@
   vars:
     openstack_metadata: "{{ (lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json).get('meta', {}) }}"
   tasks:
+    - name: Ensure Zenith SSH mount has the correct permissions
+      file:
+        path: "/etc/zenith/ssh"
+        state: directory
+        owner: "podman"
+        group: "podman"
+        mode: '0755'
+
     - name: Write Guacamole user mapping file
       copy:
         content: |

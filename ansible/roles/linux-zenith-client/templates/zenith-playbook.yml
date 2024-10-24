@@ -21,6 +21,14 @@
         "zenith_sshd_port" not in os_user_metadata or
         zenith_registrar_token_metadata_key not in os_user_metadata
 
+    - name: Ensure Zenith SSH mount has the correct permissions
+      file:
+        path: "/etc/zenith/ssh/"
+        state: directory
+        owner: "podman"
+        group: "podman"
+        mode: '0755'
+
     - name: Set Zenith facts
       set_fact:
         zenith_client_registrar_url: "{{ os_user_metadata.zenith_registrar_url }}"
