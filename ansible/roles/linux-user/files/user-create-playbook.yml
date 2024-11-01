@@ -79,11 +79,10 @@
         create: true
         marker: ""
         block: |
-          This Azimuth user is mounted at {{ user_mountpoint }}/azimuth-home
+          Note that this user storage (/home/azimuth) is EPHEMERAL and is removed on platform deletion,
+          but is persistent through platform patches. All system level changes outside of the home directory
+          will be lost on a platform patch.
 
-          Note that this user storage is EPHEMERAL and is removed on platform deletion, use
-          /platform for persistent storage between workstations.
-
-          More information is available in the Azimuth user documentation:
-          https://azimuth-cloud.github.io/azimuth-user-docs/platforms/linux-workstation/
+          When configured by the Azimuth operator, an additional filesystem is mounted at /project. This
+          filesystem persists after the platform is deleted and is shared with other platforms in the tenancy.
       become: true
