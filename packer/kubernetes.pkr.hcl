@@ -153,6 +153,14 @@ variable "disable_public_repos" {
   type = string
 }
 
+variable "ecr_credential_provider" {
+  type = string
+}
+
+variable "enable_containerd_audit" {
+  type = string
+}
+
 variable "extra_debs" {
   type = string
 }
@@ -230,6 +238,14 @@ variable "kubernetes_deb_repo" {
 }
 
 variable "kubernetes_deb_version" {
+  type = string
+}
+
+variable "kubernetes_enable_automatic_resource_sizing" {
+  type = string
+}
+
+variable "kubernetes_goarch" {
   type = string
 }
 
@@ -442,6 +458,10 @@ build {
       "--extra-vars",
       "disable_public_repos=${var.disable_public_repos}",
       "--extra-vars",
+      "ecr_credential_provider=${var.ecr_credential_provider}",
+      "--extra-vars",
+      "enable_containerd_audit=${var.enable_containerd_audit}",
+      "--extra-vars",
       "extra_debs=\"${var.extra_debs}\"",
       "--extra-vars",
       "extra_repos=\"${var.extra_repos}\"",
@@ -479,6 +499,10 @@ build {
       "kubernetes_deb_repo=${local.kubernetes_deb_repo}",
       "--extra-vars",
       "kubernetes_deb_version=${var.kubernetes_deb_version}",
+      "--extra-vars",
+      "kubernetes_enable_automatic_resource_sizing=${var.kubernetes_enable_automatic_resource_sizing}",
+      "--extra-vars",
+      "kubernetes_goarch=${var.kubernetes_goarch}",
       "--extra-vars",
       "kubernetes_http_source=${var.kubernetes_http_source}",
       "--extra-vars",
