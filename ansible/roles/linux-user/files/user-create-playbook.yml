@@ -79,10 +79,11 @@
         create: true
         marker: ""
         block: |
-          Note that this user storage (/home/azimuth) is EPHEMERAL and is removed on platform deletion,
-          but is persistent through platform patches. All system level changes outside of the home directory
-          will be lost on a platform patch.
+          Note that this user storage (/home/azimuth) is ephemeral, but is persistent through
+          platform patches. All system level changes outside of the home directory will be lost
+          on a platform patch.
 
-          When configured by the Azimuth operator, an additional filesystem is mounted at /project. This
-          filesystem persists after the platform is deleted and is shared with other platforms in the tenancy.
+          When configured by the Azimuth operator and supported by the platform, an additional
+          filesystem is mounted at /project. This filesystem persists after the platform is deleted
+          and is shared with other platforms in the tenancy.
       become: true
