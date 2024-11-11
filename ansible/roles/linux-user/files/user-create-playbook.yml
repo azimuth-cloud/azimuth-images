@@ -30,17 +30,19 @@
         state: mounted
       become: true
 
-    - name: Ensure the Azimuth user is created
-      ansible.builtin.user:
-        name: "azimuth"
-        uid: "{{ azimuth_uid }}"
-        shell: "/bin/bash"
-      become: true
-
-    - name: Ensure the Azimuth group has the correct GID
+    - name: Ensure the Azimuth group is created
       ansible.builtin.group:
         name: "azimuth"
         gid: "{{ azimuth_gid }}"
+      become: true
+
+    - name: Ensure the Azimuth user is created
+      ansible.builtin.user:
+        name: "azimuth"
+        group: "azimuth"
+        uid: "{{ azimuth_uid }}"
+        shell: "/bin/bash"
+        create_home: false
       become: true
 
     - name: Ensure Azimuth home directory has the correct permissions
