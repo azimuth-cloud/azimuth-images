@@ -6,6 +6,14 @@
   vars_files:
     - /etc/ansible-init/vars/guacamole.yml
   tasks:
+    - name: Ensure Zenith SSH mount has the correct permissions
+      file:
+        path: "/etc/zenith/ssh"
+        state: directory
+        owner: "podman"
+        group: "podman"
+        mode: '0755'
+
     - name: Generate SSH keypair for Guacamole
       # Guacamole requires that the key is PEM-formatted
       # See https://issues.apache.org/jira/browse/GUACAMOLE-745
@@ -48,17 +56,26 @@
             # generating ]]>, which will still break XML. Therefore remove ">" from special
             # characters.
             special_chars: '!"#$%&()*+,-./:;<=?@[\]^_`{|}~'
-        
+          
+        - name: Get Guacamole user info
+          getent:
+            database: passwd
+            key: "{{ guacamole_user }}"
+
+        - name: Set Guacamole user home directory
+          set_fact:
+            guacamole_user_home: "{{ ansible_facts.getent_passwd[guacamole_user][4] }}"
+
+        - name: Configure user for systemd unit
+          copy:
+            dest: /etc/systemd/system/vncserver@:1.service.d/user.conf
+            content: |
+              [Service]
+              Environment=VNCSERVER_PASSWD_FILE={{ guacamole_user_home }}/.vnc/passwd
+              User={{ guacamole_user }}
+          become: true
+
         - block:
-          - name: Get Guacamole user info
-            getent:
-              database: passwd
-              key: "{{ guacamole_user }}"
-
-          - name: Set Guacamole user home directory
-            set_fact:
-              guacamole_user_home: "{{ ansible_facts.getent_passwd[guacamole_user][4] }}"
-
           - name: Generate VNC password
             command: vncpasswd -f
             args:

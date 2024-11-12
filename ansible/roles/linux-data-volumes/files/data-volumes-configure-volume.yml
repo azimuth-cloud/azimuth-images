@@ -67,11 +67,3 @@
     state: mounted
     fstype: "{{ data_volume.get('fs_type', 'ext4') }}"
     opts: "{{ data_volume.get('opts', omit) }}"
-
-- name: Ensure mountpoint permissions
-  ansible.builtin.file:
-    state: directory
-    owner: "{{ data_volume.owner }}"
-    group: "{{ data_volume.group }}"
-    path: "{{ data_volume.mountpoint }}"
-    mode: "{{ data_volume.get('mode', '0755') }}"

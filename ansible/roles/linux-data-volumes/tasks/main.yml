@@ -16,7 +16,7 @@
   loop:
     - data-volumes-configure-volume.yml
 
-- name: Install ansible-init vars
+- name: Install ansible-init vars for volumes
   copy:
     content: "{{ { 'data_volumes': data_volumes } | to_nice_yaml }}"
     dest: /etc/ansible-init/vars/data-volumes.yml

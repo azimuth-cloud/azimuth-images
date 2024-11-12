@@ -1,0 +1,24 @@
+---
+
+- name: Ensure ansible-init directories exist
+  file:
+    path: "/etc/ansible-init/{{ item }}"
+    state: directory
+  loop:
+    - includes
+    - playbooks
+    - vars
+
+- name: Install ansible-init vars for users
+  copy:
+    content: "{{ user_init_vars | to_nice_yaml }}"
+    dest: /etc/ansible-init/vars/user.yml
+  vars:
+    user_init_vars:
+      user_mountpoint: /data
+
+- name: Install ansible-init playbook
+  copy:
+    src: user-create-playbook.yml
+    # Leave some numbers for playbooks to execute before
+    dest: /etc/ansible-init/playbooks/15-user-create.yml
