@@ -8,7 +8,7 @@
     pkg:
     - acl
     - ca-certificates
-    - linux-generic
+      #- linux-generic
     state: latest
 
 # Enables the ansible-init system, but does not install any default playbooks
