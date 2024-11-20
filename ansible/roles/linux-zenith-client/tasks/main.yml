@@ -9,6 +9,7 @@
     - zenith_client_pod
     - zenith_registrar_token_metadata_key
     - zenith_client_playbook_priority
+    - zenith_forward_to_port
 
 - name: Ensure Zenith config directory exists
   file:
@@ -56,7 +57,7 @@
       zenith_forward_to_host: "{{ zenith_forward_to_host }}"
       zenith_forward_to_port: "{{ zenith_forward_to_port }}"
       zenith_registrar_token_metadata_key: "{{ zenith_registrar_token_metadata_key }}"
-      
+      zenith_client_config_extra: "{{ zenith_client_config_extra }}"
 
 - name: Install ansible-init playbook for Zenith client
   template:
