@@ -2,6 +2,8 @@
 
 - hosts: all
   become: yes
+  vars:
+    enable_pvc: true
   roles:
     - linux-common
 

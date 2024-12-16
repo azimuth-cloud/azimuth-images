@@ -1,3 +1,6 @@
 ---
+
+enable_pvc: false
+
 kernel_modules:
   - ib_ipoib

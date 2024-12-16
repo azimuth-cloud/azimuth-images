@@ -43,3 +43,9 @@
 - name: Clean up after ourselves
   ansible.builtin.apt:
     clean: yes
+
+- name: Install ansible-init playbook
+  copy:
+    src: install-intel-pvc.yml
+    dest: /etc/ansible-init/playbooks/10-intel-pvc.yml
+  when: enable_pvc
