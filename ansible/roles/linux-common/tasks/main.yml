@@ -19,6 +19,9 @@
 - include_role:
     name: linux-volumes-by-tag
 
+- include_tasks: intel-pvc.yml
+  when: enable_pvc
+
 - name: Load relevant kernel modules
   template:
     src: modules.conf.j2
