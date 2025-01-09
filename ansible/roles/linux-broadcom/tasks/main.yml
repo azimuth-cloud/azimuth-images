@@ -9,6 +9,7 @@
         - libasan8
         - libtsan2
         - dkms
+        - xz-utils
       state: latest    
 
   - name: Install the broadcom driver for NetXtreme-E Ethernet

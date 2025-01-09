@@ -52,6 +52,9 @@
         group: azimuth
 
 - include_role:
+    name: linux-zenith-ssh
+
+- include_role:
     name: stackhpc.os-manila-mount
     tasks_from: install.yml
   vars:
