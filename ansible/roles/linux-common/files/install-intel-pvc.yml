@@ -1,0 +1,47 @@
+---
+
+- hosts: localhost
+  gather_facts: true
+  become: true
+  tasks:
+    - name: Install dependencies
+      ansible.builtin.apt:
+        update_cache: true
+        pkg:
+          - gpg-agent
+          - wget
+        state: latest
+    
+    - name: Fail if running on an unsupported release
+      ansible.builtin.fail:
+        msg: "PVC is only supported on Ubuntu Jammy"
+      when: "{{ ansible_distribution_release }} is not 'jammy'"
+
+    - name: Download GPG key for PVC repo
+      ansible.builtin.get_url:
+        url: https://repositories.intel.com/gpu/intel-graphics.key
+        dest: /usr/share/keyrings/intel-graphics.gpg
+
+    - name: Enable Intel PVC repository
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] https://repositories.intel.com/gpu/ubuntu {{ ansible_distribution_release }}/lts/2350 unified"
+        state: present
+        update_cache: true
+    
+    - name: Install PVC packages
+      ansible.builtin.apt:
+        pkg:
+          - linux-headers-{{ ansible-kernel }}
+          - linux-modules-extra-{{ ansible-kernel }}
+          - flex
+          - bison
+          - intel-fw-gpu
+          - intel-i915-dkms
+          - xpu-smi
+        state: latest
+
+    - name: Ensure i915 is loaded
+      community.general.modprobe:
+        name: i915
+        state: present
+        persistent: present
