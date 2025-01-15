@@ -9,6 +9,6 @@ grafana_dashboards:
     home: true
 
 prometheus_container_image: "prom/prometheus"
-prometheus_version: "v3.0.1"
+prometheus_version: "v3.1.0"
 
 podman_service_user: "podman"
