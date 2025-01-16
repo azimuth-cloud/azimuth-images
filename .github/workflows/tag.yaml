@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install s3cmd
         run: |
@@ -26,6 +26,6 @@ jobs:
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
 
       - name: Publish manifest to release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: manifest.json
