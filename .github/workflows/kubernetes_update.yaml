@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install script dependencies
         run: pip install -r ./requirements.txt
@@ -30,7 +30,7 @@ jobs:
 
       - name: Propose changes via PR if required
         if: ${{ steps.k8s-update.outputs.pr }}
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ steps.generate-app-token.outputs.token }}
           commit-message: ${{ fromJson(steps.k8s-update.outputs.pr).title }}
@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install script dependencies
         run: pip install -r ./requirements.txt
@@ -65,7 +65,7 @@ jobs:
 
       - name: Propose changes via PR if required
         if: ${{ steps.k8s-next.outputs.pr }}
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ steps.generate-app-token.outputs.token }}
           commit-message: ${{ fromJson(steps.k8s-next.outputs.pr).title }}
@@ -81,7 +81,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -108,7 +108,7 @@ jobs:
           app-private-key: ${{ secrets.AUTOMATION_APP_PRIVATE_KEY }}
 
       - name: Propose changes via PR if required
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ steps.generate-app-token.outputs.token }}
           commit-message: >-

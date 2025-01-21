@@ -10,7 +10,7 @@ jobs:
       builds: ${{ steps.builds-as-json.outputs.builds }}
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install script dependencies
         run: pip install -r ./requirements.txt
@@ -34,7 +34,7 @@ jobs:
       security-events: write  # required to upload SARIF files
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -60,7 +60,7 @@ jobs:
           ENV_VAR_FILES: ${{ matrix.var-files }}
 
       - name: Install cosign
-        uses: sigstore/cosign-installer@v3.4.0
+        uses: sigstore/cosign-installer@v3
 
       - name: Publish image
         id: publish-image
@@ -108,7 +108,7 @@ jobs:
 #          category: "${{ matrix.name }}"
 
       - name: Fail if scan has CRITICAL vulnerabilities
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@0.29.0
         with:
           scan-type: fs
           scan-ref: "./${{ steps.publish-image.outputs.image-name }}"
@@ -121,7 +121,7 @@ jobs:
           TRIVY_DB_REPOSITORY: ghcr.io/azimuth-cloud/trivy-db:2
 
       - name: Write matrix outputs
-        uses: cloudposse/github-action-matrix-outputs-write@0.4.2
+        uses: cloudposse/github-action-matrix-outputs-write@v1
         with:
           matrix-step-name: ${{ github.job }}
           matrix-key: ${{ matrix.name }}
@@ -145,12 +145,12 @@ jobs:
 
       - name: Read matrix outputs
         id: matrix-outputs
-        uses: cloudposse/github-action-matrix-outputs-read@0.1.1
+        uses: cloudposse/github-action-matrix-outputs-read@v1
         with:
           matrix-step-name: build_images
 
       - name: Write outputs
-        uses: DamianReeves/write-file-action@0a7fcbe1960c53fc08fe789fa4850d24885f4d84
+        uses: DamianReeves/write-file-action@v1.3
         with:
           path: build-outputs.json
           write-mode: overwrite
@@ -246,7 +246,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install s3cmd
         run: |
