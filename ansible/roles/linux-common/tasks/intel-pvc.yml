@@ -23,7 +23,7 @@
   ansible.builtin.apt:
     pkg:
       - linux-headers-generic
-      - linux-modules-extra-generic
+      - linux-image-generic
       - flex
       - bison
       - intel-fw-gpu
