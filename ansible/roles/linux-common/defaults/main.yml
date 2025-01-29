@@ -4,4 +4,4 @@ enable_pvc: false
 
 kernel_modules:
   - ib_ipoib
-  - "{% if enable_pvc | bool %}i915{% endif %}"
+  - i915
