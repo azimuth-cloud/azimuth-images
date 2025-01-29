@@ -1,0 +1,18 @@
+---
+  - name: Install pre-requisites
+    ansible.builtin.apt:
+      pkg:
+        - dctrl-tools
+        - gcc-12
+        - cpp-12
+        - libgcc-12-dev
+        - libasan8
+        - libtsan2
+        - dkms
+        - xz-utils
+      state: latest    
+
+  - name: Install the broadcom driver for NetXtreme-E Ethernet
+    ansible.builtin.apt:
+      deb: https://object.arcus.openstack.hpc.cam.ac.uk/swift/v1/AUTH_7ac3c0a502cd46c783b2128116165566/bcom-nxe-drivers/netxtreme-peer-mem-dkms_229.2.49.0_all.deb
+      state: present

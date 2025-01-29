@@ -8,7 +8,7 @@
     pkg:
     - acl
     - ca-certificates
-    - linux-generic
+      #- linux-generic
     state: latest
 
 # Enables the ansible-init system, but does not install any default playbooks
@@ -21,6 +21,10 @@
 
 - include_tasks: intel-pvc.yml
   when: enable_pvc
+
+# Install the Broadcom network driver for NetXtreme-E Ethernet
+- include_role:
+    name: linux-broadcom
 
 - name: Load relevant kernel modules
   template:
