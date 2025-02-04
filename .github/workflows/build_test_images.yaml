@@ -30,13 +30,23 @@ jobs:
     permissions:
       contents: read
       packages: write
-      id-token: write         # required to get an OIDC token for signing
-      security-events: write  # required to upload SARIF files
+      id-token: write # required to get an OIDC token for signing
+      security-events: write # required to upload SARIF files
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
         with:
           submodules: recursive
+
+      - name: Setup ssh
+        run: |
+          set -x
+          mkdir ~/.ssh
+          echo "${{ secrets[format('{0}_SSH_KEY', vars.TARGET_CLOUD)] }}" > ~/.ssh/id_ed25519
+          chmod 0600 ~/.ssh/id_ed25519
+
+      - name: Add bastion's ssh key to known_hosts
+        run: echo "${{ vars.BASTION_FINGERPRINTS }}" >> ~/.ssh/known_hosts
 
       - name: Write OpenStack credentials
         run: echo "$OS_CLOUDS" > ./clouds.yaml
@@ -114,8 +124,8 @@ jobs:
           scan-ref: "./${{ steps.publish-image.outputs.image-name }}"
           scanners: "vuln"
           format: table
-          exit-code: '1'
-          severity: 'CRITICAL'
+          exit-code: "1"
+          severity: "CRITICAL"
           ignore-unfixed: true
         env:
           TRIVY_DB_REPOSITORY: ghcr.io/azimuth-cloud/trivy-db:2
