@@ -34,12 +34,12 @@ cleanup() {
 trap cleanup EXIT
 
 # Wait until we are able to allocate a FIP
-PKR_VAR_floating_ip=
-until \
-  PKR_VAR_floating_ip="$(openstack floating ip create -f value -c id "$FLOATING_IP_NETWORK")"
-do
-  sleep 30
-done
+# PKR_VAR_floating_ip=
+# until \
+#   PKR_VAR_floating_ip="$(openstack floating ip create -f value -c id "$FLOATING_IP_NETWORK")"
+# do
+#   sleep 30
+# done
 
 PKR_VAR_source_image_name="packer-$(uuidgen | tr '[:upper:]' '[:lower:]')"
 curl -Lo "$PKR_VAR_source_image_name.download" "$SOURCE_IMAGE_URL"
@@ -52,7 +52,8 @@ openstack image create \
   $SOURCE_IMAGE_PROPERTIES \
   "$PKR_VAR_source_image_name"
 
-export PACKER_LOG=1 PKR_VAR_floating_ip PKR_VAR_source_image_name
+# export PACKER_LOG=1 PKR_VAR_floating_ip PKR_VAR_source_image_name
+export PACKER_LOG=1 PKR_VAR_source_image_name
 packer build \
   --on-error=cleanup \
   $PACKER_VAR_FILES_ARGS \

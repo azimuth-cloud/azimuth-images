@@ -1,5 +1,8 @@
 {
-  "network": "92a7ff81-bfe6-4bd7-9eec-d7a6aa290a45",
+  "network": "909e49e8-6911-473a-bf88-0495ca63853c",
   "flavor": "ec1.medium",
-  "volume_type": "unencrypted"
+  "volume_type": "unencrypted",
+  "ssh_bastion_host": "195.114.30.222",
+  "ssh_bastion_username": "scott",
+  "ssh_bastion_private_key_file": "~/.ssh/id_ed25519"
 }
