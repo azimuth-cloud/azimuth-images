@@ -3,7 +3,7 @@
 zenith_client_image_prefix: ghcr.io/azimuth-cloud
 zenith_client_image_name: zenith-client
 # TODO(mkjpryor) update when SSH protocol is in a release
-zenith_client_image_tag: 0.13.1
+zenith_client_image_tag: 0.14.0
 zenith_client_image: "{{ zenith_client_image_prefix }}/{{ zenith_client_image_name }}:{{ zenith_client_image_tag }}"
 
 zenith_client_wants: []

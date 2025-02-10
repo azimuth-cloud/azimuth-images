@@ -4,3 +4,4 @@ clouds.yaml*
 packer-manifest.json
 s3cfg
 venv
+**/.DS_Store

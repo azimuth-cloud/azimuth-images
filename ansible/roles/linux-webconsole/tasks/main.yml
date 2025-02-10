@@ -57,7 +57,7 @@
     name: stackhpc.os-manila-mount
     tasks_from: install.yml
   vars:
-    os_manila_mount_ceph_version: '18.2.1' # default debian-reef repo URL currently broken
+    os_manila_mount_ceph_version: '18.2.4' # default debian-reef repo URL currently broken
 
 - include_role:
     name: linux-eessi
