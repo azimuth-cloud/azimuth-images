@@ -3,5 +3,5 @@
 podman_service_user: "podman"
 jupyter_data_volume: "/data/jupyter"
 
-repo2docker_version: 2024.03.0
+repo2docker_version: 239c4f57f5a40f7241bb4b4746019eb173475ed8
 repo2podman_version: 0.2.0
