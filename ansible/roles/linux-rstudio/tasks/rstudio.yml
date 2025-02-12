@@ -20,6 +20,10 @@
       # (https://support.posit.co/hc/en-us/articles/360023654474-Installing-and-Configuring-Python-with-RStudio)
       - python3-venv
       - python3-pip
+      # Geospatial Data Abstraction Library (GDAL) is a system package needed
+      # for installing some popular R packages, such as leaflet.
+      - gdal-bin
+      - libgdal-dev
     update_cache: true
     state: present
 
