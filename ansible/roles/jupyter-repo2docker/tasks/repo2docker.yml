@@ -13,7 +13,7 @@
 - name: Install repo2docker
   pip:
     name:
-      - "jupyter-repo2docker=={{ repo2docker_version }}"
+      - "git+https://github.com/jupyterhub/repo2docker.git@{{ repo2docker_version }}"
       - "repo2podman=={{ repo2podman_version }}"
 
 - name: Install systemd unit for repo2docker pod
