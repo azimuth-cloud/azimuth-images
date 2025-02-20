@@ -16,7 +16,7 @@ collections:
     version: 0.24.1
   - name: https://github.com/azimuth-cloud/ansible-collection-image-utils
     type: git
-    version: 0.2.0
+    version: e2d2620ace588ae8f06fa111f11a3f0e23761cf2
 
 roles:
   - src: https://github.com/stackhpc/ansible-role-os-manila-mount.git
