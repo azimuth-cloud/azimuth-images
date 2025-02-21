@@ -1,0 +1,4 @@
+# NOTE(sd109): Affects the the python-jose package
+# bundled with Ansible as part of cyberark/ark-sdk-python.
+# We don't use Cyberark so safe to ignore.
+CVE-2024-33663
