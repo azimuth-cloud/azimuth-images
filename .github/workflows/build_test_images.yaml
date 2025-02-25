@@ -42,8 +42,8 @@ jobs:
         run: |
           set -x
           mkdir ~/.ssh
-          echo "${{ secrets[format('{0}_SSH_KEY', vars.TARGET_CLOUD)] }}" > ~/.ssh/id_ed25519
-          chmod 0600 ~/.ssh/id_ed25519
+          echo "${{ secrets[format('{0}_SSH_KEY_TEST', vars.TARGET_CLOUD)] }}" > ~/.ssh/azimuth-ci
+          chmod 0600 ~/.ssh/azimuth-ci
 
       - name: Add bastion's ssh key to known_hosts
         run: echo "${{ vars.BASTION_FINGERPRINTS }}" >> ~/.ssh/known_hosts
