@@ -40,6 +40,13 @@
     line: "    activators: ['networkd', 'eni', 'network-manager']"
     state: present
 
+- name: Blacklist specified kernel modules
+  community.general.kernel_blacklist:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ blacklisted_kernel_modules }}"
+  when: blacklisted_kernel_modules | length > 0
+
 - name: Clean up after ourselves
   ansible.builtin.apt:
     clean: yes

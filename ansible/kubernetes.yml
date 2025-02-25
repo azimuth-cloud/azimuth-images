@@ -4,5 +4,8 @@
   become: yes
   roles:
     - linux-common
+      vars:
+        blacklisted_kernel_modules:
+          - nouveau
 
 - import_playbook: ../vendor/image-builder/images/capi/ansible/node.yml
