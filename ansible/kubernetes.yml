@@ -3,7 +3,7 @@
 - hosts: all
   become: yes
   roles:
-    - linux-common
+    - role: linux-common
       vars:
         blacklisted_kernel_modules:
           - nouveau
