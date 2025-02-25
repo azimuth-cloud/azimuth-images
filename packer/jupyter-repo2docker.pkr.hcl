@@ -98,7 +98,7 @@ build {
     playbook_file = "${path.root}/../ansible/jupyter-repo2docker.yml"
     use_proxy = false
     extra_arguments = ["-v"]
-    ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10", "ANSIBLE_SSH_ARGS='-J ${ var.ssh_bastion_username }@${ var.ssh_bastion_host }'"]
+    ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10", "ANSIBLE_SSH_ARGS='-o ProxyCommand=\"ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -W %h:%p ${var.ssh_bastion_username}@${var.ssh_bastion_host}\"'"]
   }
 
   post-processor "manifest" { }
