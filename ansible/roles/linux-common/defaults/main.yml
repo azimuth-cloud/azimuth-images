@@ -1,3 +1,4 @@
 ---
+blacklisted_kernel_modules: []
 kernel_modules:
   - ib_ipoib
