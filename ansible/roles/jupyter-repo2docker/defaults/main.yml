@@ -3,5 +3,5 @@
 podman_service_user: "podman"
 jupyter_data_volume: "/data/jupyter"
 
-repo2docker_version: 2023.06.0
+repo2docker_version: dd097a229a302b63d5a940c86f94e564784db421 # fixes https://github.com/azimuth-cloud/azimuth-images/issues/175
 repo2podman_version: 0.2.0

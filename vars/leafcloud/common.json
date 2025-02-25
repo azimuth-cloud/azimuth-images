@@ -1,5 +1,5 @@
 {
-  "network": "909e49e8-6911-473a-bf88-0495ca63853c",
+  "network": "96b9024a-0591-4db6-b9e6-e19b85192dbf",
   "flavor": "ec1.medium",
   "volume_type": "unencrypted",
   "ssh_bastion_host": "195.114.30.222",

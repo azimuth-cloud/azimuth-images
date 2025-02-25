@@ -97,26 +97,6 @@ jobs:
       - name: mount qcow2 file
         run: sudo guestmount -a ${{ steps.publish-image.outputs.image-name }}.qcow2 -i --ro -o allow_other './${{ steps.publish-image.outputs.image-name }}'
 
-#      - name: Run Trivy vulnerability scanner
-#        uses: aquasecurity/trivy-action@0.24.0
-#        with:
-#          scan-type: fs
-#          scan-ref: "./${{ steps.publish-image.outputs.image-name }}"
-#          scanners: "vuln"
-#          format: sarif
-#          output: "${{ steps.publish-image.outputs.image-name }}.sarif"
-#          # limit to high and critical as we get too many results for GH security otherwise
-#          limit-severities-for-sarif: 'true'
-#          severity: 'HIGH,CRITICAL'
-#        env:
-#          TRIVY_DB_REPOSITORY: ghcr.io/azimuth-cloud/trivy-db:2
-
-#      - name: Upload Trivy scan results to GitHub Security tab
-#        uses: github/codeql-action/upload-sarif@v3
-#        with:
-#          sarif_file: "${{ steps.publish-image.outputs.image-name }}.sarif"
-#          category: "${{ matrix.name }}"
-
       - name: Fail if scan has CRITICAL vulnerabilities
         uses: aquasecurity/trivy-action@0.29.0
         with:
@@ -127,6 +107,7 @@ jobs:
           exit-code: "1"
           severity: "CRITICAL"
           ignore-unfixed: true
+          trivyignores: .github/.trivyignore
         env:
           TRIVY_DB_REPOSITORY: ghcr.io/azimuth-cloud/trivy-db:2
 
@@ -235,6 +216,7 @@ jobs:
             generate_tests_caas_test_case_slurm_enabled: false
             generate_tests_kubernetes_test_cases_latest_only: false
             generate_tests_kubernetes_apps_suite_enabled: false
+            generate_tests_caas_test_case_repo2docker_service_repo2docker_expected_title: Home
         # GitHub terminates jobs after 6 hours
         # We don't want jobs to acquire the lock then get timed out before they can finish
         # So wait a maximum of 3 hours to acquire the lock, leaving 3 hours for other tasks in the job
