@@ -14,6 +14,7 @@ variable "network" {
 
 variable "floating_ip" {
   type = string
+  default = null
 }
 
 variable "flavor" {
@@ -46,6 +47,19 @@ variable "ssh_username" {
   type = string
 }
 
+variable "ssh_bastion_host" {
+  type = string
+}
+
+variable "ssh_bastion_username" {
+  type = string
+}
+
+variable "ssh_bastion_private_key_file" {
+  type = string
+}
+
+
 variable "skip_create_image" {
   type = bool
   default = false
@@ -70,6 +84,9 @@ source "openstack" "linux-webconsole" {
   volume_size = var.volume_size
 
   communicator = "ssh"
+  ssh_bastion_host = var.ssh_bastion_host
+  ssh_bastion_username = var.ssh_bastion_username
+  ssh_bastion_private_key_file = var.ssh_bastion_private_key_file
   ssh_username = var.ssh_username
   ssh_clear_authorized_keys = true
 }
