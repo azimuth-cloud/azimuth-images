@@ -46,7 +46,7 @@ jobs:
           chmod 0600 ~/.ssh/azimuth-ci
 
       - name: Add bastion's ssh key to known_hosts
-        run: echo "${{ vars.BASTION_FINGERPRINTS }}" >> ~/.ssh/known_hosts
+        run: echo "${{ vars.BASTION_FINGERPRINTS_TEST }}" >> ~/.ssh/known_hosts
 
       - name: Write OpenStack credentials
         run: echo "$OS_CLOUDS" > ./clouds.yaml

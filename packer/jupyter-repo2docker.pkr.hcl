@@ -97,7 +97,7 @@ build {
     galaxy_file = "${path.root}/../requirements.yml"
     playbook_file = "${path.root}/../ansible/jupyter-repo2docker.yml"
     use_proxy = false
-    extra_arguments = ["-v"]
+    extra_arguments = ["-vvv"]
     ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10", "ANSIBLE_SSH_ARGS='-J ${var.ssh_bastion_username}@${var.ssh_bastion_host}'"]
   }
 
