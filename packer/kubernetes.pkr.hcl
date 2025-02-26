@@ -564,7 +564,7 @@ build {
       "--extra-vars",
       "ubuntu_security_repo=${var.ubuntu_security_repo}",
     ]
-    ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10"]
+    ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10", "ANSIBLE_SSH_ARGS='-J jump'"]
   }
 
   post-processor "manifest" {

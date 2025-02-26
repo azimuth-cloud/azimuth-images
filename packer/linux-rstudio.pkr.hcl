@@ -98,7 +98,7 @@ build {
     playbook_file = "${path.root}/../ansible/linux-rstudio.yml"
     use_proxy = false
     extra_arguments = ["-v"]
-    ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10"]
+    ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10", "ANSIBLE_SSH_ARGS='-J jump'"]
   }
 
   post-processor "manifest" { }

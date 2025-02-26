@@ -102,7 +102,7 @@ build {
       "--extra-vars",
       "desktop_enabled=yes",
     ]
-    ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10"]
+    ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10", "ANSIBLE_SSH_ARGS='-J jump'"]
   }
 
   post-processor "manifest" { }
