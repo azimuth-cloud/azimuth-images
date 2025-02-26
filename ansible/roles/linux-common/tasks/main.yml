@@ -46,6 +46,7 @@
     state: present
   loop: "{{ blacklisted_kernel_modules }}"
   when: blacklisted_kernel_modules | length > 0
+  notify: Regenerate initramfs
 
 - name: Clean up after ourselves
   ansible.builtin.apt:
