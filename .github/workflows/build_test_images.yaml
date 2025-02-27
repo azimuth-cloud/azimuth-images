@@ -63,6 +63,7 @@ jobs:
             User "${{ env.BASTION_USER }}"
             Hostname "${{ env.BASTION_HOST }}"
             IdentityFile "${{ env.BASTION_KEY_PATH }}"
+            ForwardAgent yes
           EOF
           chmod 600 ~/.ssh/config
 

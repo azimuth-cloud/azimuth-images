@@ -430,7 +430,7 @@ build {
     playbook_file = "${path.root}/../ansible/kubernetes.yml"
     use_proxy = false
     extra_arguments = [
-      "-vvv",
+      "-v",
       "--extra-vars",
       "additional_executables=${var.additional_executables}",
       "--extra-vars",
