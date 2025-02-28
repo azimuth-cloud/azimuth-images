@@ -30,13 +30,44 @@ jobs:
     permissions:
       contents: read
       packages: write
-      id-token: write         # required to get an OIDC token for signing
-      security-events: write  # required to upload SARIF files
+      id-token: write # required to get an OIDC token for signing
+      security-events: write # required to upload SARIF files
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
         with:
           submodules: recursive
+
+      - name: Read Bastion Variables
+        run: |
+          VAR_FILE="vars/${{ vars.TARGET_CLOUD }}/common.json"
+          if [ -f "$VAR_FILE" ]; then
+            echo "File exists!"
+          else
+            echo "File does not exist at $VAR_FILE"
+          fi
+          pwd
+          echo "BASTION_HOST=$(jq -r '.ssh_bastion_host' $VAR_FILE)" >> $GITHUB_ENV
+          echo "BASTION_USER=$(jq -r '.ssh_bastion_username' $VAR_FILE)" >> $GITHUB_ENV
+          echo "BASTION_KEY_PATH=$(jq -r '.ssh_bastion_private_key_file' $VAR_FILE)" >> $GITHUB_ENV
+
+      - name: Setup ssh
+        run: |
+          set -x
+          mkdir -p ~/.ssh
+          echo "${{ secrets[format('{0}_SSH_KEY_TEST', vars.TARGET_CLOUD)] }}" > ${{ env.BASTION_KEY_PATH }}
+          chmod 0600 ${{ env.BASTION_KEY_PATH }}
+
+          cat << EOF > ~/.ssh/config
+          Host jump
+            User "${{ env.BASTION_USER }}"
+            Hostname "${{ env.BASTION_HOST }}"
+            IdentityFile "${{ env.BASTION_KEY_PATH }}"
+          EOF
+          chmod 600 ~/.ssh/config
+
+      - name: Add bastion's ssh key to known_hosts
+        run: echo "${{ vars.BASTION_FINGERPRINTS_TEST }}" >> ~/.ssh/known_hosts
 
       - name: Write OpenStack credentials
         run: echo "$OS_CLOUDS" > ./clouds.yaml
@@ -94,8 +125,8 @@ jobs:
           scan-ref: "./${{ steps.publish-image.outputs.image-name }}"
           scanners: "vuln"
           format: table
-          exit-code: '1'
-          severity: 'CRITICAL'
+          exit-code: "1"
+          severity: "CRITICAL"
           ignore-unfixed: true
           trivyignores: .github/.trivyignore
         env:
