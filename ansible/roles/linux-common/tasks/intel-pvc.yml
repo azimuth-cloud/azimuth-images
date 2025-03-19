@@ -30,3 +30,24 @@
       - intel-i915-dkms
       - xpu-smi
     state: latest
+
+- include_role:
+    name: linux-data-volumes
+  vars:
+    data_volumes:
+      - metadata_var: nvme1
+        partitions:
+          - mountpoint: /mnt/nvme1
+            opts: "defaults,nofail"
+      - metadata_var: nvme2
+        partitions:
+          - mountpoint: /mnt/nvme2
+            opts: "defaults,nofail"
+      - metadata_var: nvme3
+        partitions:
+          - mountpoint: /mnt/nvme3
+            opts: "defaults,nofail"
+      - metadata_var: nvme4
+        partitions:
+          - mountpoint: /mnt/nvme4
+            opts: "defaults,nofail"
