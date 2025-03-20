@@ -6,6 +6,8 @@
     pkg:
       - gpg-agent
       - wget
+      - linux-headers-generic
+      - linux-image-generic
     state: latest
 
 - name: Add an Apt signing key, uses whichever key is at the URL
@@ -20,6 +22,7 @@
 
 - name: Install PVC packages
   ansible.builtin.apt:
+    update_cache: true
     pkg:
       - linux-headers-generic
       - linux-image-generic
