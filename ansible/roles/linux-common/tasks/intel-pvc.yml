@@ -17,13 +17,8 @@
 
 - name: Enable Intel PVC repository (non-lts)
   ansible.builtin.apt_repository:
-    repo: "deb https://repositories.intel.com/gpu/ubuntu {{ ansible_distribution_release }} unified"
+    repo: "deb https://repositories.intel.com/gpu/ubuntu {{ ansible_distribution_release }}/lts/2350 unified"
     state: present
-
-- name: REMOVEME Try upgrade of all packages
-  ansible.builtin.apt:
-    upgrade: dist
-    update_cache: yes
 
 - name: Install PVC packages
   ansible.builtin.apt:
@@ -31,17 +26,11 @@
     pkg:
       - linux-headers-generic
       - linux-image-generic
+      - intel-i915-dkms
+      - intel-fw-gpu
       - flex
       - bison
       - xpu-smi
-    state: present
-
-- name: Install i915 via dkms
-  ansible.builtin.apt:
-    update_cache: true
-    pkg:
-      - intel-i915-dkms
-      - intel-fw-gpu
     state: present
 
 - include_role:
