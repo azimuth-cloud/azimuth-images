@@ -10,6 +10,11 @@
       - linux-image-generic
     state: latest
 
+- name: REMOVEME Try upgrade of all packages
+  ansible.builtin.apt:
+    upgrade: dist
+    update_cache: yes
+
 - name: Add an Apt signing key, uses whichever key is at the URL
   ansible.builtin.apt_key:
     url: https://repositories.intel.com/gpu/intel-graphics.key
