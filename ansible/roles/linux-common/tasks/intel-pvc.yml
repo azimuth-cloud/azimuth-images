@@ -33,9 +33,15 @@
       - linux-image-generic
       - flex
       - bison
-      - intel-fw-gpu
-      - intel-i915-dkms
       - xpu-smi
+    state: present
+
+- name: Install i915 via dkms
+  ansible.builtin.apt:
+    update_cache: true
+    pkg:
+      - intel-i915-dkms
+      - intel-fw-gpu
     state: present
 
 - include_role:
