@@ -60,7 +60,7 @@
 - block: Loop on partitions where required
   - name: Set facts for current partition
     set_fact:
-      data_volume_device_partition: "{{ ( data_volume_device  + item.num ) if data_volume.partitions is iterable else data_volume_device }}"
+      data_volume_device_partition: "{{ ( data_volume_device  + 'p' + item.num ) if data_volume.partitions is iterable else data_volume_device }}"
       data_volume_mountpoint_partition: "{{ item.get('mountpoint', omit) if data_volume.partitions is iterable else data_volume.get('mountpoint', omit) }}"
       data_volume_opts_partition: "{{ item.get('opts', omit)  if data_volume.partitions is iterable else data_volume.get('opts', omit) }}" 
 
