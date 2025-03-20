@@ -10,11 +10,6 @@
       - linux-image-generic
     state: latest
 
-- name: REMOVEME Try upgrade of all packages
-  ansible.builtin.apt:
-    upgrade: dist
-    update_cache: yes
-
 - name: Add an Apt signing key, uses whichever key is at the URL
   ansible.builtin.apt_key:
     url: https://repositories.intel.com/gpu/intel-graphics.key
@@ -24,6 +19,11 @@
   ansible.builtin.apt_repository:
     repo: "deb https://repositories.intel.com/gpu/ubuntu {{ ansible_distribution_release }}/lts/2350 unified"
     state: present
+
+- name: REMOVEME Try upgrade of all packages
+  ansible.builtin.apt:
+    upgrade: dist
+    update_cache: yes
 
 - name: Install PVC packages
   ansible.builtin.apt:
