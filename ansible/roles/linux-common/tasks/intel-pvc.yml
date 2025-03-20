@@ -17,7 +17,6 @@
   ansible.builtin.apt_repository:
     repo: "deb https://repositories.intel.com/gpu/ubuntu {{ ansible_distribution_release }}/lts/2350 unified"
     state: present
-    update_cache: true
 
 - name: Install PVC packages
   ansible.builtin.apt:
