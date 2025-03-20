@@ -29,7 +29,7 @@
       - intel-fw-gpu
       - intel-i915-dkms
       - xpu-smi
-    state: latest
+    state: present
 
 - include_role:
     name: linux-data-volumes
