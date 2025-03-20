@@ -15,9 +15,9 @@
     url: https://repositories.intel.com/gpu/intel-graphics.key
     state: present
 
-- name: Enable Intel PVC repository
+- name: Enable Intel PVC repository (non-lts)
   ansible.builtin.apt_repository:
-    repo: "deb https://repositories.intel.com/gpu/ubuntu {{ ansible_distribution_release }}/lts/2350 unified"
+    repo: "deb https://repositories.intel.com/gpu/ubuntu {{ ansible_distribution_release }} unified"
     state: present
 
 - name: REMOVEME Try upgrade of all packages
