@@ -26,8 +26,6 @@
     - "{{ 'scsi-0QEMU_QEMU_HARDDISK_{}'.format(data_volume_id) }}"
     # ESXi
     - "{{ 'wwn-0x{}'.format(data_volume_id | replace('-', '')) }}"
-    # NVMe
-    - "{{ 'nvme-{}'.format(data_volume_id) }}"
   register: candidate_device_paths_stat
 
 - name: Set volume block device name
@@ -49,39 +47,23 @@
     msg: "Could not locate block device for volume {{ data_volume_id }}."
   when: data_volume_device == ""
 
-- name: Create partitions for disk
-  community.general.parted:
-    device: "/dev/{{ data_volume_device }}"
-    number: "{{ data_volume.partitions | length }}"
-    state: present
-    fs_type: data_volume.get('fs_type', 'ext4')
-  when: data_volume.partitions is iterable
+- name: Create filesystem on device
+  community.general.filesystem:
+    fstype: "{{ data_volume.get('fs_type', 'ext4') }}"
+    dev: "/dev/{{ data_volume_device }}"
+  register: data_volume_fs
 
-- block: Loop on partitions where required
-  - name: Set facts for current partition
-    set_fact:
-      data_volume_device_partition: "{{ ( data_volume_device + 'p' + item.num ) if data_volume.partitions is iterable else data_volume_device }}"
-      data_volume_mountpoint_partition: "{{ item.get('mountpoint', omit) if data_volume.partitions is iterable else data_volume.get('mountpoint', omit) }}"
-      data_volume_opts_partition: "{{ item.get('opts', omit)  if data_volume.partitions is iterable else data_volume.get('opts', omit) }}" 
+- name: Update ansible_devices to populate filesystem UUID
+  setup:
+    filter:
+      - ansible_devices
+  when: data_volume_fs is changed
 
-  - name: Create filesystem on device
-    community.general.filesystem:
-      fstype: "{{ data_volume.get('fs_type', 'ext4') }}"
-      dev: "/dev/{{ data_volume_device_partition }}"
-    register: data_volume_fs
-
-  - name: Update ansible_devices to populate filesystem UUID
-    setup:
-      filter:
-        - ansible_devices
-    when: data_volume_fs is changed
-
-  - name: Mount up filesystem using UUID
-    ansible.posix.mount:
-      # Get the UUID from ansible_devices
-      src: "UUID={{ ansible_devices[data_volume_device_partition].links.uuids[0] }}"
-      path: "{{ data_volume_mountpoint_partition }}"
-      state: mounted
-      fstype: "{{ data_volume.get('fs_type', 'ext4') }}"
-      opts: "{{ data_volume_opts_partition }}"
-  loop: "{{ data_volume.partitions if data_volume.partitions is iterable else [] }}"
+- name: Mount up filesystem using UUID
+  ansible.posix.mount:
+    # Get the UUID from ansible_devices
+    src: "UUID={{ ansible_devices[data_volume_device].links.uuids[0] }}"
+    path: "{{ data_volume.mountpoint }}"
+    state: mounted
+    fstype: "{{ data_volume.get('fs_type', 'ext4') }}"
+    opts: "{{ data_volume.get('opts', omit) }}"
