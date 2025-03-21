@@ -32,4 +32,3 @@
       - bison
       - xpu-smi
     state: present
-    lock_timeout: 3600
