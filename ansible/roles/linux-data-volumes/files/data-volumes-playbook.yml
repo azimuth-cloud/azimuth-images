@@ -5,7 +5,6 @@
   become: true
   vars:
     openstack_metadata: "{{ (lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json).get('meta', {}) }}"
-    configure_nvme: false
   vars_files:
     - /etc/ansible-init/vars/data-volumes.yml
   tasks:
@@ -14,7 +13,7 @@
       loop_control:
         loop_var: data_volume
         label: "{{ data_volume.mountpoint }}"
-      when: not configure_nvme
+      when: data_volumes.configure_nvme is undefined
 
     - include_tasks: /etc/ansible-init/includes/data-volumes-configure-nvme.yml
-      when: configure_nvme
+      when: data_volumes.configure_nvme

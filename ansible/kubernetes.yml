@@ -4,6 +4,7 @@
   become: yes
   vars:
     enable_pvc: true
+    configure_nvme: true
   roles:
     - role: linux-common
       vars:

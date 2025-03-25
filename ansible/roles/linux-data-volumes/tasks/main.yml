@@ -15,6 +15,7 @@
     dest: /etc/ansible-init/includes/{{ item }}
   loop:
     - data-volumes-configure-volume.yml
+    - data-volumes-configure-nvme.yml
 
 - name: Install ansible-init vars for volumes
   copy:

@@ -1,8 +1,19 @@
 ---
 
-- name: Get volume ID for volume
+- name: Set LVM configuration
   set_fact:
-    data_volume_id: "{{ openstack_metadata[data_volume.metadata_var] }}"
+    lvm_groups:
+      - vgname: lvm-nvme
+        disks: "{{ openstack_metadata.lvm_disk_nvme | split(',') | map('trim') | list }}"
+        create: true
+        lvnames:
+          - lvname: primary
+            size: 100%FREE
+            opts: --type raid0
+            create: true
+            filesystem: ext4
+            mount: true
+            mntp: /mnt/nvme
 
 - name: Ensure LVM configuration is applied
   vars:
