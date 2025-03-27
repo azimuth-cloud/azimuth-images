@@ -19,8 +19,11 @@
 - include_role:
     name: linux-volumes-by-tag
 
-- include_tasks: intel-pvc.yml
-  when: enable_pvc
+- include_role:
+    name: linux-data-volumes
+  vars:
+    data_volumes:
+      configure_nvme: "{{ enable_nvme | default(false) }}"
 
 - name: Load relevant kernel modules
   template:
