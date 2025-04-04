@@ -14,6 +14,7 @@ variable "network" {
 
 variable "floating_ip" {
   type = string
+  default = null
 }
 
 variable "flavor" {
