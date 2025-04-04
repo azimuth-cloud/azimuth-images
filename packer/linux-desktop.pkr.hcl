@@ -57,7 +57,7 @@ source "openstack" "linux-desktop" {
 
   image_name = "${var.distro_name}-desktop-${local.timestamp}"
   image_visibility = "private"
-  image_disk_format = var.disk_format
+  #image_disk_format = var.disk_format
 
   source_image_name = var.source_image_name
   flavor = var.flavor
@@ -65,9 +65,9 @@ source "openstack" "linux-desktop" {
   security_groups = var.security_groups
   floating_ip = var.floating_ip
 
-  use_blockstorage_volume = true
-  volume_type = var.volume_type
-  volume_size = var.volume_size
+  #use_blockstorage_volume = true
+  #volume_type = var.volume_type
+  #volume_size = var.volume_size
 
   communicator = "ssh"
   ssh_username = var.ssh_username
