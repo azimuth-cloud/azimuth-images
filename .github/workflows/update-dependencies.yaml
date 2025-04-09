@@ -108,11 +108,11 @@ jobs:
         with:
           token: ${{ steps.generate-app-token.outputs.token }}
           commit-message: >-
-            Bump ${{ matrix.key }} to ${{ steps.next.outputs.version }}
+            Update ${{ matrix.key }} to ${{ steps.next.outputs.version }}
           branch: update-dependency/${{ matrix.key }}
           delete-branch: true
           title: >-
-            Bump ${{ matrix.key }} to ${{ steps.next.outputs.version }}
+            Update ${{ matrix.key }} to ${{ steps.next.outputs.version }}
           body: >
             This PR was created automatically to update
             ${{ matrix.key }} to ${{ steps.next.outputs.version }}.
