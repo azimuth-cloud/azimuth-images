@@ -22,3 +22,5 @@ roles:
   - src: https://github.com/stackhpc/ansible-role-os-manila-mount.git
     name: stackhpc.os-manila-mount
     version: v24.5.0
+  - src: mrlesmithjr.manage_lvm
+    version: v0.2.8

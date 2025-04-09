@@ -1,0 +1,27 @@
+---
+
+- name: Set LVM configuration
+  set_fact:
+    lvm_groups:
+      - vgname: lvm-nvme
+        disks: "{{ devices | map('regex_replace', '^', '/dev/') }}"
+        create: true
+        lvnames:
+          - lvname: primary
+            size: 100%FREE
+            opts: --type raid0
+            create: true
+            filesystem: ext4
+            mount: true
+            mntp: /mnt/nvme
+
+- name: Ensure LVM configuration is applied
+  vars:
+    manage_lvm: True
+  include_role:
+    name: mrlesmithjr.manage_lvm
+    apply:
+      become: True
+  when:
+    - lvm_groups is defined
+    - lvm_groups | length > 0
