@@ -1,10 +1,14 @@
+---
 name: Build and test main
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-on:
+on:  # yamllint disable-line rule:truthy
   push:
     branches:
       - main
