@@ -38,7 +38,7 @@
 
 - name: Pull image for Grafana
   containers.podman.podman_image:
-    name: "{{ grafana_container_image }}:{{ grafana_version }}"
+    name: "{{ grafana_container_image }}"
   become: true
   become_user: "{{ podman_service_user }}"
 

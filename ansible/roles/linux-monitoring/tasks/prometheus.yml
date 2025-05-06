@@ -9,7 +9,7 @@
 
 - name: Pull image for Prometheus
   containers.podman.podman_image:
-    name: "{{ prometheus_container_image }}:{{ prometheus_version }}"
+    name: "{{ prometheus_container_image }}"
   become: true
   become_user: "{{ podman_service_user }}"
 
