@@ -1,0 +1,5 @@
+---
+paths:
+  .github/workflows/pr.yaml:
+    ignore:
+      - "shellcheck reported issue in this script: SC2242:.+"
