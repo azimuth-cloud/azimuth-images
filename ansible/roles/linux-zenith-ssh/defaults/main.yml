@@ -6,5 +6,6 @@ zenith_ssh_service_name: zenith-ssh
 # The name of the SSH service in metadata items
 zenith_ssh_metadata_name: ssh
 
-# The SSH playbook must happen after the data volumes are set up, which have priority "10"
+# The SSH playbook must happen after the data volumes are set up,
+# which have priority "10"
 zenith_ssh_playbook_priority: "11"

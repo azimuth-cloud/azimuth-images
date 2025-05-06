@@ -1,6 +1,6 @@
 {
-    "kubernetes_deb_version": "1.32.6-*",
-    "kubernetes_rpm_version": "1.32.6",
-    "kubernetes_semver": "v1.32.6",
-    "kubernetes_series": "v1.32"
+  "kubernetes_deb_version": "1.32.6-*",
+  "kubernetes_rpm_version": "1.32.6",
+  "kubernetes_semver": "v1.32.6",
+  "kubernetes_series": "v1.32"
 }

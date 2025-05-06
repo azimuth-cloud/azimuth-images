@@ -1,21 +1,31 @@
 ---
-
-- hosts: localhost
+- name: Ensure Guacamole is configured
+  hosts: localhost
   gather_facts: true
   become: true
   vars:
-    openstack_metadata: "{{ (lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json).get('meta', {}) }}"
+    openstack_metadata: >-
+      {{
+        (
+          lookup(
+            'url',
+            'http://169.254.169.254/openstack/latest/meta_data.json'
+            )| from_json).get(
+              'meta', {}
+              )
+        }}
   tasks:
     - name: Ensure Zenith SSH mount has the correct permissions
-      file:
+      ansible.builtin.file:
         path: "/etc/zenith/ssh"
         state: directory
         owner: "podman"
         group: "podman"
-        mode: '0755'
+        mode: "0755"
 
     - name: Write Guacamole user mapping file
-      copy:
+      ansible.builtin.copy:
+        # yamllint disable rule:line-length
         content: |
           <user-mapping>
               <authorize username="portal" password="portal">
@@ -30,13 +40,17 @@
                   </connection>
               </authorize>
           </user-mapping>
+        # yamllint enable rule:line-length
         dest: /etc/guacamole/user-mapping.xml
+        owner: "podman"
+        group: "podman"
+        mode: "0644"
 
     - name: Start and enable Guacamole services
-      service:
+      ansible.builtin.service:
         name: "{{ item }}"
         state: started
-        enabled: yes
+        enabled: true
       loop:
         - guacamole
         - guacamole-server
