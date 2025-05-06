@@ -137,7 +137,7 @@
 
 - name: Install Zenith client
   ansible.windows.win_command: >-
-    pip.exe install --no-deps -e "C:\Program Files\Zenith\client"
+    pip.exe install -e "C:\Program Files\Zenith\client"
 
 - name: Install Windows service wrapper for Zenith client
   ansible.windows.win_get_url:
