@@ -17,6 +17,17 @@
   ansible.builtin.include_role:
     name: linux-guacamole
 
+- name: Write Guacamole ansible-init vars file
+  ansible.builtin.copy:
+    content: "{{ guacamole_init_vars | to_nice_yaml }}"
+    dest: /etc/ansible-init/vars/guacamole.yml
+    owner: root
+    group: root
+    mode: "0644"
+  vars:
+    guacamole_init_vars:
+      podman_service_user: "{{ podman_service_user }}"
+
 - name: Install Guacamole ansible-init playbook
   ansible.builtin.copy:
     src: guacamole-playbook.yml

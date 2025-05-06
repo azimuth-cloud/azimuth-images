@@ -90,6 +90,7 @@
     guacamole_init_vars:
       desktop_enabled: "{{ desktop_enabled }}"
       guacamole_user: "{{ guacamole_user }}"
+      podman_service_user: "{{ podman_service_user }}"
 
 - name: Install Guacamole ansible-init playbook
   ansible.builtin.copy:
