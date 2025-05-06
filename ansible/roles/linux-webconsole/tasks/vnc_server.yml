@@ -1,35 +1,46 @@
 ---
-
 #####
 ## These tasks install TigerVNC server and perform global configuration
 #####
 
 - name: Install VNC server
-  package:
+  ansible.builtin.package:
     name: "{{ tigervnc_server_packages }}"
     state: present
 
 # CentOS includes a systemd unit, Ubuntu does not
 - name: Install vncserver systemd unit file
-  copy:
+  ansible.builtin.copy:
     src: vnc_server/vncserver@.service
     dest: /etc/systemd/system/
+    owner: root
+    group: root
+    mode: "0644"
   when: ansible_distribution == 'Ubuntu'
 
 - name: Ensure systemd override directory exists
-  file:
+  ansible.builtin.file:
     path: /etc/systemd/system/vncserver@.service.d
     state: directory
+    owner: root
+    group: root
+    mode: "0755"
 
 - name: Install systemd overrides
-  copy:
+  ansible.builtin.copy:
     src: "vnc_server/{{ item }}"
     dest: /etc/systemd/system/vncserver@.service.d/
+    owner: root
+    group: root
+    mode: "0644"
   loop:
     - start_order.conf
     - restart.conf
 
 - name: Ensure systemd overrides directory exists
-  file:
+  ansible.builtin.file:
     path: /etc/systemd/system/vncserver@:1.service.d
     state: directory
+    owner: root
+    group: root
+    mode: "0755"
