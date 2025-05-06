@@ -1,14 +1,25 @@
 ---
-
-- hosts: localhost
+- name: Configure and mount data volumes
+  hosts: localhost
   gather_facts: true
   become: true
   vars:
-    openstack_metadata: "{{ (lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json).get('meta', {}) }}"
+    openstack_metadata: >-
+      {{
+        (
+          lookup(
+            'url',
+            'http://169.254.169.254/openstack/latest/meta_data.json'
+            )| from_json).get(
+              'meta', {}
+              )
+        }}
   vars_files:
     - /etc/ansible-init/vars/data-volumes.yml
   tasks:
-    - include_tasks: /etc/ansible-init/includes/data-volumes-configure-volume.yml
+    - name: Configure data volumes
+      ansible.builtin.include_tasks: >-
+        /etc/ansible-init/includes/data-volumes-configure-volume.yml
       loop: "{{ data_volumes }}"
       loop_control:
         loop_var: data_volume

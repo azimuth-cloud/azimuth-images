@@ -1,7 +1,7 @@
 ---
-
-- hosts: all
-  gather_facts: no
+- name: Configure webconsole for Windows hosts
+  hosts: all
+  gather_facts: false
   roles:
     - windows-webconsole
     - windows-sysprep

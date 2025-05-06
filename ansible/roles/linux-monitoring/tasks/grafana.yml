@@ -1,9 +1,11 @@
 ---
-
 - name: Ensure Grafana config directories exists
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
+    owner: root
+    group: root
+    mode: "0755"
   loop:
     - /etc/grafana/
     - /etc/grafana/dashboards
@@ -11,36 +13,45 @@
     - /etc/grafana/provisioning/datasources
     - /etc/grafana/provisioning/dashboards
 
-- name: Write Grafana datasources provisioning configuration 
-  template:
+- name: Write Grafana datasources provisioning configuration
+  ansible.builtin.template:
     src: "{{ item }}"
+    # yamllint disable-line rule:line-length
     dest: /etc/grafana/provisioning/datasources/{{ item | basename | regex_replace("\.j2$", "") }}
+    owner: root
+    group: root
+    mode: "0644"
   with_fileglob: "{{ role_path }}/templates/grafana/datasources/*.yml.j2"
 
-- name: Write Grafana dashboards provisioning configuration 
-  template:
+- name: Write Grafana dashboards provisioning configuration
+  ansible.builtin.template:
     src: "{{ item }}"
+    # yamllint disable-line rule:line-length
     dest: /etc/grafana/provisioning/dashboards/{{ item | basename | regex_replace("\.j2$", "") }}
+    owner: root
+    group: root
+    mode: "0644"
   with_fileglob: "{{ role_path }}/templates/grafana/dashboards/*.yml.j2"
 
 - name: Write grafana dashboards
-  include_tasks: grafana-dashboards.yml
+  ansible.builtin.include_tasks: grafana-dashboards.yml
 
 - name: Pull image for Grafana
   containers.podman.podman_image:
     name: "{{ grafana_container_image }}:{{ grafana_version }}"
-  become: yes
+  become: true
   become_user: "{{ podman_service_user }}"
 
 - name: Install systemd unit for Grafana
-  include_role:
+  ansible.builtin.include_role:
     name: linux-podman
     tasks_from: systemd-unit.yml
   vars:
     podman_service_name: "grafana"
     podman_service_type: container
     podman_service_pod: "monitoring"
-    podman_service_wants: ["prometheus"]
+    podman_service_wants:
+      - prometheus
     podman_service_image: "{{ grafana_container_image }}"
     podman_service_volumes:
       - /etc/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
