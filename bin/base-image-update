@@ -53,7 +53,7 @@ env_file = repo_root / "env" / "base" / f"ubuntu-{args.distro}.env"
 with fileinput.input(env_file, inplace = True) as fh:
     for line in fh:
         if line.startswith("SOURCE_IMAGE_URL="):
-            print(f"SOURCE_IMAGE_URL=\"{latest_url}\"")
+            print(f"SOURCE_IMAGE_URL={latest_url}")
         else:
             print(line, end = "")
 
