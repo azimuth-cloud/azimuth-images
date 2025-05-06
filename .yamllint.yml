@@ -1,0 +1,17 @@
+---
+
+extends: default
+
+rules:
+  brackets:
+    forbid: non-empty
+  comments:
+    # https://github.com/prettier/prettier/issues/6780
+    min-spaces-from-content: 1
+  # https://github.com/adrienverge/yamllint/issues/384
+  comments-indentation: false
+  braces:
+    max-spaces-inside: 1 # yamllint defaults to 0
+  octal-values:
+    forbid-implicit-octal: true # yamllint defaults to false
+    forbid-explicit-octal: true # yamllint defaults to false

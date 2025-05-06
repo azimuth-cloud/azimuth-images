@@ -66,4 +66,19 @@ ENV_VAR_FILES=common,kvm,linux,ubuntu-jammy \
 ./bin/build-image
 ```
 
-This will result in a private image being built in the target OpenStack project.
+
+## Developing locally
+
+Locally run the linters that are run in GitHub Actions using:
+
+```sh
+docker run --rm \
+    -e RUN_LOCAL=true \
+    --env-file "super-linter.env" \
+    -v "$(pwd)":/tmp/lint \
+    ghcr.io/super-linter/super-linter:v7.3.0
+```
+
+```sh
+ansible-lint -c .ansible-lint.yml ansible/
+```
