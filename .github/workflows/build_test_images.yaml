@@ -1,8 +1,17 @@
+---
+# yamllint disable rule:line-length
 name: Build, publish and test images
 
-on:
-  workflow_call:
+permissions:
+  contents: read
+  packages: write
+  # To report GitHub Actions status checks
+  statuses: write
+  security-events: write
+  id-token: write
 
+on:  # yamllint disable-line rule:truthy
+  workflow_call:
 jobs:
   read_builds:
     runs-on: ubuntu-latest
@@ -20,7 +29,8 @@ jobs:
         run: ./bin/builds-as-json
 
   build_images:
-    needs: [read_builds]
+    needs:
+      - read_builds
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -30,7 +40,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-      id-token: write         # required to get an OIDC token for signing
+      id-token: write  # required to get an OIDC token for signing
       security-events: write  # required to upload SARIF files
     steps:
       - name: Check out the repository
@@ -85,7 +95,11 @@ jobs:
         run: sudo mkdir -p './${{ steps.publish-image.outputs.image-name }}'
 
       - name: mount qcow2 file
-        run: sudo guestmount -a ${{ steps.publish-image.outputs.image-name }}.qcow2 -i --ro -o allow_other './${{ steps.publish-image.outputs.image-name }}'
+        run: >
+          sudo guestmount -a
+          ${{ steps.publish-image.outputs.image-name }}.qcow2
+          -i --ro -o allow_other
+          './${{ steps.publish-image.outputs.image-name }}'
 
       - name: Fail if scan has CRITICAL vulnerabilities
         uses: aquasecurity/trivy-action@0.29.0
@@ -94,8 +108,8 @@ jobs:
           scan-ref: "./${{ steps.publish-image.outputs.image-name }}"
           scanners: "vuln"
           format: table
-          exit-code: '1'
-          severity: 'CRITICAL'
+          exit-code: "1"
+          severity: "CRITICAL"
           ignore-unfixed: true
           trivyignores: .github/.trivyignore
         env:
@@ -115,14 +129,15 @@ jobs:
 
   publish_manifest:
     # this job should always run, but needs to run after the build matrix
-    needs: [build_images]
+    needs:
+      - build_images
     if: ${{ always() }}
     runs-on: ubuntu-latest
     outputs:
       manifest-url-encoded: ${{ steps.encode-manifest-url.outputs.encoded }}
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Read matrix outputs
         id: matrix-outputs
@@ -158,34 +173,40 @@ jobs:
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
 
-      # The manifest URL that publish-manifest outputs is a signed URL
-      # This means that it contains the S3 access key which, although it does not necessarily need
-      # to be kept secret, is provided using a GitHub secret
-      # GitHub does not allow outputs that include secrets to be transferred between jobs
-      # To get around this, we encrypt the manifest URL using GPG and use that as the output of this workflow
+      # The manifest URL that publish-manifest outputs is a signed URL, this
+      # means that it contains the S3 access key which, although it does not
+      # necessarily need to be kept secret, is provided using a GitHub secret.
+      # As GitHub does not allow outputs that include secrets to be
+      # transferred between jobs, we encrypt the manifest URL using GPG and
+      # use that as the output of this workflow.
       - name: Encode manifest URL using GPG
         id: encode-manifest-url
         run: |
-          result=$(gpg --symmetric --batch --passphrase "${PASSPHRASE}" --output - <(echo "${INPUT}") | base64 -w0)
-          echo "encoded=${result}" >> $GITHUB_OUTPUT
+          result="$(gpg --symmetric --batch --passphrase "${PASSPHRASE}" \
+                    --output - <(echo "${INPUT}") | base64 -w0)"
+          echo encoded="${result}" >> "$GITHUB_OUTPUT"
         env:
           PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           INPUT: ${{ steps.publish-manifest.outputs.manifest-url }}
 
   run_azimuth_tests:
-    needs: [publish_manifest]
+    needs:
+      - publish_manifest
     runs-on: ubuntu-latest
     steps:
       # The manifest URL that publish-manifest outputs is a signed URL
-      # This means that it contains the S3 access key which, although it does not necessarily need
-      # to be kept secret, is provided using a GitHub secret
-      # GitHub does not allow outputs that include secrets to be transferred between jobs
-      # To get around this, the manifest URL is encrypted using GPG that we must now decrypt to use
+      # This means that it contains the S3 access key which, although it does
+      # not necessarily need to be kept secret, is provided using a GitHub
+      # secret GitHub does not allow outputs that include secrets to be
+      # transferred between jobs. To get around this, the manifest URL is
+      # encrypted using GPG that we must now decrypt to use.
       - name: Decode manifest URL using GPG
         id: decode-manifest-url
         run: |
-          result=$(gpg --decrypt --quiet --batch --passphrase "${PASSPHRASE}" --output - <(echo "${INPUT}" | base64 -d))
-          echo "decoded=${result}" >> $GITHUB_OUTPUT
+          result="$(gpg --decrypt --quiet --batch \
+                    --passphrase "${PASSPHRASE}" \
+                    --output - <(echo "${INPUT}" | base64 -d))"
+          echo decoded="${result}" >> "$GITHUB_OUTPUT"
         env:
           PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           INPUT: ${{ needs.publish_manifest.outputs.manifest-url-encoded }}
@@ -207,8 +228,9 @@ jobs:
             generate_tests_kubernetes_test_cases_latest_only: false
             generate_tests_kubernetes_apps_suite_enabled: false
         # GitHub terminates jobs after 6 hours
-        # We don't want jobs to acquire the lock then get timed out before they can finish
-        # So wait a maximum of 3 hours to acquire the lock, leaving 3 hours for other tasks in the job
+        # We don't want jobs to acquire the lock then get timed out before
+        # they can finish, so wait a maximum of 3 hours to acquire the lock,
+        # leaving 3 hours for other tasks in the job
         timeout-minutes: 180
 
       - name: Provision Azimuth
@@ -223,7 +245,8 @@ jobs:
 
   # Purge the images that we just tested from OpenStack
   purge_images:
-    needs: [run_azimuth_tests]
+    needs:
+      - run_azimuth_tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

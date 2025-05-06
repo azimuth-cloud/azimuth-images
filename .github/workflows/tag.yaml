@@ -1,5 +1,10 @@
+---
 name: Promote image manifest
-on:
+
+permissions:
+  contents: write
+
+on:  # yamllint disable-line rule:truthy
   push:
     tags:
       - "**"

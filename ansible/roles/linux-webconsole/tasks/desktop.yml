@@ -1,14 +1,13 @@
 ---
-
-#####
-## These tasks set up a graphical environment for use with a VNC server
-##
-## Mostly borrowed from the exosphere project
-## https://github.com/exosphere-project/exosphere/
-#####
+###
+# These tasks set up a graphical environment for use with a VNC server
+#
+# Mostly borrowed from the exosphere project:
+# https://github.com/exosphere-project/exosphere/
+###
 
 - name: Install graphical environment
-  package:
+  ansible.builtin.package:
     name: "{{ desktop_environment_package }}"
     state: present
   # Allow the package installation to take up to an hour
@@ -17,30 +16,40 @@
   poll: 15
 
 - name: Enable graphical environment
-  systemd:
+  ansible.builtin.systemd:
     name: graphical.target
-    enabled: yes
+    enabled: true
 
 - name: Set graphical environment as default systemd target
-  command: systemctl set-default graphical.target
+  ansible.builtin.command: systemctl set-default graphical.target
+  changed_when: true
 
 - name: Create user dconf profile
-  lineinfile:
+  ansible.builtin.lineinfile:
     line: "{{ item }}"
     path: /etc/dconf/profile/user
-    create: yes
+    create: true
+    owner: root
+    group: root
+    mode: "0644"
   loop:
     - user-db:user
     - system-db:local
 
 - name: Ensure dconf db directory exists
-  file:
+  ansible.builtin.file:
     path: /etc/dconf/db/local.d/locks
     state: directory
+    owner: root
+    group: root
+    mode: "0755"
 
 - name: Disable screen lock
-  copy:
+  ansible.builtin.copy:
     dest: /etc/dconf/db/local.d/00-screenlock
+    owner: root
+    group: root
+    mode: "0644"
     content: |
       [org/gnome/desktop/lockdown]
       disable-lock-screen=true
@@ -52,20 +61,26 @@
       idle-delay=uint32 0
 
 - name: Override user preferences for screen lock
-  copy:
+  ansible.builtin.copy:
     dest: /etc/dconf/db/local.d/locks/screensaver
+    owner: root
+    group: root
+    mode: "0644"
     content: |
       /org/gnome/desktop/lockdown/disable-lock-screen
       /org/gnome/desktop/screensaver/lock-enabled
       /org/gnome/desktop/session/idle-delay
 
 - name: Update dconf database
-  command: dconf update
+  ansible.builtin.command: dconf update
+  changed_when: true
 
-# See https://c-nergy.be/blog/?p=14051
 - name: Prevent authentication prompts for updating system repos
-  copy:
+  ansible.builtin.copy:
     dest: /etc/polkit-1/localauthority/50-local.d/46-allow-update-repo.pkla
+    owner: root
+    group: root
+    mode: "0644"
     content: |
       [Allow Package Management all Users]
       Identity=unix-user:*

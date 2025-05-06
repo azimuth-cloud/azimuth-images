@@ -1,11 +1,12 @@
 ---
-
-- hosts: all
-  become: yes
+- name: Ensure common configuration is applied on Linux hosts
+  hosts: all
+  become: true
   roles:
     - role: linux-common
       vars:
         blacklisted_kernel_modules:
           - nouveau
 
-- import_playbook: ../vendor/image-builder/images/capi/ansible/node.yml
+- name: Import CAPI image playbook
+  import_playbook: ../vendor/image-builder/images/capi/ansible/node.yml

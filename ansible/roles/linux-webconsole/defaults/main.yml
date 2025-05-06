@@ -1,7 +1,7 @@
 ---
 
 # By default, the desktop is not enabled
-desktop_enabled: no
+desktop_enabled: false
 
 # By default, use the azimuth user to run the guacamole services
 guacamole_user: azimuth

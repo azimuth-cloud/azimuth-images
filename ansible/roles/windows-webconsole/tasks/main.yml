@@ -1,5 +1,4 @@
 ---
-
 - name: Install TightVNC
   chocolatey.chocolatey.win_chocolatey:
     name: tightvnc
@@ -43,7 +42,7 @@
   community.windows.win_unzip:
     src: .\noVNC.zip
     dest: .\noVNC
-    delete_archive: yes
+    delete_archive: true
 
 - name: Make noVNC data directory
   ansible.windows.win_file:
@@ -52,7 +51,7 @@
 
 - name: Copy required noVNC files to data directory
   ansible.windows.win_copy:
-    remote_src: yes
+    remote_src: true
     src: .\noVNC\noVNC-{{ novnc_version }}\{{ item }}
     dest: C:\ProgramData\noVNC\
   loop:
@@ -117,6 +116,7 @@
     git.exe clone {{ zenith_repo_url }} "C:\Program Files\Zenith"
   register: zenith_clone
   changed_when: zenith_clone.rc == 0
+  # yamllint disable rule:line-length
   failed_when: zenith_clone.rc != 0 and 'already exists' not in zenith_clone.stderr
 
 - name: Checkout specified version of Zenith
