@@ -155,8 +155,8 @@
           </user-mapping>
         # yamllint enable rule:line-length
         dest: /etc/guacamole/user-mapping.xml
-        owner: "{{ guacamole_user }}"
-        group: "{{ guacamole_user }}"
+        owner: "{{ podman_service_user }}"
+        group: "{{ podman_service_user }}"
         mode: "0600"
 
     - name: Start and enable Guacamole services

@@ -3,6 +3,8 @@
   hosts: localhost
   gather_facts: true
   become: true
+  vars_files:
+    - /etc/ansible-init/vars/guacamole.yml
   vars:
     openstack_metadata: >-
       {{
@@ -42,9 +44,9 @@
           </user-mapping>
         # yamllint enable rule:line-length
         dest: /etc/guacamole/user-mapping.xml
-        owner: "podman"
-        group: "podman"
-        mode: "0644"
+        owner: "{{ podman_service_user }}"
+        group: "{{ podman_service_user }}"
+        mode: "0600"
 
     - name: Start and enable Guacamole services
       ansible.builtin.service:
