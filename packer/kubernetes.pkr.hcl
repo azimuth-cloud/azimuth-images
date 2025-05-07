@@ -12,6 +12,7 @@ variable "network" {
 
 variable "floating_ip" {
   type = string
+  default = null
 }
 
 variable "flavor" {
@@ -41,6 +42,18 @@ variable "distro_name" {
 }
 
 variable "ssh_username" {
+  type = string
+}
+
+variable "ssh_bastion_host" {
+  type = string
+}
+
+variable "ssh_bastion_username" {
+  type = string
+}
+
+variable "ssh_bastion_private_key_file" {
   type = string
 }
 
@@ -404,6 +417,9 @@ source "openstack" "kubernetes" {
 
   communicator = "ssh"
   ssh_username = var.ssh_username
+  ssh_bastion_host = var.ssh_bastion_host
+  ssh_bastion_username = var.ssh_bastion_username
+  ssh_bastion_private_key_file = var.ssh_bastion_private_key_file
 }
 
 build {
@@ -548,7 +564,7 @@ build {
       "--extra-vars",
       "ubuntu_security_repo=${var.ubuntu_security_repo}",
     ]
-    ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10"]
+    ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10", "ANSIBLE_SSH_ARGS='-J jump -o ControlMaster=auto -o ControlPersist=240s -o PreferredAuthentications=publickey'", "ANSIBLE_SSH_PIPELINING=True"]
   }
 
   post-processor "manifest" {

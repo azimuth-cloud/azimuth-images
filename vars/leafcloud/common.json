@@ -1,5 +1,8 @@
 {
   "network": "96b9024a-0591-4db6-b9e6-e19b85192dbf",
   "flavor": "ec1.medium",
-  "volume_type": "unencrypted"
+  "volume_type": "unencrypted",
+  "ssh_bastion_host": "45.135.58.45",
+  "ssh_bastion_username": "azimuth-ci",
+  "ssh_bastion_private_key_file": "~/.ssh/azimuth-ci"
 }
