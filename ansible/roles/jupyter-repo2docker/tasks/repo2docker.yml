@@ -1,23 +1,23 @@
 ---
-
-- name: Install pip
-  package:
+- name: Install pip  # noqa package-latest
+  ansible.builtin.package:
     name: python3-pip
     state: latest
 
-- name: Upgrade pip
-  pip:
+- name: Upgrade pip  # noqa package-latest
+  ansible.builtin.pip:
     name: pip
     state: latest
 
 - name: Install repo2docker
-  pip:
+  ansible.builtin.pip:
     name:
+      # yamllint disable-line rule:line-length
       - "git+https://github.com/jupyterhub/repo2docker.git@{{ repo2docker_version }}"
       - "repo2podman=={{ repo2podman_version }}"
 
 - name: Install systemd unit for repo2docker pod
-  include_role: 
+  ansible.builtin.include_role:
     name: linux-podman
     tasks_from: systemd-unit.yml
   vars:
@@ -25,7 +25,7 @@
     podman_service_type: pod
 
 - name: Install systemd unit for repo2docker notebook
-  include_role: 
+  ansible.builtin.include_role:
     name: linux-podman
     tasks_from: systemd-unit.yml
   vars:
@@ -45,16 +45,22 @@
       - "{{ jupyter_data_volume }}:/data:U"
 
 - name: Write repo2docker ansible-init vars file
-  copy:
+  ansible.builtin.copy:
     content: "{{ repo2docker_init_vars | to_nice_yaml }}"
     dest: /etc/ansible-init/vars/repo2docker.yml
+    mode: "0644"
+    owner: root
+    group: root
   vars:
     repo2docker_init_vars:
       podman_service_user: "{{ podman_service_user }}"
       jupyter_data_volume: "{{ jupyter_data_volume }}"
 
 - name: Install repo2docker ansible-init playbook
-  copy:
+  ansible.builtin.copy:
     src: repo2docker-playbook.yml
     # Execute between data volumes and zenith client
     dest: /etc/ansible-init/playbooks/50-repo2docker.yml
+    mode: "0644"
+    owner: root
+    group: root

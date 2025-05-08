@@ -1,4 +1,9 @@
+---
 name: Purge defunct images
+
+permissions:
+  contents: read
+
 on:
   # Allow manual executions
   workflow_dispatch:

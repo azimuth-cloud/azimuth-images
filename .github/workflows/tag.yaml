@@ -1,4 +1,9 @@
+---
 name: Promote image manifest
+
+permissions:
+  contents: write
+
 on:
   push:
     tags:
