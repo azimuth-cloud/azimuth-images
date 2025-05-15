@@ -29,3 +29,7 @@
 - name: kubernetes-1-32-jammy
   template: kubernetes
   var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_32
+
+- name: kubernetes-1-33-jammy
+  template: kubernetes
+  var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_33
