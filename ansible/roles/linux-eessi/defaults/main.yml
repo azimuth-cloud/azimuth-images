@@ -7,5 +7,4 @@ cvmfs_config_default:
   CVMFS_QUOTA_LIMIT: "{{ cvmfs_quota_limit_mb }}"
 
 cvmfs_config_overrides: {}
-
 cvmfs_config: "{{ cvmfs_config_default | combine(cvmfs_config_overrides) }}"

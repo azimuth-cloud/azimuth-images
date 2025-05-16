@@ -1,23 +1,25 @@
 ---
-
 - name: Install pip
-  apt:
+  ansible.builtin.apt:
     name: python3-pip
-    update_cache: yes
+    update_cache: true
 
 - name: Install pycdlib
-  pip:
+  ansible.builtin.pip:
     name: pycdlib
     # Install into the distribution packages so that udev picks it up
     extra_args: "--target /usr/lib/python3/dist-packages"
 
 - name: Install openstack-disk-tag script
-  copy:
+  ansible.builtin.copy:
     src: openstack-disk-tag
     dest: /usr/local/bin/openstack-disk-tag
     mode: u=rwx,g=rx,o=rx
 
 - name: Install openstack-disks-by-tag udev rule
-  copy:
+  ansible.builtin.copy:
     src: openstack-disks-by-tag.rules
     dest: /etc/udev/rules.d/80-openstack-disks-by-tag.rules
+    owner: root
+    group: root
+    mode: "0644"

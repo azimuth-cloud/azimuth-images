@@ -1,3 +1,5 @@
 ---
 
-podman_packages: [podman-rootless, containernetworking-plugins]
+podman_packages:
+  - podman-rootless
+  - containernetworking-plugins
