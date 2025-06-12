@@ -61,7 +61,8 @@ for vars_file in vars_files_dir.glob("kubernetes_*.json"):
             "kubernetes_semver": str(latest_version),
         })
         with vars_file.open("w") as fh:
-            json.dump(data, fh, indent = 4)
+            json.dump(data, fh, indent = 2)
+            fh.write("\n")
         next_versions.append(str(latest_version))
 
 if not next_versions:

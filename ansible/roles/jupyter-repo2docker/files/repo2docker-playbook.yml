@@ -1,55 +1,63 @@
 ---
-
-- hosts: localhost
+- name: Ensure repo2docker is configured
+  hosts: localhost
   gather_facts: true
   become: true
   vars_files:
     - /etc/ansible-init/vars/repo2docker.yml
   vars:
-    os_metadata: "{{ lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json }}"
+    os_metadata: >-
+      {{
+        lookup(
+          'url',
+          'http://169.254.169.254/openstack/latest/meta_data.json'
+          ) | from_json
+        }}
     os_user_metadata: "{{ os_metadata.get('meta', {}) }}"
     os_project_id: "{{ os_metadata.project_id }}"
   tasks:
     - name: Ensure Zenith SSH mount has the correct permissions
-      file:
+      ansible.builtin.file:
         path: "/etc/zenith/ssh"
         state: directory
-        owner: "podman"
-        group: "podman"
-        mode: '0755'
+        owner: "{{ podman_service_user }}"
+        group: "{{ podman_service_user }}"
+        mode: "0755"
 
     - name: Ensure data mountpoint has the correct permissions
-      file:
+      ansible.builtin.file:
         path: "/data"
         state: directory
-        owner: "podman"
-        group: "podman"
-        mode: '0755'
+        owner: "{{ podman_service_user }}"
+        group: "{{ podman_service_user }}"
+        mode: "0755"
 
     - name: Make Jupyter data directory
       # Have to make this here not in the base image
       # because the data volume has to be mounted first
-      file:
+      ansible.builtin.file:
         state: directory
         path: "{{ jupyter_data_volume }}"
         owner: "{{ podman_service_user }}"
         group: "{{ podman_service_user }}"
+        mode: "0777"
 
     - name: Build repo2docker image
-      command: >-
+      ansible.builtin.command: >-
         jupyter-repo2docker
           --image-name repo2docker-notebook-server
           --engine podman
           --no-run
           {{ os_user_metadata.repo2docker_repository }}
       become: true
-      become_user: podman
+      become_user: "{{ podman_service_user }}"
+      changed_when: true
 
     - name: Start and enable repo2docker services
-      service:
+      ansible.builtin.service:
         name: "{{ item }}"
         state: started
-        enabled: yes
+        enabled: true
       loop:
         - repo2docker
         - repo2docker-notebook-server

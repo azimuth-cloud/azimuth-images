@@ -1,24 +1,32 @@
 ---
-
 - name: Ensure ansible-init directories exist
-  file:
+  ansible.builtin.file:
     path: "/etc/ansible-init/{{ item }}"
     state: directory
+    owner: root
+    group: root
+    mode: "0755"
   loop:
     - includes
     - playbooks
     - vars
 
 - name: Install ansible-init vars for users
-  copy:
+  ansible.builtin.copy:
     content: "{{ user_init_vars | to_nice_yaml }}"
     dest: /etc/ansible-init/vars/user.yml
+    owner: root
+    group: root
+    mode: "0644"
   vars:
     user_init_vars:
       user_mountpoint: /data
 
 - name: Install ansible-init playbook
-  copy:
+  ansible.builtin.copy:
     src: user-create-playbook.yml
     # Leave some numbers for playbooks to execute before
     dest: /etc/ansible-init/playbooks/15-user-create.yml
+    owner: root
+    group: root
+    mode: "0644"

@@ -1,0 +1,8 @@
+---
+skip_list:
+  - role-name
+
+exclude_paths:
+  - vendor/**
+  - ansible/roles/windows-*/**
+  - .github/**

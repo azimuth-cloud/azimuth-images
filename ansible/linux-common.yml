@@ -1,4 +1,5 @@
 ---
-- hosts: all
+- name: Apply common configuration to Linux hosts
+  hosts: all
   roles:
     - role: linux-common
