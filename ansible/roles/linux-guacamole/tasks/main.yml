@@ -1,7 +1,6 @@
 ---
-
 - name: Install systemd unit for guacamole pod
-  include_role: 
+  ansible.builtin.include_role:
     name: linux-podman
     tasks_from: systemd-unit.yml
   vars:
@@ -11,11 +10,11 @@
 - name: Pull image for guacamole server
   containers.podman.podman_image:
     name: "{{ guacamole_server_image }}"
-  become: yes
+  become: true
   become_user: "{{ podman_service_user }}"
 
 - name: Install systemd unit for guacamole server
-  include_role: 
+  ansible.builtin.include_role:
     name: linux-podman
     tasks_from: systemd-unit.yml
   vars:
@@ -25,18 +24,21 @@
     podman_service_pod: guacamole
 
 - name: Ensure guacamole config directory exists
-  file:
+  ansible.builtin.file:
     path: /etc/guacamole
     state: directory
+    mode: "0755"
+    owner: "{{ podman_service_user }}"
+    group: "{{ podman_service_user }}"
 
 - name: Pull image for guacamole client
   containers.podman.podman_image:
     name: "{{ guacamole_client_image }}"
-  become: yes
+  become: true
   become_user: "{{ podman_service_user }}"
 
 - name: Install systemd unit for guacamole client
-  include_role: 
+  ansible.builtin.include_role:
     name: linux-podman
     tasks_from: systemd-unit.yml
   vars:
@@ -51,17 +53,23 @@
       GUACAMOLE_HOME: /config
       GUACD_HOSTNAME: localhost
     podman_service_volumes:
-      - /etc/guacamole:/config:ro
+      - /etc/guacamole:/config:U,ro
 
 - name: Ensure guacamole MITM config directory exists
-  file:
+  ansible.builtin.file:
     path: /etc/guacamole-mitm
     state: directory
+    mode: "0755"
+    owner: root
+    group: root
 
 - name: Install guacamole MITM config files
-  template:
+  ansible.builtin.template:
     src: "{{ item }}"
     dest: "/etc/guacamole-mitm/{{ item }}"
+    mode: "0644"
+    owner: root
+    group: root
   loop:
     - nginx.conf
     - guacamole_auth.js
@@ -69,11 +77,11 @@
 - name: Pull NGINX image for guacamole MITM
   containers.podman.podman_image:
     name: "{{ guacamole_nginx_image }}"
-  become: yes
+  become: true
   become_user: "{{ podman_service_user }}"
 
 - name: Install systemd unit for guacamole MITM
-  include_role: 
+  ansible.builtin.include_role:
     name: linux-podman
     tasks_from: systemd-unit.yml
   vars:

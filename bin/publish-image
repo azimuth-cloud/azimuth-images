@@ -24,7 +24,7 @@ cosign verify-blob "${IMAGE_NAME}.qcow2" --bundle "${IMAGE_NAME}.cosign.bundle" 
   --certificate-identity-regexp="https://github.com/azimuth-cloud/azimuth-images/.github/.*"
 
 # Upload the compressed image to S3
-cat <<EOF > ~/.s3cfg
+cat <<EOF >~/.s3cfg
 host_base = ${S3_HOST}
 host_bucket = ${S3_HOST_BUCKET:-"$S3_HOST"}
 access_key = ${S3_ACCESS_KEY}
@@ -47,7 +47,9 @@ COSIGN_BUNDLE_URL="https://${S3_HOST}/swift/v1/AUTH_f0dc9cb312144d0aa44037c9149d
 IMAGE_CHECKSUM="sha256:$(sha256sum "${IMAGE_NAME}.qcow2" | awk '{ print $1 }')"
 
 # Produce outputs
-echo "image-name=$IMAGE_NAME" >> "${GITHUB_OUTPUT:-/dev/stdout}"
-echo "image-url=$IMAGE_URL" >> "${GITHUB_OUTPUT:-/dev/stdout}"
-echo "image-checksum=$IMAGE_CHECKSUM" >> "${GITHUB_OUTPUT:-/dev/stdout}"
-echo "cosign-bundle-url=$COSIGN_BUNDLE_URL" >> "${GITHUB_OUTPUT:-/dev/stdout}"
+{
+  echo "image-name=$IMAGE_NAME"
+  echo "image-url=$IMAGE_URL"
+  echo "image-checksum=$IMAGE_CHECKSUM"
+  echo "cosign-bundle-url=$COSIGN_BUNDLE_URL"
+} >>"${GITHUB_OUTPUT:-/dev/stdout}"

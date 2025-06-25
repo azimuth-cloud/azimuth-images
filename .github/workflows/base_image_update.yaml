@@ -1,10 +1,20 @@
+---
 name: Update base images
-on:
+
+permissions:
+  contents: read
+  packages: write
+  # To report GitHub Actions status checks
+  statuses: write
+  security-events: write
+  id-token: write
+
+on:  # yamllint disable-line rule:truthy
   # Allow manual executions
   workflow_dispatch:
   # Run nightly
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
 
 jobs:
   propose_base_image_update:
@@ -12,7 +22,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        distro: [jammy]
+        distro:
+          - jammy
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,7 +47,8 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ steps.generate-app-token.outputs.token }}
-          commit-message: ${{ fromJson(steps.base-image-update.outputs.pr).title }}
+          commit-message: >
+            ${{ fromJson(steps.base-image-update.outputs.pr).title }}
           branch: update/ubuntu-${{ matrix.distro }}
           delete-branch: true
           title: ${{ fromJson(steps.base-image-update.outputs.pr).title }}
