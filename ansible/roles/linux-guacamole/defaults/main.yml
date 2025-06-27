@@ -2,7 +2,7 @@
 
 guacamole_image_prefix: docker.io/guacamole
 
-guacamole_version: 1.5.5
+guacamole_version: 1.6.0
 
 guacamole_server_image_name: guacd
 guacamole_server_image_tag: "{{ guacamole_version }}"
