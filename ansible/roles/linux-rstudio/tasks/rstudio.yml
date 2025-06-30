@@ -32,8 +32,7 @@
 
 - name: Ensure R-Studio Server is installed
   ansible.builtin.apt:
-    # yamllint disable-line rule:line-length
-    deb: https://download2.rstudio.org/server/{{ ansible_distribution_release }}/amd64/rstudio-server-2024.12.1-563-amd64.deb
+    deb: "{{ linux_rstudio_deb_url }}"
     state: present
 
 - name: Ensure rstudio user exists
