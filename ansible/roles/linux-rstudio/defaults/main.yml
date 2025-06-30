@@ -1,0 +1,4 @@
+---
+
+# NOTE(matta): Same URL for Jammy and Noble
+linux_rstudio_deb_url: "https://download2.rstudio.org/server/jammy/amd64/rstudio-server-2025.05.1-513-amd64.deb"
