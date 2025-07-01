@@ -1,3 +1,4 @@
 ---
 
-podman_packages: [podman]
+podman_packages:
+  - "podman"
