@@ -98,10 +98,19 @@
           become: true
           become_user: "{{ guacamole_user }}"
           block:
+            - name: Get path to bash executable
+              ansible.builtin.command: "which bash"
+              register: get_bash_path
+              changed_when: false
+
             - name: Generate VNC password
-              ansible.builtin.command: vncpasswd -f
+              # NOTE(matta): Output must be UTF-8 so base64 encode it
+              ansible.builtin.shell: |
+                set -o pipefail
+                vncpasswd -f | base64
               args:
                 stdin: "{{ guacamole_vnc_password }}"
+                executable: "{{ get_bash_path.stdout }}"
               register: vncpassword
               changed_when: true
 
@@ -115,7 +124,7 @@
 
             - name: Create VNC password file
               ansible.builtin.copy:
-                content: "{{ vncpassword.stdout }}"
+                content: "{{ vncpassword.stdout | ansible.builtin.b64decode }}"
                 dest: "{{ guacamole_user_home }}/.vnc/passwd"
                 owner: "{{ guacamole_user }}"
                 group: "{{ guacamole_user }}"
