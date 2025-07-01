@@ -2,16 +2,20 @@
 
 set -eo pipefail
 
-REPO_ROOT="$(dirname $(dirname $(realpath ${BASH_SOURCE[0]:-${(%):-%x}})))"
+REPO_ROOT="$(
+  cd -- "$(dirname "$0")" >/dev/null 2>&1
+  pwd -P
+)/.."
+
 source "$REPO_ROOT/bin/env-vars"
 
-PACKER_VAR_FILES_ARGS=
+PACKER_VAR_FILES_ARGS=()
 if [ -n "$PACKER_VAR_FILES" ]; then
-    IFS="," read -ra PACKER_VAR_FILES_ARR <<< "$PACKER_VAR_FILES"
-    for FILE in "${PACKER_VAR_FILES_ARR[@]}"; do
-        if [ -z "$FILE" ]; then continue; fi
-        PACKER_VAR_FILES_ARGS="$PACKER_VAR_FILES_ARGS -var-file=$REPO_ROOT/$FILE"
-    done
+  IFS="," read -ra PACKER_VAR_FILES_ARR <<<"$PACKER_VAR_FILES"
+  for FILE in "${PACKER_VAR_FILES_ARR[@]}"; do
+    if [ -z "$FILE" ]; then continue; fi
+    PACKER_VAR_FILES_ARGS+=("-var-file=$REPO_ROOT/$FILE")
+  done
 fi
 
 set -x
@@ -35,7 +39,7 @@ trap cleanup EXIT
 
 # Wait until we are able to allocate a FIP
 PKR_VAR_floating_ip=
-until \
+until
   PKR_VAR_floating_ip="$(openstack floating ip create -f value -c id "$FLOATING_IP_NETWORK")"
 do
   sleep 30
@@ -49,29 +53,31 @@ openstack image create \
   --container-format "${SOURCE_IMAGE_CONTAINER_FORMAT:-bare}" \
   --disk-format "${SOURCE_IMAGE_DISK_FORMAT:-qcow2}" \
   --file "$PKR_VAR_source_image_name.download" \
-  $SOURCE_IMAGE_PROPERTIES \
+  "${SOURCE_IMAGE_PROPERTIES[@]}" \
   "$PKR_VAR_source_image_name"
 
 export PACKER_LOG=1 PKR_VAR_floating_ip PKR_VAR_source_image_name
+PACKER_ARGS=("${PACKER_VAR_FILES_ARGS[@]}" "${PACKER_EXTRA_ARGS[@]}")
 packer build \
   --on-error=cleanup \
-  $PACKER_VAR_FILES_ARGS \
-  $PACKER_EXTRA_ARGS \
+  "${PACKER_ARGS[@]}" \
   "$REPO_ROOT/packer/$PACKER_TEMPLATE.pkr.hcl"
 
 if [ -f "./packer-manifest.json" ]; then
   # Download the image that we built and remove it from OpenStack
   IMAGE_ID="$(jq -r '.builds[-1].artifact_id' ./packer-manifest.json)"
-  IMAGE_NAME="$(openstack image show -f value -c name $IMAGE_ID)"
-  IMAGE_DISK_FORMAT="$(openstack image show -f value -c disk_format $IMAGE_ID)"
+  IMAGE_NAME="$(openstack image show -f value -c name "$IMAGE_ID")"
+  IMAGE_DISK_FORMAT="$(openstack image show -f value -c disk_format "$IMAGE_ID")"
   IMAGE_SOURCE_FILE="${IMAGE_NAME}.source.${IMAGE_DISK_FORMAT}"
   openstack image save --file "$IMAGE_SOURCE_FILE" "$IMAGE_ID"
   openstack image delete "$IMAGE_ID"
 
   # Output the name, format and filename for the downloaded image, and the manifest extra
   MANIFEST_EXTRA="$(jq -c -r '.builds[-1].custom_data // {}' ./packer-manifest.json)"
-  echo "image-name=$IMAGE_NAME" >> "${GITHUB_OUTPUT:-/dev/stdout}"
-  echo "image-disk-format=$IMAGE_DISK_FORMAT" >> "${GITHUB_OUTPUT:-/dev/stdout}"
-  echo "image-source-file=$IMAGE_SOURCE_FILE" >> "${GITHUB_OUTPUT:-/dev/stdout}"
-  echo "manifest-extra=$MANIFEST_EXTRA" >> "${GITHUB_OUTPUT:-/dev/stdout}"
+  {
+    echo "image-name=$IMAGE_NAME"
+    echo "image-disk-format=$IMAGE_DISK_FORMAT"
+    echo "image-source-file=$IMAGE_SOURCE_FILE"
+    echo "manifest-extra=$MANIFEST_EXTRA"
+  } >>"${GITHUB_OUTPUT:-/dev/stdout}"
 fi

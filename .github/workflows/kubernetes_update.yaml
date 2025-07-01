@@ -1,10 +1,20 @@
+---
 name: Update Kubernetes versions
-on:
+
+permissions:
+  contents: read
+  packages: write
+  # To report GitHub Actions status checks
+  statuses: write
+  security-events: write
+  id-token: write
+
+on:  # yamllint disable-line rule:truthy
   # Allow manual executions
   workflow_dispatch:
   # Run nightly
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
 
 jobs:
   propose_patch_versions:
@@ -118,8 +128,8 @@ jobs:
           title: >-
             Update image-builder submodule to ${{ steps.next.outputs.version }}
           body: |
-            This PR was created automatically to update the Kubernetes image-builder
-            submodule to ${{ steps.next.outputs.version }}.
+            This PR was created automatically to update the Kubernetes
+            image-builder submodule to ${{ steps.next.outputs.version }}.
           labels: |
             automation
             dependency-update

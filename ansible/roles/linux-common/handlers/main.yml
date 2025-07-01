@@ -1,13 +1,15 @@
 ---
 - name: Regenerate initramfs
+  become: true
   block:
     - name: Regenerate initramfs (Debian/Ubuntu)
-      command: update-initramfs -u
+      ansible.builtin.command: update-initramfs -u
       when: ansible_os_family == "Debian"
+      changed_when: true
       listen: Regenerate initramfs
 
     - name: Regenerate initramfs (RedHat)
-      command: dracut -f
+      ansible.builtin.command: dracut -f
       when: ansible_os_family == "RedHat"
+      changed_when: true
       listen: Regenerate initramfs
-  become: true

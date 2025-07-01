@@ -1,33 +1,36 @@
 ---
-
 # Include the variables for the OS distribution we are running on
 # Note that we don't use first_found across the whole list of files because
-# we want to include all the ones that apply, in the order in which they are defined
-# However we do use first_found to handle the case where the file doesn't exist at all
+# we want to include all the ones that apply, in the order in which they are
+# defined, however we do use first_found to handle the case where the file
+# doesn't exist at all.
 - name: Include OS-specific variables
-  include_vars: "{{ vars_file }}"
+  ansible.builtin.include_vars: "{{ vars_file }}"
   vars:
     vars_file: "{{ lookup('first_found', lookup_params) }}"
     lookup_params:
-      files: ["{{ item }}"]
+      files:
+        - "{{ item }}"
       skip: true
   when: vars_file
   loop:
     - "{{ role_path }}/vars/{{ ansible_os_family }}.yml"
     - "{{ role_path }}/vars/{{ ansible_distribution }}.yml"
+    # yamllint disable-line rule:line-length
     - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
 
 - name: Add apptainer repository
-  apt_repository:
-    repo: 'ppa:apptainer/ppa'
+  ansible.builtin.apt_repository:
+    repo: "ppa:apptainer/ppa"
     update_cache: true
 
 - name: Install apptainer
-  apt:
+  ansible.builtin.apt:
     name: apptainer
     state: present
 
-- include_role:
+- name: Configure data volumes
+  ansible.builtin.include_role:
     name: linux-data-volumes
   vars:
     data_volumes:
@@ -38,62 +41,84 @@
         mountpoint: /data
         opts: "defaults,nofail"
 
-- include_role:
+- name: Configure Azimuth user
+  ansible.builtin.include_role:
     name: linux-user
 
-- block:
-    - include_tasks: desktop.yml
-    - include_tasks: vnc_server.yml
+- name: Configure Desktop
   when: desktop_enabled is defined and desktop_enabled
+  block:
+    - name: Configure Desktop
+      ansible.builtin.include_tasks: desktop.yml
 
-- include_role: 
+    - name: Configure VNC server
+      ansible.builtin.include_tasks: vnc_server.yml
+
+- name: Configure Podman
+  ansible.builtin.include_role:
     name: linux-podman
     tasks_from: install.yml
 
-- include_role:
+- name: Configure Zenith SSH
+  ansible.builtin.include_role:
     name: linux-zenith-ssh
 
-- include_role:
+- name: Configure Manila mounts
+  ansible.builtin.include_role:
     name: stackhpc.os-manila-mount
     tasks_from: install.yml
   vars:
-    os_manila_mount_ceph_version: '18.2.4' # default debian-reef repo URL currently broken
+    # default debian-reef repo URL currently broken
+    os_manila_mount_ceph_version: "18.2.4"
 
-- include_role:
+- name: Configure EESSI
+  ansible.builtin.include_role:
     name: linux-eessi
 
-- include_role:
+- name: Configure Guacamole
+  ansible.builtin.include_role:
     name: linux-guacamole
 
 - name: Write Guacamole ansible-init vars file
-  copy:
+  ansible.builtin.copy:
     content: "{{ guacamole_init_vars | to_nice_yaml }}"
     dest: /etc/ansible-init/vars/guacamole.yml
+    owner: root
+    group: root
+    mode: "0644"
   vars:
     guacamole_init_vars:
       desktop_enabled: "{{ desktop_enabled }}"
       guacamole_user: "{{ guacamole_user }}"
+      podman_service_user: "{{ podman_service_user }}"
 
 - name: Install Guacamole ansible-init playbook
-  copy:
+  ansible.builtin.copy:
     src: guacamole-playbook.yml
     # Execute between data volumes and zenith client
     dest: /etc/ansible-init/playbooks/50-guacamole.yml
+    owner: root
+    group: root
+    mode: "0644"
 
-- include_role:
+- name: Configure monitoring services
+  ansible.builtin.include_role:
     name: linux-monitoring
   vars:
     prometheus_data_directory: /data/prometheus/database
 
-- include_role:
+- name: Configure Zenith client
+  ansible.builtin.include_role:
     name: linux-zenith-client
   vars:
     zenith_client_name: guacamole-zenith-client
     zenith_client_pod: guacamole
-    zenith_client_wants: [guacamole-mitm]
+    zenith_client_wants:
+      - guacamole-mitm
     zenith_forward_to_port: 8081
     zenith_registrar_token_metadata_key: zenith_registrar_token_webconsole
     zenith_client_playbook_priority: "51"
 
 - name: Run cloud-init cleanup
-  command: cloud-init clean --logs --seed
+  ansible.builtin.command: cloud-init clean --logs --seed
+  changed_when: true

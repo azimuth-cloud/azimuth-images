@@ -1,7 +1,7 @@
 ---
-
-- hosts: all
-  become: yes
+- name: Ensure Linux webconsole hoss are configured
+  hosts: all
+  become: true
   roles:
     - linux-common
     - linux-webconsole

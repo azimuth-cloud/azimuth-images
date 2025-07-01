@@ -6,10 +6,12 @@ guacamole_version: 1.6.0
 
 guacamole_server_image_name: guacd
 guacamole_server_image_tag: "{{ guacamole_version }}"
+# yamllint disable-line rule:line-length
 guacamole_server_image: "{{ guacamole_image_prefix }}/{{ guacamole_server_image_name }}:{{ guacamole_server_image_tag }}"
 
 guacamole_client_image_name: guacamole
 guacamole_client_image_tag: "{{ guacamole_version }}"
+# yamllint disable-line rule:line-length
 guacamole_client_image: "{{ guacamole_image_prefix }}/{{ guacamole_client_image_name }}:{{ guacamole_client_image_tag }}"
 
 guacamole_nginx_image_prefix: docker.io

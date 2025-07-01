@@ -50,9 +50,9 @@ Finally, set up an environment using the `arcus` environment for inspiration.
 You can then build images using the `./bin/build-image` script. This script expects the
 following environment variables to be set:
 
-  * `ENVIRONMENT` - the environment to use
-  * `PACKER_TEMPLATE` - the Packer template in `packer` to use
-  * `ENV_VAR_FILES` - the environment variable files to include
+- `ENVIRONMENT` - the environment to use
+- `PACKER_TEMPLATE` - the Packer template in `packer` to use
+- `ENV_VAR_FILES` - the environment variable files to include
 
 The values for `PACKER_TEMPLATE` and `ENV_VAR_FILES` can be determined by looking at
 [the defined builds](./.github/builds.yaml).
@@ -66,4 +66,20 @@ ENV_VAR_FILES=common,kvm,linux,ubuntu-jammy \
 ./bin/build-image
 ```
 
-This will result in a private image being built in the target OpenStack project.
+This will result in a private image being created in the target OpenStack project.
+
+## Developing locally
+
+To run the GitHub Actions linters locally, use:
+
+```sh
+docker run --rm \
+    -e RUN_LOCAL=true \
+    --env-file "super-linter.env" \
+    -v "$(pwd)":/tmp/lint \
+    ghcr.io/super-linter/super-linter:v7.3.0
+```
+
+```sh
+ansible-lint -c .ansible-lint.yml ansible/
+```

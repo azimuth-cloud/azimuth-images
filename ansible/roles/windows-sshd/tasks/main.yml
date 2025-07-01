@@ -1,13 +1,12 @@
 ---
-
 - name: Add SSH capabilities
   ansible.windows.win_shell: >-
     Add-WindowsCapability -Online -Name OpenSSH.{{ item }}~~~~0.0.1.0
   loop:
     # - Client
     - Server
-  become: yes
-  become_method: runas
+  become: true
+  become_method: ansible.builtin.runas
   become_user: "{{ ansible_user }}"
 
 - name: Start and enable SSHD service
@@ -24,7 +23,7 @@
     direction: in
     protocol: tcp
     state: present
-    enabled: yes
+    enabled: true
 
 - name: Disable additional group check for admins
   community.windows.win_lineinfile:

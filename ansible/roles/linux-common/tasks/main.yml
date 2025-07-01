@@ -2,39 +2,44 @@
 # ACL Required for become to an unprivileged user to work
 # Ensure up-to-date CA certificates
 # Use linux-generic to track linux-modules-extra (IB)
-- name: Install common packages
-  apt:
+- name: Install common packages  # noqa package-latest
+  ansible.builtin.apt:
     update_cache: true
     pkg:
-    - acl
-    - ca-certificates
-    - linux-generic
+      - acl
+      - ca-certificates
+      - linux-generic
     state: latest
 
 # Enables the ansible-init system, but does not install any default playbooks
-- include_role:
+- name: Ensure ansible-init is configured
+  ansible.builtin.include_role:
     name: azimuth_cloud.image_utils.linux_ansible_init
 
 # Enables volumes to be referred to by tag for setting up mounts in cloud-config
-- include_role:
+- name: Ensure volumes can be mounted by tag
+  ansible.builtin.include_role:
     name: linux-volumes-by-tag
 
 - name: Load relevant kernel modules
-  template:
+  ansible.builtin.template:
     src: modules.conf.j2
     dest: /etc/modules-load.d/modules.conf
+    mode: "0644"
+    owner: root
+    group: root
 
 # The cloud-init netplan renderer is default for ubuntu
 # but does not support InfiniBand devices
 - name: Switch cloud-init to alternative network renderer
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/cloud/cloud.cfg
     regexp: "^    renderers:.*"
     line: "    renderers: ['networkd', 'network-manager']"
     state: present
 
 - name: Switch cloud-init to alternative network activator
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/cloud/cloud.cfg
     regexp: "^    activators:.*"
     line: "    activators: ['networkd', 'eni', 'network-manager']"
@@ -50,4 +55,4 @@
 
 - name: Clean up after ourselves
   ansible.builtin.apt:
-    clean: yes
+    clean: true

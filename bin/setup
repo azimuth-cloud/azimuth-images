@@ -2,7 +2,10 @@
 
 set -ex
 
-REPO_ROOT="$(dirname $(dirname $(realpath ${BASH_SOURCE[0]:-${(%):-%x}})))"
+REPO_ROOT="$(
+  cd -- "$(dirname "$0")" >/dev/null 2>&1
+  pwd -P
+)/.."
 
 # Add the packer repo
 curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
