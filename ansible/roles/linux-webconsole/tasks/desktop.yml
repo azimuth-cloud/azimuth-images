@@ -90,12 +90,14 @@
       ResultActive=yes
   when:
     - ansible_facts['distribution'] == "Ubuntu"
-    - ansible_facts['distribution_major_version'] == 22
+    - ansible_facts['distribution_major_version'] == "22"
 
-# See https://github.com/neutrinolabs/xrdp/issues/1889#issuecomment-847924542
 - name: Prevent authentication prompts for updating system repos
-  copy:
+  ansible.builtin.copy:
     dest: /etc/polkit-1/rules.d/46-allow-update-repo.rules
+    owner: root
+    group: root
+    mode: "0644"
     content: |
       polkit.addRule(function(action, subject) {
         if (action.id == "org.freedesktop.packagekit.system-sources-refresh"
@@ -105,4 +107,4 @@
       });
   when:
     - ansible_facts['distribution'] == "Ubuntu"
-    - ansible_facts['distribution_major_version'] == 24
+    - ansible_facts['distribution_major_version'] == "24"
