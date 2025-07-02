@@ -1,10 +1,17 @@
 ---
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+  register: apt_cache_update
+  timeout: 300
+  retries: 3
+  until: apt_cache_update is not failed
+
 # ACL Required for become to an unprivileged user to work
 # Ensure up-to-date CA certificates
 # Use linux-generic to track linux-modules-extra (IB)
 - name: Install common packages  # noqa package-latest
   ansible.builtin.apt:
-    update_cache: true
     pkg:
       - acl
       - ca-certificates
