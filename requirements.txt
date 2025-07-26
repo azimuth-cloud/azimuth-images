@@ -1,4 +1,4 @@
-ansible-core
+ansible-core<2.19
 boto3
 easysemver
 passlib
