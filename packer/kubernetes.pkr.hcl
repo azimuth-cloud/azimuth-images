@@ -293,6 +293,10 @@ variable "node_custom_roles_post" {
   type = string
 }
 
+variable "node_custom_roles_post_sysprep" {
+  type = string
+}
+
 variable "node_custom_roles_pre" {
   type = string
 }
@@ -521,6 +525,8 @@ build {
       "kubernetes_source_type=${var.kubernetes_source_type}",
       "--extra-vars",
       "node_custom_roles_post=\"${var.node_custom_roles_post}\"",
+      "--extra-vars",
+      "node_custom_roles_post_sysprep=\"${var.node_custom_roles_post_sysprep}\"",
       "--extra-vars",
       "node_custom_roles_pre=\"${var.node_custom_roles_pre}\"",
       "--extra-vars",
