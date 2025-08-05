@@ -15,6 +15,13 @@
   # But poll it every 15s
   poll: 15
 
+# https://bugs.launchpad.net/ubuntu/+source/systemd/+bug/2097769/comments/19
+- name: Run netplan apply to ensure DNS works
+  ansible.builtin.command: netplan apply
+  become: true
+  changed_when: true
+  when: ansible_distribution_version is version('24.04', '>=')
+
 - name: Enable graphical environment
   ansible.builtin.systemd:
     name: graphical.target
