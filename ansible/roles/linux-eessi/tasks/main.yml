@@ -1,15 +1,20 @@
 ---
+- name: Create temporary directory for CVMFS debs
+  ansible.builtin.tempfile:
+    state: directory
+  register: cvmfs_tempdir
+
 - name: Download CVMFS repo
   ansible.builtin.get_url:
     # yamllint disable-line rule:line-length
     url: https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest_all.deb
-    dest: "."
+    dest: "{{ cvmfs_tempdir.path }}/cvmfs-release-latest_all.deb"
     mode: "0700"
     owner: root
     group: root
 
 - name: Add CVMFS repo
-  ansible.builtin.command: "dpkg -i cvmfs-release-latest_all.deb"
+  ansible.builtin.command: "dpkg -i {{ cvmfs_tempdir.path }}/cvmfs-release-latest_all.deb"
   changed_when: true
 
 - name: Install CVMFS
@@ -21,13 +26,13 @@
   ansible.builtin.get_url:
     # yamllint disable-line rule:line-length
     url: https://github.com/EESSI/filesystem-layer/releases/download/latest/cvmfs-config-eessi_latest_all.deb
-    dest: "."
+    dest: "{{ cvmfs_tempdir.path }}/cvmfs-config-eessi_latest_all.deb"
     mode: "0700"
     owner: root
     group: root
 
 - name: Install EESSI CVMFS config
-  ansible.builtin.command: "dpkg -i cvmfs-config-eessi_latest_all.deb"
+  ansible.builtin.command: "dpkg -i {{ cvmfs_tempdir.path }}/cvmfs-config-eessi_latest_all.deb"
   changed_when: true
 
 - name: Add base CVMFS config
@@ -46,3 +51,9 @@
   ansible.builtin.command:
     cmd: "cvmfs_config setup"
   changed_when: true
+
+- name: Clean up temporary directory for CVMFS debs
+  ansible.builtin.file:
+    path: "{{ cvmfs_tempdir.path }}"
+    state: absent
+  when: cvmfs_tempdir.path is defined
