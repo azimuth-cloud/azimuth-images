@@ -77,7 +77,7 @@
 
     - name: Ensure Azimuth home directory has the correct permissions
       ansible.builtin.file:
-        path: "{{ user_mountpoint }}"
+        path: "{{ user_mountpoint }}/azimuth-home"
         state: directory
         owner: "azimuth"
         group: "azimuth"
