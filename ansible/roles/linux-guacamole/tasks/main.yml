@@ -47,7 +47,7 @@
     podman_service_image: "{{ guacamole_client_image }}"
     podman_service_pod: guacamole
     # Add a soft dependency on the server
-    podman_service_wants:
+    podman_service_needs:
       - guacamole-server
     podman_service_env:
       GUACAMOLE_HOME: /config
@@ -90,7 +90,7 @@
     podman_service_image: "{{ guacamole_nginx_image }}"
     podman_service_pod: guacamole
     # Add a soft dependency on the client
-    podman_service_wants:
+    podman_service_needs:
       - guacamole-client
     podman_service_command: >-
       nginx -c /etc/guacamole-mitm/nginx.conf

@@ -3,8 +3,8 @@ Description=Podman container-{{ podman_service_name }}.service
 Documentation=man:podman-generate-systemd(1)
 Wants=network.target user@{{ podman_user_id }}.service
 After=network-online.target user@{{ podman_user_id }}.service
-{% for service in podman_service_wants %}
-Wants={{ service }}.service
+{% for service in podman_service_needs %}
+BindsTo={{ service }}.service
 After={{ service }}.service
 {% endfor %}
 

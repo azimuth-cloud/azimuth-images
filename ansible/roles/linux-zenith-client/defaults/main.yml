@@ -5,7 +5,7 @@ zenith_client_image_name: zenith-client
 zenith_client_image_tag: 0.15.1
 zenith_client_image: "{{ zenith_client_image_prefix }}/{{ zenith_client_image_name }}:{{ zenith_client_image_tag }}"  # yamllint disable-line rule:line-length
 
-zenith_client_wants: []
+zenith_client_needs: []
 # The default host for forwarding is the pod that the client is in
 zenith_forward_to_host: 127.0.0.1
 

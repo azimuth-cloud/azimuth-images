@@ -113,7 +113,7 @@
   vars:
     zenith_client_name: guacamole-zenith-client
     zenith_client_pod: guacamole
-    zenith_client_wants:
+    zenith_client_needs:
       - guacamole-mitm
     zenith_forward_to_port: 8081
     zenith_registrar_token_metadata_key: zenith_registrar_token_webconsole

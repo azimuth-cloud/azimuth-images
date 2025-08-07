@@ -31,7 +31,7 @@
   vars:
     zenith_client_name: repo2docker-zenith-client
     zenith_client_pod: repo2docker
-    zenith_client_wants:
+    zenith_client_needs:
       - repo2docker-notebook-server
     zenith_forward_to_port: 8888
     # checkov:skip=CKV_SECRET_6
