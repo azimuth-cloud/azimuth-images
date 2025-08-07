@@ -85,9 +85,16 @@
     #     recurse: true
     #   become: true
 
+    - name: Setup public keys for the Azimuth user
+      ansible.posix.authorized_key:
+        user: "azimuth"
+        state: present
+        key: "{{ item }}"
+      with_items: "{{ azimuth_ssh_keys }}"
+
+    # TODO: Remove this after debugging Azimuth user permissions
     - name: Setup public keys for the Ubuntu user
       ansible.posix.authorized_key:
-        # user: "azimuth"
         user: "ubuntu"
         state: present
         key: "{{ item }}"
