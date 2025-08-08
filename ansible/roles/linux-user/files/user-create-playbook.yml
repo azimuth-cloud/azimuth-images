@@ -75,16 +75,6 @@
         state: mounted
       become: true
 
-    - name: Ensure Azimuth home directory has the correct permissions
-      ansible.builtin.file:
-        path: "{{ user_mountpoint }}/azimuth-home"
-        state: directory
-        owner: "azimuth"
-        group: "azimuth"
-        mode: "750"
-        recurse: true
-      become: true
-
     - name: Setup public keys for the Azimuth user
       ansible.posix.authorized_key:
         user: "azimuth"
