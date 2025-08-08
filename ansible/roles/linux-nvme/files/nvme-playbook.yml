@@ -1,0 +1,26 @@
+---
+
+- hosts: localhost
+  gather_facts: true
+  become: true
+  vars:
+    openstack_metadata: "{{ (lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json).get('meta', {}) }}"
+  tasks:
+    - name: Process openstack metadata
+      set_fact:
+        devices: "{{ openstack_metadata.lvm_disk_nvme | split(',') | map('trim') | list }}"
+      when: openstack_metadata.lvm_disk_nvme is defined
+
+    - name: Check if devices exist
+      assert:
+        that: "item in ansible_devices"
+      register: device_list
+      failed_when: false
+      with_items: "{{ devices }}"
+      when: openstack_metadata.lvm_disk_nvme is defined
+
+    - name: Configure LVM filesystem
+      include_tasks: /etc/ansible-init/includes/nvme-configure-lvm.yml
+      when:
+        - openstack_metadata.lvm_disk_nvme is defined
+        - "'Assertion failed' not in device_list.results | map(attribute='msg')"
