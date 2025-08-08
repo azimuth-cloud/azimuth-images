@@ -48,7 +48,7 @@
   vars:
     zenith_client_name: rstudio-zenith-client
     # The deb install of rstudio-server creates a systemd unit for us
-    zenith_client_wants:
+    zenith_client_needs:
       - rstudio-server
     zenith_client_pod: rstudio
     zenith_forward_to_host: "HOST_IP"
