@@ -30,7 +30,7 @@
       changed_when: true
 
     - name: Set SSH keypair facts
-      ansible.builtin.set_fact:
+      ansible.builtin.set_fact: # noqa jinja[invalid]
         # yamllint disable-line rule:line-length
         guacamole_ssh_public_key: "{{ lookup('file', '/etc/guacamole/id_rsa.pub') }}"
         # yamllint disable-line rule:line-length
