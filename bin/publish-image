@@ -40,8 +40,8 @@ s3cmd put "${IMAGE_NAME}.cosign.bundle" "s3://$S3_BUCKET"
 # COSIGN_BUNDLE_URL="$(s3cmd signurl "s3://$S3_BUCKET/${IMAGE_NAME}.cosign.bundle" +31536000)"
 
 # Use public Swift URL instead of signed link
-IMAGE_URL="https://${S3_HOST}/swift/v1/AUTH_f0dc9cb312144d0aa44037c9149d2513/${S3_BUCKET}/${IMAGE_NAME}.qcow2"
-COSIGN_BUNDLE_URL="https://${S3_HOST}/swift/v1/AUTH_f0dc9cb312144d0aa44037c9149d2513/${S3_BUCKET}/${IMAGE_NAME}.cosign.bundle"
+IMAGE_URL="https://${S3_HOST}${S3_HOST_PUBLIC_PATH}/${S3_BUCKET}/${IMAGE_NAME}.qcow2"
+COSIGN_BUNDLE_URL="https://${S3_HOST}${S3_HOST_PUBLIC_PATH}/${S3_BUCKET}/${IMAGE_NAME}.cosign.bundle"
 
 # Get the checksum of the image
 IMAGE_CHECKSUM="sha256:$(sha256sum "${IMAGE_NAME}.qcow2" | awk '{ print $1 }')"
