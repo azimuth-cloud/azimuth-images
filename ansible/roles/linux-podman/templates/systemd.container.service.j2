@@ -8,8 +8,8 @@ BindsTo={{ podman_service_pod }}.service
 PartOf={{ podman_service_pod }}.service
 After={{ podman_service_pod }}.service
 {% endif %}
-{% for service in podman_service_wants %}
-Wants={{ service }}.service
+{% for service in podman_service_needs %}
+BindsTo={{ service }}.service
 After={{ service }}.service
 {% endfor %}
 
