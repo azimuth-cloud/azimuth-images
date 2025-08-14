@@ -15,6 +15,10 @@
   # But poll it every 15s
   poll: 15
 
+- name: Run netplan apply
+  ansible.builtin.command: netplan apply
+  changed_when: true
+
 - name: Enable graphical environment
   ansible.builtin.systemd:
     name: graphical.target
