@@ -81,6 +81,7 @@ jobs:
           IMAGE_SOURCE_FILE: ${{ steps.build-image.outputs.image-source-file }}
           # Upload images to a fixed S3 host
           S3_HOST: ${{ vars.S3_HOST }}
+          S3_HOST_PUBLIC_PATH: ${{ vars.S3_HOST_PUBLIC_PATH }}
           S3_BUCKET: ${{ vars.S3_BUCKET }}
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
