@@ -3,30 +3,30 @@
 # This file defines the builds that will be executed by the CI
 #####
 
-- name: ubuntu-desktop
-  template: linux-desktop
-  var-files: common,kvm,linux,ubuntu-jammy
+# - name: ubuntu-desktop
+#   template: linux-desktop
+#   var-files: common,kvm,linux,ubuntu-jammy
 
-- name: jupyter-repo2docker
-  template: jupyter-repo2docker
-  var-files: common,kvm,linux,ubuntu-jammy
+# - name: jupyter-repo2docker
+#   template: jupyter-repo2docker
+#   var-files: common,kvm,linux,ubuntu-jammy
 
 - name: linux-rstudio
   template: linux-rstudio
   var-files: common,kvm,linux,ubuntu-jammy
 
-- name: kubernetes-1-30-jammy
-  template: kubernetes
-  var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_30
+# - name: kubernetes-1-30-jammy
+#   template: kubernetes
+#   var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_30
 
-- name: kubernetes-1-31-jammy
-  template: kubernetes
-  var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_31
+# - name: kubernetes-1-31-jammy
+#   template: kubernetes
+#   var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_31
 
-- name: kubernetes-1-32-jammy
-  template: kubernetes
-  var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_32
+# - name: kubernetes-1-32-jammy
+#   template: kubernetes
+#   var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_32
 
-- name: kubernetes-1-33-jammy
-  template: kubernetes
-  var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_33
+# - name: kubernetes-1-33-jammy
+#   template: kubernetes
+#   var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_33
