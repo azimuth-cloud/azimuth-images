@@ -6,3 +6,5 @@ jupyter_data_volume: "/data/jupyter"
 # fixes https://github.com/azimuth-cloud/azimuth-images/issues/175
 repo2docker_version: dd097a229a302b63d5a940c86f94e564784db421
 repo2podman_version: 0.2.0
+
+repo2docker_venv_path: "/opt/repo2docker/venv"
