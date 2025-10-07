@@ -42,16 +42,23 @@
         mode: "0755"
 
     # Workaround for https://github.com/azimuth-cloud/azimuth-images/issues/370
+    - name: Check for existing Prometheus data files
+      ansible.builtin.stat:
+        path: "{{ prometheus_data }}/{{ item }}"
+      loop:
+        - lock
+        - queries.active
+      register: _prom_files
+
     - name: Ensure permissions on Prometheus data files
       ansible.builtin.file:
-        path: "{{ prometheus_data }}/{{ item }}"
+        path: "{{ item.stat.path }}"
         state: file
         owner: "{{ prometheus_podman_user }}"
         group: "{{ prometheus_podman_user }}"
         mode: "0644"
-      loop:
-        - lock
-        - queries.active
+      loop: "{{ _prom_files.results }}"
+      when: item.stat.exists
 
     - name: Write Prometheus configuration file
       ansible.builtin.copy:

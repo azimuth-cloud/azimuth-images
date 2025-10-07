@@ -70,7 +70,7 @@
 
   # Workaround for https://github.com/azimuth-cloud/azimuth-images/issues/370
 - name: Ensure permissions for mount
-  ansible.builtin.filesystem:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: root
@@ -79,3 +79,4 @@
   loop:
     - "{{ data_volume.mountpoint }}"
     - "{{ data_volume.mountpoint }}/lost+found"
+  when: data_volume.mountpoint == "/data"
