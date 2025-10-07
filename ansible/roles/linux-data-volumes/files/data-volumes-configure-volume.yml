@@ -71,7 +71,7 @@
   # Workaround for https://github.com/azimuth-cloud/azimuth-images/issues/370
 - name: Ensure permissions for mount
   ansible.builtin.filesystem:
-    path: {{ item }}
+    path: "{{ item }}"
     state: directory
     owner: root
     group: root
