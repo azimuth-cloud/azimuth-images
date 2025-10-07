@@ -23,6 +23,16 @@
         regexp: "{{ ansible_hostname }}"
         line: "{{ ansible_default_ipv4.address }} {{ ansible_hostname }}"
 
+    # Workaround for https://github.com/azimuth-cloud/azimuth-images/issues/370
+    - name: Ensure Prometheus parent directory with correct permissions
+      ansible.builtin.file:
+        path: /data/prometheus
+        state: directory
+        owner: "{{ prometheus_podman_user }}"
+        group: "{{ prometheus_podman_user }}"
+        recurse: true
+        mode: "0755"
+
     - name: Ensure Prometheus data directory exists
       ansible.builtin.file:
         path: "{{ prometheus_data }}"
@@ -30,6 +40,18 @@
         owner: "{{ prometheus_podman_user }}"
         group: "{{ prometheus_podman_user }}"
         mode: "0755"
+
+    # Workaround for https://github.com/azimuth-cloud/azimuth-images/issues/370
+    - name: Ensure permissions on Prometheus data files
+      ansible.builtin.file:
+        path: "{{ prometheus_data }}/{{ item }}"
+        state: file
+        owner: "{{ prometheus_podman_user }}"
+        group: "{{ prometheus_podman_user }}"
+        mode: "0644"
+      loop:
+        - lock
+        - queries.active
 
     - name: Write Prometheus configuration file
       ansible.builtin.copy:
