@@ -67,3 +67,17 @@
     state: mounted
     fstype: "{{ data_volume.get('fs_type', 'ext4') }}"
     opts: "{{ data_volume.get('opts', omit) }}"
+
+# Workaround for https://github.com/azimuth-cloud/azimuth-images/issues/370
+- name: Ensure permissions for mount
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - "{{ data_volume.mountpoint }}"
+    - "{{ data_volume.mountpoint }}/lost+found"
+  # Avoid making changes Zenith data volume
+  when: data_volume.mountpoint == "/data"
