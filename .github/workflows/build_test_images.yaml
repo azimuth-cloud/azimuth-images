@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Install script dependencies
         run: pip install -r ./requirements.txt
@@ -47,6 +49,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+          persist-credentials: false
 
       - name: Write OpenStack credentials
         run: echo "$OS_CLOUDS" > ./clouds.yaml
@@ -93,14 +96,18 @@ jobs:
         run: sudo apt-get -y install libguestfs-tools
 
       - name: mkdir for mount
-        run: sudo mkdir -p './${{ steps.publish-image.outputs.image-name }}'
+        run: sudo mkdir -p './${STEPS_PUBLISH_IMAGE_OUTPUTS_IMAGE_NAME}'
+        env:
+          STEPS_PUBLISH_IMAGE_OUTPUTS_IMAGE_NAME: ${{ steps.publish-image.outputs.image-name }}
 
       - name: mount qcow2 file
         run: >
           sudo guestmount -a
-          ${{ steps.publish-image.outputs.image-name }}.qcow2
+          "${STEPS_PUBLISH_IMAGE_OUTPUTS_IMAGE_NAME}.qcow2"
           -i --ro -o allow_other
-          './${{ steps.publish-image.outputs.image-name }}'
+          './${STEPS_PUBLISH_IMAGE_OUTPUTS_IMAGE_NAME}'
+        env:
+          STEPS_PUBLISH_IMAGE_OUTPUTS_IMAGE_NAME: ${{ steps.publish-image.outputs.image-name }}
 
       - name: Fail if scan has CRITICAL vulnerabilities
         uses: aquasecurity/trivy-action@0.29.0
@@ -139,6 +146,8 @@ jobs:
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Read matrix outputs
         id: matrix-outputs
@@ -252,6 +261,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Install s3cmd
         run: |
