@@ -1,0 +1,22 @@
+---
+
+- name: Ensure ansible-init directories exist
+  file:
+    path: "/etc/ansible-init/{{ item }}"
+    state: directory
+  loop:
+    - includes
+    - playbooks
+
+- name: Install task includes
+  copy:
+    src: "{{ item }}"
+    dest: /etc/ansible-init/includes/{{ item }}
+  loop:
+    - nvme-configure-lvm.yml
+
+- name: Install ansible-init playbook
+  copy:
+    src: nvme-playbook.yml
+    # Leave some numbers for playbooks to execute before
+    dest: /etc/ansible-init/playbooks/10-nvme.yml

@@ -19,6 +19,9 @@
 - include_role:
     name: linux-volumes-by-tag
 
+- include_role:
+    name: linux-nvme
+
 - name: Load relevant kernel modules
   template:
     src: modules.conf.j2
