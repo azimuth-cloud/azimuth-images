@@ -11,9 +11,10 @@
             size: 100%FREE
             opts: --type raid0
             create: true
-            filesystem: ext4
+            filesystem: "{{ filesystem }}"
             mount: true
             mntp: /mnt/nvme
+  when: lvm
 
 - name: Ensure LVM configuration is applied
   vars:
@@ -22,6 +23,19 @@
     name: mrlesmithjr.manage_lvm
     apply:
       become: True
-  when:
-    - lvm_groups is defined
-    - lvm_groups | length > 0
+  when: lvm
+
+- name: Ensure filesystem is created
+  community.general.filesystem:
+    fstype: "{{ filesystem }}"
+    dev: "{{ item }}"
+  loop: "{{ devices | map('regex_replace', '^', '/dev/') }}"
+  when: not lvm
+
+- name: Ensure disks are mounted
+  ansible.posix.mount:
+    path: "{{ '/mnt/nvme' + loop.index }}"
+    src: "{{ item }}"
+    fstype: "{{ filesystem }}"
+  loop: "{{ devices | map('regex_replace', '^', '/dev/') }}"
+  when: not lvm

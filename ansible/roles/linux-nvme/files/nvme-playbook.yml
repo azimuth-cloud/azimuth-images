@@ -8,8 +8,10 @@
   tasks:
     - name: Process openstack metadata
       set_fact:
-        devices: "{{ openstack_metadata.lvm_disk_nvme | split(',') | map('trim') | list }}"
-      when: openstack_metadata.lvm_disk_nvme is defined
+        devices: "{{ openstack_metadata.disk_nvme | split(',') | map('trim') | list }}"
+        lvm: "{{ openstack_metadata.disk_lvm | bool }}"
+        filesystem: "{{ openstack_metadata.disk_filesystem | bool }}"
+      when: openstack_metadata.disk_nvme is defined
 
     - name: Check if devices exist
       assert:
@@ -17,10 +19,10 @@
       register: device_list
       failed_when: false
       with_items: "{{ devices }}"
-      when: openstack_metadata.lvm_disk_nvme is defined
+      when: openstack_metadata.disk_nvme is defined
 
-    - name: Configure LVM filesystem
-      include_tasks: /etc/ansible-init/includes/nvme-configure-lvm.yml
+    - name: Configure drive filesystem
+      include_tasks: /etc/ansible-init/includes/nvme-configure-filesystem.yml
       when:
-        - openstack_metadata.lvm_disk_nvme is defined
+        - openstack_metadata.disk_nvme is defined
         - "'Assertion failed' not in device_list.results | map(attribute='msg')"
