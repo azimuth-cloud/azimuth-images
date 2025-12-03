@@ -164,12 +164,6 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y s3cmd
 
-      - name: Install AWS CLI for signed url
-        run: |
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip awscliv2.zip
-          sudo ./aws/install
-
       - name: Publish manifest to S3
         id: publish-manifest
         run: ./bin/publish-manifest
