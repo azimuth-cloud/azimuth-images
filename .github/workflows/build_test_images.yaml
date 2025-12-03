@@ -163,7 +163,7 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install -y s3cmd
-      
+
       - name: Install AWS CLI for signed url
         run: |
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
