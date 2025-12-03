@@ -163,6 +163,12 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install -y s3cmd
+      
+      - name: Install AWS CLI for signed url
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
 
       - name: Publish manifest to S3
         id: publish-manifest
@@ -173,6 +179,9 @@ jobs:
           S3_BUCKET: ${{ vars.S3_BUCKET }}
           S3_ACCESS_KEY: ${{ secrets.CLOUDFLARE_S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.CLOUDFLARE_S3_SECRET_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_S3_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_S3_SECRET_KEY }}
+          AWS_REGION: auto
 
       # The manifest URL that publish-manifest outputs is a signed URL, this
       # means that it contains the S3 access key which, although it does not

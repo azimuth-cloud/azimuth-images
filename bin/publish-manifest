@@ -16,7 +16,7 @@ cp "$MANIFEST_FILE" "${GITHUB_SHA}.manifest"
 s3cmd put "${GITHUB_SHA}.manifest" "s3://$S3_BUCKET"
 
 # Make a signed link for the manifest that lasts for one day
-MANIFEST_URL="$(s3cmd signurl "s3://$S3_BUCKET/${GITHUB_SHA}.manifest" +86400)"
+MANIFEST_URL="$(aws s3 presign --endpoint-url https://$S3_HOST s3://$S3_BUCKET/${GITHUB_SHA}.manifest +86400)"
 
 # Produce the manifest URL as an output
 echo "manifest-url=$MANIFEST_URL" >>"${GITHUB_OUTPUT:-/dev/stdout}"
