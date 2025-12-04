@@ -210,6 +210,8 @@ jobs:
           result="$(gpg --decrypt --quiet --batch \
                     --passphrase "${PASSPHRASE}" \
                     --output - <(echo "${INPUT}" | base64 -d))"
+          # Fix broken encoding
+          result=${result//%20%2B86400/}
           echo decoded="${result}" >> "$GITHUB_OUTPUT"
         env:
           PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
