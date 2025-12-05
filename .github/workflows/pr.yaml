@@ -66,7 +66,7 @@ jobs:
       - name: Purge tested images from S3
         run: ./bin/purge-manifest "${GITHUB_SHA}.manifest"
         env:
-          S3_HOST: ${{ vars.S3_HOST }}
+          S3_HOST: ${{ vars.CLOUDFLARE_S3_HOST }}
           S3_BUCKET: ${{ vars.S3_BUCKET }}
-          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+          S3_ACCESS_KEY: ${{ secrets.CLOUDFLARE_S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.CLOUDFLARE_S3_SECRET_KEY }}
