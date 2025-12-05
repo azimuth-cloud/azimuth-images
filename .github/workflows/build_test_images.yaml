@@ -80,11 +80,11 @@ jobs:
           IMAGE_DISK_FORMAT: ${{ steps.build-image.outputs.image-disk-format }}
           IMAGE_SOURCE_FILE: ${{ steps.build-image.outputs.image-source-file }}
           # Upload images to a fixed S3 host
-          S3_HOST: ${{ vars.S3_HOST }}
-          S3_HOST_PUBLIC_PATH: ${{ vars.S3_HOST_PUBLIC_PATH }}
+          S3_HOST: ${{ vars.CLOUDFLARE_S3_HOST }}
+          S3_HOST_PUBLIC_PATH: ${{ vars.CLOUDFLARE_S3_HOST_PUBLIC_PATH }}
           S3_BUCKET: ${{ vars.S3_BUCKET }}
-          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+          S3_ACCESS_KEY: ${{ secrets.CLOUDFLARE_S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.CLOUDFLARE_S3_SECRET_KEY }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -135,7 +135,7 @@ jobs:
     if: ${{ always() }}
     runs-on: ubuntu-latest
     outputs:
-      manifest-url-encoded: ${{ steps.encode-manifest-url.outputs.encoded }}
+      manifest-url: ${{ steps.publish-manifest.outputs.manifest-url }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
@@ -169,48 +169,17 @@ jobs:
         run: ./bin/publish-manifest
         env:
           MANIFEST_FILE: ./manifest.json
-          S3_HOST: ${{ vars.S3_HOST }}
+          S3_HOST: ${{ vars.CLOUDFLARE_S3_HOST }}
           S3_BUCKET: ${{ vars.S3_BUCKET }}
-          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
-
-      # The manifest URL that publish-manifest outputs is a signed URL, this
-      # means that it contains the S3 access key which, although it does not
-      # necessarily need to be kept secret, is provided using a GitHub secret.
-      # As GitHub does not allow outputs that include secrets to be
-      # transferred between jobs, we encrypt the manifest URL using GPG and
-      # use that as the output of this workflow.
-      - name: Encode manifest URL using GPG
-        id: encode-manifest-url
-        run: |
-          result="$(gpg --symmetric --batch --passphrase "${PASSPHRASE}" \
-                    --output - <(echo "${INPUT}") | base64 -w0)"
-          echo encoded="${result}" >> "$GITHUB_OUTPUT"
-        env:
-          PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          INPUT: ${{ steps.publish-manifest.outputs.manifest-url }}
+          S3_HOST_PUBLIC_PATH: ${{ vars.CLOUDFLARE_S3_HOST_PUBLIC_PATH }}
+          S3_ACCESS_KEY: ${{ secrets.CLOUDFLARE_S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.CLOUDFLARE_S3_SECRET_KEY }}
 
   run_azimuth_tests:
     needs:
       - publish_manifest
     runs-on: ubuntu-latest
     steps:
-      # The manifest URL that publish-manifest outputs is a signed URL
-      # This means that it contains the S3 access key which, although it does
-      # not necessarily need to be kept secret, is provided using a GitHub
-      # secret GitHub does not allow outputs that include secrets to be
-      # transferred between jobs. To get around this, the manifest URL is
-      # encrypted using GPG that we must now decrypt to use.
-      - name: Decode manifest URL using GPG
-        id: decode-manifest-url
-        run: |
-          result="$(gpg --decrypt --quiet --batch \
-                    --passphrase "${PASSPHRASE}" \
-                    --output - <(echo "${INPUT}" | base64 -d))"
-          echo decoded="${result}" >> "$GITHUB_OUTPUT"
-        env:
-          PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          INPUT: ${{ needs.publish_manifest.outputs.manifest-url-encoded }}
 
       # Check out the configuration repository
       - name: Set up Azimuth environment
@@ -224,7 +193,7 @@ jobs:
           # We want to run the Kubernetes tests _for all Kubernetes versions_
           # We don't need to run the apps tests
           extra-vars: |
-            community_images_azimuth_images_manifest_url: ${{ steps.decode-manifest-url.outputs.decoded }}
+            community_images_azimuth_images_manifest_url: ${{ needs.publish_manifest.outputs.manifest-url }}
             generate_tests_caas_test_case_slurm_enabled: false
             generate_tests_kubernetes_test_cases_latest_only: false
             generate_tests_kubernetes_apps_suite_enabled: false
@@ -271,7 +240,7 @@ jobs:
         env:
           REPO_ROOT: ${{ github.workspace }}
           OS_CLOUD: ${{ vars.TARGET_CLOUD }}
-          S3_HOST: ${{ vars.S3_HOST }}
+          S3_HOST: ${{ vars.CLOUDFLARE_S3_HOST }}
           S3_BUCKET: ${{ vars.S3_BUCKET }}
-          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+          S3_ACCESS_KEY: ${{ secrets.CLOUDFLARE_S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.CLOUDFLARE_S3_SECRET_KEY }}
