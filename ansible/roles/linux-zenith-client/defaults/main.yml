@@ -2,17 +2,14 @@
 
 zenith_client_image_prefix: ghcr.io/azimuth-cloud
 zenith_client_image_name: zenith-client
-# TODO(mkjpryor) update when SSH protocol is in a release
-zenith_client_image_tag: 0.14.0
-zenith_client_image: "{{ zenith_client_image_prefix }}/{{ zenith_client_image_name }}:{{ zenith_client_image_tag }}"
+zenith_client_image_tag: 0.16.0
+zenith_client_image: "{{ zenith_client_image_prefix }}/{{ zenith_client_image_name }}:{{ zenith_client_image_tag }}"  # yamllint disable-line rule:line-length
 
-zenith_client_wants: []
-
+zenith_client_needs: []
 # The default host for forwarding is the pod that the client is in
 zenith_forward_to_host: 127.0.0.1
 
 # Any extra configuration for the Zenith client
 zenith_client_config_extra: {}
-
 # The user to run systemd services as
 podman_service_user: podman

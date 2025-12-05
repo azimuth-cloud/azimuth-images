@@ -2,19 +2,21 @@
 
 guacamole_image_prefix: docker.io/guacamole
 
-guacamole_version: 1.5.5
+guacamole_version: 1.6.0
 
 guacamole_server_image_name: guacd
 guacamole_server_image_tag: "{{ guacamole_version }}"
+# yamllint disable-line rule:line-length
 guacamole_server_image: "{{ guacamole_image_prefix }}/{{ guacamole_server_image_name }}:{{ guacamole_server_image_tag }}"
 
 guacamole_client_image_name: guacamole
 guacamole_client_image_tag: "{{ guacamole_version }}"
+# yamllint disable-line rule:line-length
 guacamole_client_image: "{{ guacamole_image_prefix }}/{{ guacamole_client_image_name }}:{{ guacamole_client_image_tag }}"
 
 guacamole_nginx_image_prefix: docker.io
 guacamole_nginx_image_name: nginx
-guacamole_nginx_image_tag: 1.27.3
+guacamole_nginx_image_tag: 1.29.1
 guacamole_nginx_image: "{{ guacamole_nginx_image_prefix }}/{{ guacamole_nginx_image_name }}:{{ guacamole_nginx_image_tag }}"
 
 guacamole_mitm_log_level: notice

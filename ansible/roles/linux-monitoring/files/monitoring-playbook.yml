@@ -1,83 +1,129 @@
-- hosts: localhost
+---
+- name: Ensure monitoring services are configured
+  hosts: localhost
   gather_facts: true
   become: true
   vars:
-    os_metadata: "{{ lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json }}"
+    os_metadata: >-
+      {{
+        lookup(
+          'url',
+          'http://169.254.169.254/openstack/latest/meta_data.json'
+          ) | from_json
+        }}
     os_user_metadata: "{{ os_metadata.get('meta', {}) }}"
     os_project_id: "{{ os_metadata.project_id }}"
   vars_files:
     - /etc/ansible-init/vars/monitoring.yml
   tasks:
-  - name: Populate /etc/hosts with hostname
-    # Node exporter will get hostname instead of IP address
-    lineinfile:
-      path: /etc/hosts
-      regexp: "{{ ansible_hostname }}"
-      line: "{{ ansible_default_ipv4.address }} {{ ansible_hostname }}"
+    - name: Populate /etc/hosts with hostname
+      # Node exporter will get hostname instead of IP address
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        regexp: "{{ ansible_hostname }}"
+        line: "{{ ansible_default_ipv4.address }} {{ ansible_hostname }}"
 
-  - name: Ensure Prometheus data directory exists
-    file:
-      path: "{{ prometheus_data }}"
-      state: directory
-      owner: "{{ prometheus_podman_user }}"
-      group: "{{ prometheus_podman_user }}"
+    # Workaround for https://github.com/azimuth-cloud/azimuth-images/issues/370
+    - name: Ensure Prometheus parent directory with correct permissions
+      ansible.builtin.file:
+        path: /data/prometheus
+        state: directory
+        owner: "{{ prometheus_podman_user }}"
+        group: "{{ prometheus_podman_user }}"
+        recurse: true
+        mode: "0755"
 
-  - name: Write Prometheus configuration file
-    copy:
-      content: "{{ prometheus_config | to_nice_yaml() }}"
-      dest: /etc/prometheus/prometheus.yml
-    vars:
-      prometheus_config:
-        scrape_configs:
-          - job_name: "prometheus"
-            metrics_path: "/metrics"
-            static_configs:
-            - targets:
-              - "127.0.0.1:9090"
-          - job_name: "grafana"
-            static_configs:
-            - targets:
-              - "127.0.0.1:3000"
-          - job_name: node
-            static_configs:
-              - targets: ['{{ ansible_hostname }}:9100']
-            relabel_configs:
-              # strip off port
-              - source_labels: ['__address__']
-                separator:     ':'
-                regex:         '(.*):.*'
-                target_label:  'instance'
-                replacement:   '${1}'
-            scrape_interval: 30s
-            scrape_timeout: 20s
+    - name: Ensure Prometheus data directory exists
+      ansible.builtin.file:
+        path: "{{ prometheus_data }}"
+        state: directory
+        owner: "{{ prometheus_podman_user }}"
+        group: "{{ prometheus_podman_user }}"
+        mode: "0755"
 
-  - name: Write Grafana configuration file
-    copy:
-      dest: /etc/grafana/grafana.ini
-      content: |
-        [server]
-        protocol = http
-        http_addr = 127.0.0.1
-        http_port = 3000
-        enable_gzip = true
-        domain = {{ os_user_metadata.zenith_fqdn_monitoring }}
+    # Workaround for https://github.com/azimuth-cloud/azimuth-images/issues/370
+    - name: Check for existing Prometheus data files
+      ansible.builtin.stat:
+        path: "{{ prometheus_data }}/{{ item }}"
+      loop:
+        - lock
+        - queries.active
+      register: _prom_files
 
-        [auth]
-        disable_login_form = true
+    - name: Ensure permissions on Prometheus data files
+      ansible.builtin.file:
+        path: "{{ item.stat.path }}"
+        state: file
+        owner: "{{ prometheus_podman_user }}"
+        group: "{{ prometheus_podman_user }}"
+        mode: "0644"
+      loop: "{{ _prom_files.results }}"
+      when: item.stat.exists
 
-        [auth.anonymous]
-        enabled = true
-        org_role = Viewer
+    - name: Write Prometheus configuration file
+      ansible.builtin.copy:
+        content: "{{ prometheus_config | to_nice_yaml() }}"
+        dest: /etc/prometheus/prometheus.yml
+        owner: "{{ prometheus_podman_user }}"
+        group: "{{ prometheus_podman_user }}"
+        mode: "0644"
+      vars:
+        prometheus_config:
+          scrape_configs:
+            - job_name: "prometheus"
+              metrics_path: "/metrics"
+              static_configs:
+                - targets:
+                    - "127.0.0.1:9090"
+            - job_name: "grafana"
+              static_configs:
+                - targets:
+                    - "127.0.0.1:3000"
+            - job_name: node
+              static_configs:
+                - targets:
+                    - "{{ ansible_hostname }}:9100"
+              relabel_configs:
+                # strip off port
+                - source_labels:
+                    - "__address__"
+                  separator: ":"
+                  regex: "(.*):.*"
+                  target_label: "instance"
+                  replacement: "${1}"
+              scrape_interval: 30s
+              scrape_timeout: 20s
 
-        [dashboards]
-        default_home_dashboard_path = /etc/grafana/dashboards/home.json
+    - name: Write Grafana configuration file
+      ansible.builtin.copy:
+        dest: /etc/grafana/grafana.ini
+        owner: "{{ prometheus_podman_user }}"
+        group: "{{ prometheus_podman_user }}"
+        mode: "0644"
+        content: |
+          [server]
+          protocol = http
+          http_addr = 127.0.0.1
+          http_port = 3000
+          enable_gzip = true
+          domain = {{ os_user_metadata.zenith_fqdn_monitoring }}
 
-  - name: Start and enable monitoring services
-    service:
-      name: "{{ item }}"
-      state: started
-      enabled: yes
-    loop:
-      - grafana
-      - prometheus
-      - monitoring
+          [auth]
+          disable_login_form = true
+
+          [auth.anonymous]
+          enabled = true
+          org_role = Viewer
+
+          [dashboards]
+          default_home_dashboard_path = /etc/grafana/dashboards/home.json
+
+    - name: Start and enable monitoring services
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      loop:
+        - grafana
+        - prometheus
+        - monitoring

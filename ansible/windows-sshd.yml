@@ -1,7 +1,7 @@
 ---
-
-- hosts: all
-  gather_facts: no
+- name: Configure SSHD for Windows hosts
+  hosts: all
+  gather_facts: false
   roles:
     - windows-sshd
     - windows-sysprep

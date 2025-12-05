@@ -73,7 +73,8 @@ data = {
     "kubernetes_series": f"{latest_version.prefix}{latest_version.major}.{latest_version.minor}",
 }
 with latest_vars_file.open("w") as fh:
-    json.dump(data, fh, indent = 4)
+    json.dump(data, fh, indent = 2)
+    fh.write("\n")
 
 # Create the env file
 env_file = (repo_root / "env" / "base" / latest_filename).with_suffix(".env")

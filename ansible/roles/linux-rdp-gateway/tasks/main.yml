@@ -1,10 +1,11 @@
 ---
-
-- include_role: 
+- name: Install and configure Podman
+  ansible.builtin.include_role:
     name: linux-podman
     tasks_from: install.yml
 
-- include_role:
+- name: Configure data volumes
+  ansible.builtin.include_role:
     name: linux-data-volumes
   vars:
     data_volumes:
@@ -12,24 +13,42 @@
         mountpoint: /etc/zenith/ssh
         opts: "defaults,nofail"
 
-- include_role:
+- name: Configure Guacamole
+  ansible.builtin.include_role:
     name: linux-guacamole
 
+- name: Write Guacamole ansible-init vars file
+  ansible.builtin.copy:
+    content: "{{ guacamole_init_vars | to_nice_yaml }}"
+    dest: /etc/ansible-init/vars/guacamole.yml
+    owner: root
+    group: root
+    mode: "0644"
+  vars:
+    guacamole_init_vars:
+      podman_service_user: "{{ podman_service_user }}"
+
 - name: Install Guacamole ansible-init playbook
-  copy:
+  ansible.builtin.copy:
     src: guacamole-playbook.yml
     # Execute between data volumes and zenith client
     dest: /etc/ansible-init/playbooks/50-guacamole.yml
+    owner: root
+    group: root
+    mode: "0755"
 
-- include_role:
+- name: Configure Zenith cluent
+  ansible.builtin.include_role:
     name: linux-zenith-client
   vars:
     zenith_client_name: guacamole-zenith-client
     zenith_client_pod: guacamole
-    zenith_client_wants: [guacamole-mitm]
+    zenith_client_needs:
+      - guacamole-mitm
     zenith_forward_to_port: 8081
     zenith_registrar_token_metadata_key: zenith_registrar_token_webconsole
     zenith_client_playbook_priority: "51"
 
 - name: Run cloud-init cleanup
-  command: cloud-init clean --logs --seed
+  ansible.builtin.command: cloud-init clean --logs --seed
+  changed_when: true

@@ -1,12 +1,21 @@
+---
 # This workflow proposes updates to the dependencies that dependabot cannot
 name: Update dependencies
 
-on:
+permissions:
+  contents: read
+  packages: write
+  # To report GitHub Actions status checks
+  statuses: write
+  security-events: write
+  id-token: write
+
+on:  # yamllint disable-line rule:truthy
   # Allow manual executions
   workflow_dispatch:
   # Run nightly
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
 
 jobs:
   propose_github_release_updates:
@@ -108,11 +117,11 @@ jobs:
         with:
           token: ${{ steps.generate-app-token.outputs.token }}
           commit-message: >-
-            Bump ${{ matrix.key }} to ${{ steps.next.outputs.version }}
+            Update ${{ matrix.key }} to ${{ steps.next.outputs.version }}
           branch: update-dependency/${{ matrix.key }}
           delete-branch: true
           title: >-
-            Bump ${{ matrix.key }} to ${{ steps.next.outputs.version }}
+            Update ${{ matrix.key }} to ${{ steps.next.outputs.version }}
           body: >
             This PR was created automatically to update
             ${{ matrix.key }} to ${{ steps.next.outputs.version }}.

@@ -1,7 +1,6 @@
 ---
-
 - name: Run prechecks for Zenith-client variables
-  assert:
+  ansible.builtin.assert:
     that: "{{ item }} is defined"
     fail_msg: "{{ item }} must be defined"
   loop:
@@ -12,25 +11,28 @@
     - zenith_forward_to_port
 
 - name: Ensure Zenith config directory exists
-  file:
+  ansible.builtin.file:
     path: /etc/zenith/{{ zenith_client_name }}
     state: directory
+    owner: root
+    group: root
+    mode: "0755"
 
 - name: Pull image for Zenith client
   containers.podman.podman_image:
     name: "{{ zenith_client_image }}"
-  become: yes
+  become: true
   become_user: "{{ podman_service_user }}"
 
 - name: Install systemd unit for Zenith client
-  include_role:
+  ansible.builtin.include_role:
     name: linux-podman
     tasks_from: systemd-unit.yml
   vars:
     podman_service_name: "{{ zenith_client_name }}"
     podman_service_type: container
     podman_service_pod: "{{ zenith_client_pod }}"
-    podman_service_wants: "{{ zenith_client_wants }}"
+    podman_service_needs: "{{ zenith_client_needs }}"
     podman_service_image: "{{ zenith_client_image }}"
     podman_service_command: "zenith-client connect"
     podman_service_volumes:
@@ -38,29 +40,40 @@
       - /etc/zenith/ssh/{{ zenith_client_name }}:/home/zenith/.ssh:ro
 
 - name: Ensure ansible-init directories exist
-  file:
+  ansible.builtin.file:
     state: directory
     path: "/etc/ansible-init/{{ item }}"
+    owner: root
+    group: root
+    mode: "0755"
   loop:
     - vars
     - playbooks
     - includes
 
 - name: Write ansible-init vars file for Zenith client
-  copy:
+  ansible.builtin.copy:
     content: "{{ zenith_client_init_vars | to_nice_yaml }}"
     dest: /etc/ansible-init/vars/{{ zenith_client_name }}.yml
+    owner: root
+    group: root
+    mode: "0644"
   vars:
     zenith_client_init_vars:
       zenith_client_name: "{{ zenith_client_name }}"
       zenith_client_image: "{{ zenith_client_image }}"
       zenith_forward_to_host: "{{ zenith_forward_to_host }}"
       zenith_forward_to_port: "{{ zenith_forward_to_port }}"
+      # yamllint disable-line rule:line-length
       zenith_registrar_token_metadata_key: "{{ zenith_registrar_token_metadata_key }}"
       zenith_client_config_extra: "{{ zenith_client_config_extra }}"
 
 - name: Install ansible-init playbook for Zenith client
-  template:
+  ansible.builtin.template:
     src: zenith-playbook.yml
     # Execute between data volumes and zenith client
+    # yamllint disable-line rule:line-length
     dest: /etc/ansible-init/playbooks/{{ zenith_client_playbook_priority }}-{{ zenith_client_name }}.yml
+    owner: root
+    group: root
+    mode: "0644"

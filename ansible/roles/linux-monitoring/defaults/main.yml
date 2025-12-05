@@ -1,6 +1,13 @@
 ---
-grafana_container_image: "grafana/grafana-oss"
-grafana_version: "10.4.1"
+grafana_container_image_prefix: "docker.io"
+
+grafana_version: "12.1.0"
+
+grafana_container_image_name: "grafana/grafana-oss"
+
+# yamllint disable-line rule:line-length
+grafana_container_image: "{{ grafana_container_image_prefix }}/{{ grafana_container_image_name }}:{{ grafana_version }}"
+
 grafana_dashboards:
   - name: node-exporter
     dashboard_id: 1860
@@ -8,7 +15,13 @@ grafana_dashboards:
     datasource: Prometheus
     home: true
 
-prometheus_container_image: "prom/prometheus"
-prometheus_version: "v3.1.0"
+prometheus_container_image_prefix: "docker.io"
+
+prometheus_version: "v3.5.0"
+
+prometheus_container_image_name: "prom/prometheus"
+
+# yamllint disable-line rule:line-length
+prometheus_container_image: "{{ prometheus_container_image_prefix }}/{{ prometheus_container_image_name }}:{{ prometheus_version }}"
 
 podman_service_user: "podman"

@@ -1,10 +1,19 @@
+---
 name: Build and test main
+
+permissions:
+  contents: read
+  packages: write
+  # To report GitHub Actions status checks
+  statuses: write
+  security-events: write
+  id-token: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-on:
+on:  # yamllint disable-line rule:truthy
   push:
     branches:
       - main

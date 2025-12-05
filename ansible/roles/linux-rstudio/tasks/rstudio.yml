@@ -1,12 +1,15 @@
 ---
-
 - name: Ensure R repo apt key is downloaded
   ansible.builtin.get_url:
     url: https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc
     dest: /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+    owner: root
+    group: root
+    mode: "0644"
 
 - name: Ensure R apt repository is present
   ansible.builtin.apt_repository:
+    # yamllint disable-line rule:line-length
     repo: deb https://cloud.r-project.org/bin/linux/ubuntu {{ ansible_distribution_release }}-cran40/
     state: present
 
@@ -20,12 +23,17 @@
       # (https://support.posit.co/hc/en-us/articles/360023654474-Installing-and-Configuring-Python-with-RStudio)
       - python3-venv
       - python3-pip
+      # Geospatial Data Abstraction Library (GDAL) is a system package needed
+      # for installing some popular R packages, such as leaflet.
+      - gdal-bin
+      - libgdal-dev
     update_cache: true
     state: present
 
 - name: Ensure R-Studio Server is installed
   ansible.builtin.apt:
-    deb: https://download2.rstudio.org/server/{{ ansible_distribution_release }}/amd64/rstudio-server-2023.06.1-524-amd64.deb
+    # yamllint disable-line rule:line-length
+    deb: https://download2.rstudio.org/server/{{ ansible_distribution_release }}/amd64/rstudio-server-2024.12.1-563-amd64.deb
     state: present
 
 - name: Ensure rstudio user exists
@@ -52,3 +60,6 @@
     block: |
       [Service]
       Environment=USER=rstudio
+    owner: root
+    group: root
+    mode: "0644"

@@ -1,24 +1,24 @@
 ---
-
-- hosts: localhost
+- name: Configure Guacamole components
+  hosts: localhost
   gather_facts: true
   become: true
   vars_files:
     - /etc/ansible-init/vars/guacamole.yml
   tasks:
     - name: Ensure Zenith SSH mount has the correct permissions
-      file:
+      ansible.builtin.file:
         path: "/etc/zenith/ssh"
         state: directory
         owner: "podman"
         group: "podman"
-        mode: '0755'
+        mode: "0755"
 
     - name: Generate SSH keypair for Guacamole
       # Guacamole requires that the key is PEM-formatted
-      # See https://issues.apache.org/jira/browse/GUACAMOLE-745
+      # See https://issues.apache.org/jira/browse/GUACAMOLE-745
       # This means that we cannot use community.crypto.openssh_keypair :-(
-      command: >-
+      ansible.builtin.command: >-
         ssh-keygen
           -m PEM
           -t rsa
@@ -27,14 +27,17 @@
           -N ""
           -f /etc/guacamole/id_rsa
           -C "Generated-for-Guacamole"
+      changed_when: true
 
     - name: Set SSH keypair facts
-      set_fact:
+      ansible.builtin.set_fact:
+        # yamllint disable-line rule:line-length
         guacamole_ssh_public_key: "{{ lookup('file', '/etc/guacamole/id_rsa.pub') }}"
+        # yamllint disable-line rule:line-length
         guacamole_ssh_private_key: "{{ lookup('file', '/etc/guacamole/id_rsa') }}"
-    
+
     - name: Remove SSH keypair files
-      file:
+      ansible.builtin.file:
         path: "/etc/guacamole/{{ item }}"
         state: absent
       loop:
@@ -47,68 +50,86 @@
         state: present
         key: "{{ guacamole_ssh_public_key }}"
 
-    - block:
+    - name: Configure desktop and VNC for Guacamole
+      when: desktop_enabled
+      block:
         - name: Generate VNC password for Guacamole
-          set_fact:
-            guacamole_vnc_password: "{{ lookup('community.general.random_string', length = 16, override_special = special_chars) }}"
+          ansible.builtin.set_fact:
+            guacamole_vnc_password: >-
+              {{ lookup(
+                  'community.general.random_string',
+                  length=16,
+                  override_special=special_chars
+                  )
+                }}
           vars:
-            # Even though this string is within a CDATA tag, there's very small chance of
-            # generating ]]>, which will still break XML. Therefore remove ">" from special
-            # characters.
+            # Even though this string is within a CDATA tag, there's very small
+            # chance of generating ]]>, which will still break XML.
+            # Therefore remove ">" from special characters.
             special_chars: '!"#$%&()*+,-./:;<=?@[\]^_`{|}~'
-          
+
         - name: Get Guacamole user info
-          getent:
+          ansible.builtin.getent:
             database: passwd
             key: "{{ guacamole_user }}"
 
         - name: Set Guacamole user home directory
-          set_fact:
-            guacamole_user_home: "{{ ansible_facts.getent_passwd[guacamole_user][4] }}"
+          ansible.builtin.set_fact:
+            guacamole_user_home: >-
+              {{
+                ansible_facts.getent_passwd[guacamole_user][4]
+                }}
 
         - name: Configure user for systemd unit
-          copy:
+          ansible.builtin.copy:
             dest: /etc/systemd/system/vncserver@:1.service.d/user.conf
+            # yamllint disable rule:line-length
             content: |
               [Service]
               Environment=VNCSERVER_PASSWD_FILE={{ guacamole_user_home }}/.vnc/passwd
               User={{ guacamole_user }}
+            # yamllint enable rule:line-length
+            owner: root
+            group: root
+            mode: "0644"
           become: true
 
-        - block:
-          - name: Generate VNC password
-            command: vncpasswd -f
-            args:
-              stdin: "{{ guacamole_vnc_password }}"
-            register: vncpassword
-
-          - name: Create VNC directory
-            file:
-              state: directory
-              path: "{{ guacamole_user_home }}/.vnc"
-              owner: "{{ guacamole_user }}"
-              group: "{{ guacamole_user }}"
-              mode: "0775"
-
-          - name: Create VNC password file
-            copy:
-              content: "{{ vncpassword.stdout }}"
-              dest: "{{ guacamole_user_home }}/.vnc/passwd"
-              owner: "{{ guacamole_user }}"
-              group: "{{ guacamole_user }}"
-              mode: "0600"
-          become: yes
+        - name: Configure VNC
+          become: true
           become_user: "{{ guacamole_user }}"
+          block:
+            - name: Generate VNC password
+              ansible.builtin.command: vncpasswd -f
+              args:
+                stdin: "{{ guacamole_vnc_password }}"
+              register: vncpassword
+              changed_when: true
+
+            - name: Create VNC directory
+              ansible.builtin.file:
+                state: directory
+                path: "{{ guacamole_user_home }}/.vnc"
+                owner: "{{ guacamole_user }}"
+                group: "{{ guacamole_user }}"
+                mode: "0755"
+
+            - name: Create VNC password file
+              ansible.builtin.copy:
+                content: "{{ vncpassword.stdout }}"
+                dest: "{{ guacamole_user_home }}/.vnc/passwd"
+                owner: "{{ guacamole_user }}"
+                group: "{{ guacamole_user }}"
+                mode: "0600"
 
         - name: Start and enable VNC server
-          service:
+          ansible.builtin.service:
             name: vncserver@:1.service
             state: started
-            enabled: yes
-      when: desktop_enabled
+            enabled: true
 
     - name: Write Guacamole user mapping file
-      copy:
+      ansible.builtin.copy:
+        # yamllint disable rule:line-length
         content: |
           <user-mapping>
               <authorize username="portal" password="portal">
@@ -132,13 +153,17 @@
           {% endif %}
               </authorize>
           </user-mapping>
+        # yamllint enable rule:line-length
         dest: /etc/guacamole/user-mapping.xml
+        owner: "{{ podman_service_user }}"
+        group: "{{ podman_service_user }}"
+        mode: "0600"
 
     - name: Start and enable Guacamole services
-      service:
+      ansible.builtin.service:
         name: "{{ item }}"
         state: started
-        enabled: yes
+        enabled: true
       loop:
         - guacamole
         - guacamole-server

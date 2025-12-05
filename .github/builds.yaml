@@ -14,10 +14,6 @@
   template: linux-rstudio
   var-files: common,kvm,linux,ubuntu-jammy
 
-- name: kubernetes-1-29-jammy
-  template: kubernetes
-  var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_29
-
 - name: kubernetes-1-30-jammy
   template: kubernetes
   var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_30
@@ -29,3 +25,11 @@
 - name: kubernetes-1-32-jammy
   template: kubernetes
   var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_32
+
+- name: kubernetes-1-33-jammy
+  template: kubernetes
+  var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_33
+
+- name: kubernetes-1-34-jammy
+  template: kubernetes
+  var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_1_34
