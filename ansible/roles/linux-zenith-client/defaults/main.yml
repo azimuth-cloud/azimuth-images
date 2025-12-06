@@ -2,7 +2,7 @@
 
 zenith_client_image_prefix: ghcr.io/azimuth-cloud
 zenith_client_image_name: zenith-client
-zenith_client_image_tag: 0.16.0
+zenith_client_image_tag: 0.16.2
 zenith_client_image: "{{ zenith_client_image_prefix }}/{{ zenith_client_image_name }}:{{ zenith_client_image_tag }}"  # yamllint disable-line rule:line-length
 
 zenith_client_needs: []
