@@ -3,7 +3,7 @@
 - name: Set LVM configuration
   set_fact:
     lvm_groups:
-      - vgname: lvm-nvme
+      - vgname: lvm-disks
         disks: "{{ devices | map('regex_replace', '^', '/dev/') }}"
         create: true
         lvnames:
@@ -13,7 +13,7 @@
             create: true
             filesystem: "{{ filesystem }}"
             mount: true
-            mntp: /mnt/nvme
+            mntp: /mnt/lvm
   when: lvm
 
 - name: Ensure LVM configuration is applied
@@ -34,7 +34,7 @@
 
 - name: Ensure disks are mounted
   ansible.posix.mount:
-    path: "{{ '/mnt/nvme' + loop.index }}"
+    path: "{{ '/mnt/disk' + loop.index }}"
     src: "{{ item }}"
     fstype: "{{ filesystem }}"
   loop: "{{ devices | map('regex_replace', '^', '/dev/') }}"

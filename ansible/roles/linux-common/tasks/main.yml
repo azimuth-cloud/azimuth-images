@@ -22,7 +22,7 @@
     name: linux-volumes-by-tag
 
 - include_role:
-    name: linux-nvme
+    name: linux-disks
 
 - name: Load relevant kernel modules
   ansible.builtin.template:

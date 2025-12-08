@@ -12,7 +12,7 @@
       files:
         - "{{ item }}"
       skip: true
-  when: vars_file
+  when: vars_file | length > 0
   loop:
     - "{{ role_path }}/vars/{{ ansible_os_family }}.yml"
     - "{{ role_path }}/vars/{{ ansible_distribution }}.yml"

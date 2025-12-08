@@ -13,10 +13,10 @@
     src: "{{ item }}"
     dest: /etc/ansible-init/includes/{{ item }}
   loop:
-    - nvme-configure-lvm.yml
+    - disks-configure-filesystem.yml
 
 - name: Install ansible-init playbook
   copy:
-    src: nvme-playbook.yml
+    src: disks-playbook.yml
     # Leave some numbers for playbooks to execute before
-    dest: /etc/ansible-init/playbooks/10-nvme.yml
+    dest: /etc/ansible-init/playbooks/10-disks.yml
