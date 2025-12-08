@@ -1,0 +1,41 @@
+---
+
+- name: Set LVM configuration
+  set_fact:
+    lvm_groups:
+      - vgname: lvm-disks
+        disks: "{{ devices | map('regex_replace', '^', '/dev/') }}"
+        create: true
+        lvnames:
+          - lvname: primary
+            size: 100%FREE
+            opts: --type raid0
+            create: true
+            filesystem: "{{ filesystem }}"
+            mount: true
+            mntp: /mnt/lvm
+  when: lvm
+
+- name: Ensure LVM configuration is applied
+  vars:
+    manage_lvm: True
+  include_role:
+    name: mrlesmithjr.manage_lvm
+    apply:
+      become: True
+  when: lvm
+
+- name: Ensure filesystem is created
+  community.general.filesystem:
+    fstype: "{{ filesystem }}"
+    dev: "{{ item }}"
+  loop: "{{ devices | map('regex_replace', '^', '/dev/') }}"
+  when: not lvm
+
+- name: Ensure disks are mounted
+  ansible.posix.mount:
+    path: "{{ '/mnt/disk' + loop.index }}"
+    src: "{{ item }}"
+    fstype: "{{ filesystem }}"
+  loop: "{{ devices | map('regex_replace', '^', '/dev/') }}"
+  when: not lvm
