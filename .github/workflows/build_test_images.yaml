@@ -26,7 +26,7 @@ jobs:
 
       - name: Download source image and upload to OpenStack
         id: download_source
-        run: ./bin/ensure_source_image
+        run: ./bin/ensure-source-image
 
   read_builds:
     runs-on: ubuntu-latest
@@ -160,7 +160,7 @@ jobs:
         run: pip install -r ./requirements.txt
 
       - name: Delete source image
-        run: ./bin/cleanup_source_image
+        run: ./bin/cleanup-source-image
         env:
           PKR_VAR_source_image_name: ${{ needs.ensure_source_image.outputs.source_image }}
 
