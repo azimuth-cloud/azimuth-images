@@ -24,11 +24,17 @@ jobs:
       - name: Install script dependencies
         run: pip install -r ./requirements.txt
 
+      - name: Write OpenStack credentials
+        run: echo "$OS_CLOUDS" > ./clouds.yaml
+        env:
+          OS_CLOUDS: ${{ secrets.OS_CLOUDS }}
+
       - name: Download source image and upload to OpenStack
         id: download_source
         run: ./bin/ensure-source-image
         env:
           SOURCE_IMAGE_URL: https://cloud-images.ubuntu.com/releases/jammy/release-20251203/ubuntu-22.04-server-cloudimg-amd64.img #TODO: better place to set this?
+          OS_CLOUD: ${{ vars.TARGET_CLOUD }}
 
   read_builds:
     runs-on: ubuntu-latest
@@ -161,10 +167,16 @@ jobs:
       - name: Install script dependencies
         run: pip install -r ./requirements.txt
 
+      - name: Write OpenStack credentials
+        run: echo "$OS_CLOUDS" > ./clouds.yaml
+        env:
+          OS_CLOUDS: ${{ secrets.OS_CLOUDS }}
+
       - name: Delete source image
         run: ./bin/cleanup-source-image
         env:
           PKR_VAR_source_image_name: ${{ needs.ensure_source_image.outputs.source_image }}
+          OS_CLOUD: ${{ vars.TARGET_CLOUD }}
 
   publish_manifest:
     # this job should always run, but needs to run after the build matrix
