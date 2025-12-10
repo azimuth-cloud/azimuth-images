@@ -27,12 +27,8 @@ cleanup() {
   if [ -n "$PKR_VAR_floating_ip" ]; then
     openstack floating ip delete "$PKR_VAR_floating_ip"
   fi
-  # Delete the source image artefacts
-  if [ -n "$PKR_VAR_source_image_name" ]; then
-    openstack image delete "$PKR_VAR_source_image_name"
-    if [ -f "$PKR_VAR_source_image_name.download" ]; then
-      rm "$PKR_VAR_source_image_name.download"
-    fi
+  if [[ -z "${SKIP_SOURCE_IMAGE}" ]]; then
+    $(dirname "$0")/cleanup-source-image
   fi
 }
 trap cleanup EXIT
@@ -45,16 +41,9 @@ do
   sleep 30
 done
 
-PKR_VAR_source_image_name="packer-$(uuidgen | tr '[:upper:]' '[:lower:]')"
-curl -Lo "$PKR_VAR_source_image_name.download" "$SOURCE_IMAGE_URL"
-openstack image create \
-  --progress \
-  --private \
-  --container-format "${SOURCE_IMAGE_CONTAINER_FORMAT:-bare}" \
-  --disk-format "${SOURCE_IMAGE_DISK_FORMAT:-qcow2}" \
-  --file "$PKR_VAR_source_image_name.download" \
-  "${SOURCE_IMAGE_PROPERTIES[@]}" \
-  "$PKR_VAR_source_image_name"
+if [[ -z "${SKIP_SOURCE_IMAGE}" ]]; then
+  $(dirname "$0")/ensure-source-image
+fi
 
 export PACKER_LOG=1 PKR_VAR_floating_ip PKR_VAR_source_image_name
 PACKER_ARGS=("${PACKER_VAR_FILES_ARGS[@]}" "${PACKER_EXTRA_ARGS[@]}")

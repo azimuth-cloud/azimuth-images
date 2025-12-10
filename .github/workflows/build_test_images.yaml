@@ -13,6 +13,21 @@ permissions:
 on:  # yamllint disable-line rule:truthy
   workflow_call:
 jobs:
+  ensure_source_image:
+    runs-on: ubuntu-latest
+    outputs:
+      source_image: ${{ steps.download_source.outputs.source_image_name }}
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Install script dependencies
+        run: pip install -r ./requirements.txt
+
+      - name: Download source image and upload to OpenStack
+        id: download_source
+        run: ./bin/ensure_source_image
+
   read_builds:
     runs-on: ubuntu-latest
     outputs:
@@ -31,6 +46,7 @@ jobs:
   build_images:
     needs:
       - read_builds
+      - ensure_source_image
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -68,6 +84,8 @@ jobs:
           ENVIRONMENT: ${{ vars.TARGET_CLOUD }}
           PACKER_TEMPLATE: ${{ matrix.template }}
           ENV_VAR_FILES: ${{ matrix.var-files }}
+          PKR_VAR_source_image_name: ${{ needs.ensure_source_image.outputs.source_image }}
+          SKIP_SOURCE_IMAGE: "true"
 
       - name: Install cosign
         uses: sigstore/cosign-installer@v3
@@ -127,6 +145,23 @@ jobs:
             checksum: ${{ steps.publish-image.outputs.image-checksum }}
             cosign-bundle-url: ${{ steps.publish-image.outputs.cosign-bundle-url }}
             manifest-extra: ${{ steps.build-image.outputs.manifest-extra }}
+
+  delete_source_image:
+    runs-on: ubuntu-latest
+    needs:
+      - build_images
+      - ensure_source_image
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Install script dependencies
+        run: pip install -r ./requirements.txt
+
+      - name: Delete source image
+        run: ./bin/cleanup_source_image
+        env:
+          PKR_VAR_source_image_name: ${{ needs.ensure_source_image.outputs.source_image }}
 
   publish_manifest:
     # this job should always run, but needs to run after the build matrix

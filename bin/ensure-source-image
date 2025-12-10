@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+PKR_VAR_source_image_name="packer-$(uuidgen | tr '[:upper:]' '[:lower:]')"
+curl -Lo "$PKR_VAR_source_image_name.download" "$SOURCE_IMAGE_URL"
+openstack image create \
+    --progress \
+    --private \
+    --container-format "${SOURCE_IMAGE_CONTAINER_FORMAT:-bare}" \
+    --disk-format "${SOURCE_IMAGE_DISK_FORMAT:-qcow2}" \
+    --file "$PKR_VAR_source_image_name.download" \
+    "${SOURCE_IMAGE_PROPERTIES[@]}" \
+    "$PKR_VAR_source_image_name"
+
+echo "source_image_name=$PKR_VAR_source_image_name" >> "$GITHUB_OUTPUT"
