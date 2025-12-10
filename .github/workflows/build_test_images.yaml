@@ -148,6 +148,7 @@ jobs:
 
   delete_source_image:
     runs-on: ubuntu-latest
+    if: always()
     needs:
       - build_images
       - ensure_source_image
