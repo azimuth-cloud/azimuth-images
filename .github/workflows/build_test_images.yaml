@@ -27,6 +27,8 @@ jobs:
       - name: Download source image and upload to OpenStack
         id: download_source
         run: ./bin/ensure-source-image
+        env:
+          SOURCE_IMAGE_URL: https://cloud-images.ubuntu.com/releases/jammy/release-20251203/ubuntu-22.04-server-cloudimg-amd64.img #TODO: better place to set this?
 
   read_builds:
     runs-on: ubuntu-latest
