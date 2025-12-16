@@ -27,7 +27,7 @@ cleanup() {
   if [ -n "$PKR_VAR_floating_ip" ]; then
     openstack floating ip delete "$PKR_VAR_floating_ip"
   fi
-  if [[ -z "${SKIP_SOURCE_IMAGE}" ]]; then
+  if [[ "${SKIP_SOURCE_IMAGE}" != "true" ]]; then
     "$(dirname "$0")"/cleanup-source-image
   fi
 }
@@ -41,7 +41,7 @@ do
   sleep 30
 done
 
-if [[ -z "${SKIP_SOURCE_IMAGE}" ]]; then
+if [[ "${SKIP_SOURCE_IMAGE}" != "true" ]]; then
   "$(dirname "$0")"/ensure-source-image
 fi
 
