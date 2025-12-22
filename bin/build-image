@@ -28,7 +28,7 @@ cleanup() {
     openstack floating ip delete "$PKR_VAR_floating_ip"
   fi
   if [[ "${SKIP_SOURCE_IMAGE}" != "true" ]]; then
-    $REPO_ROOT/bin/cleanup-source-image
+    "$REPO_ROOT"/bin/cleanup-source-image
   fi
 }
 trap cleanup EXIT
@@ -42,7 +42,7 @@ do
 done
 
 if [[ "${SKIP_SOURCE_IMAGE}" != "true" ]]; then
-  source $REPO_ROOT/bin/ensure-source-image
+  source "$REPO_ROOT"/bin/ensure-source-image
 fi
 
 export PACKER_LOG=1 PKR_VAR_floating_ip PKR_VAR_source_image_name

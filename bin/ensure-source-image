@@ -8,12 +8,12 @@ if [[ $GH_ACTIONS_RUN == "true" ]]; then
     .[]."var-files" 
     | split(",")[] 
     | select(startswith("ubuntu-"))
-    '| sort -u)
+    ' | sort -u)
   SOURCE_IMAGE_ENV_COUNT=$(echo "$SOURCE_IMAGE_ENV" | grep -c .)
 
-  if [ $SOURCE_IMAGE_ENV_COUNT -eq 1 ]; then
+  if [ "$SOURCE_IMAGE_ENV_COUNT" -eq 1 ]; then
     export ENV_VAR_FILES=$SOURCE_IMAGE_ENV
-    echo $REPO_ROOT
+    echo "$REPO_ROOT"
     source "$REPO_ROOT/bin/env-vars"
   else
     echo "Expecting all images to have same source image, but found $SOURCE_IMAGE_ENV_COUNT"
@@ -22,7 +22,8 @@ if [[ $GH_ACTIONS_RUN == "true" ]]; then
 fi
 
 # Download source image
-export PKR_VAR_source_image_name="packer-$(uuidgen | tr '[:upper:]' '[:lower:]')"
+PACKER_UUID=$(uuidgen | tr '[:upper:]' '[:lower:]')
+export PKR_VAR_source_image_name="packer-$PACKER_UUID"
 curl -Lo "$PKR_VAR_source_image_name.download" "$SOURCE_IMAGE_URL"
 openstack image create \
   --progress \
