@@ -8,4 +8,6 @@ if [ -n "$PKR_VAR_source_image_name" ]; then
   if [ -f "$PKR_VAR_source_image_name.download" ]; then
     rm "$PKR_VAR_source_image_name.download"
   fi
+else
+  echo "Failed to delete source image, PKR_VAR_source_image_name not set"
 fi
