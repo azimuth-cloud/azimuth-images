@@ -13,6 +13,7 @@ permissions:
 on:  # yamllint disable-line rule:truthy
   workflow_call:
 jobs:
+
   read_builds:
     runs-on: ubuntu-latest
     outputs:
@@ -28,9 +29,37 @@ jobs:
         id: builds-as-json
         run: ./bin/builds-as-json
 
+  ensure_source_image:
+    needs:
+      - read_builds
+    runs-on: ubuntu-latest
+    outputs:
+      source_image: ${{ steps.download_source.outputs.source_image_name }}
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Install script dependencies
+        run: pip install -r ./requirements.txt
+
+      - name: Write OpenStack credentials
+        run: echo "$OS_CLOUDS" > ./clouds.yaml
+        env:
+          OS_CLOUDS: ${{ secrets.OS_CLOUDS }}
+
+      - name: Download source image and upload to OpenStack
+        id: download_source
+        run: ./bin/ensure-source-image
+        env:
+          BUILD_MATRIX: ${{ needs.read_builds.outputs.builds }}
+          REPO_ROOT: ${{ github.workspace }}
+          GH_ACTIONS_RUN: "true"
+          OS_CLOUD: ${{ vars.TARGET_CLOUD }}
+
   build_images:
     needs:
       - read_builds
+      - ensure_source_image
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -68,6 +97,8 @@ jobs:
           ENVIRONMENT: ${{ vars.TARGET_CLOUD }}
           PACKER_TEMPLATE: ${{ matrix.template }}
           ENV_VAR_FILES: ${{ matrix.var-files }}
+          PKR_VAR_source_image_name: ${{ needs.ensure_source_image.outputs.source_image }}
+          SKIP_SOURCE_IMAGE: "true"
 
       - name: Install cosign
         uses: sigstore/cosign-installer@v3
@@ -127,6 +158,30 @@ jobs:
             checksum: ${{ steps.publish-image.outputs.image-checksum }}
             cosign-bundle-url: ${{ steps.publish-image.outputs.cosign-bundle-url }}
             manifest-extra: ${{ steps.build-image.outputs.manifest-extra }}
+
+  delete_source_image:
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - build_images
+      - ensure_source_image
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Install script dependencies
+        run: pip install -r ./requirements.txt
+
+      - name: Write OpenStack credentials
+        run: echo "$OS_CLOUDS" > ./clouds.yaml
+        env:
+          OS_CLOUDS: ${{ secrets.OS_CLOUDS }}
+
+      - name: Delete source image
+        run: ./bin/cleanup-source-image
+        env:
+          PKR_VAR_source_image_name: ${{ needs.ensure_source_image.outputs.source_image }}
+          OS_CLOUD: ${{ vars.TARGET_CLOUD }}
 
   publish_manifest:
     # this job should always run, but needs to run after the build matrix

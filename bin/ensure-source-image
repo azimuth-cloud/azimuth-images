@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+# Get source image from build matrix
+if [[ $GH_ACTIONS_RUN == "true" ]]; then
+  SOURCE_IMAGE_ENV=$(echo "$BUILD_MATRIX" | jq -r '
+    .[]."var-files" 
+    | split(",")[] 
+    | select(startswith("ubuntu-"))
+    ' | sort -u)
+  SOURCE_IMAGE_ENV_COUNT=$(echo "$SOURCE_IMAGE_ENV" | grep -c .)
+
+  if [ "$SOURCE_IMAGE_ENV_COUNT" -eq 1 ]; then
+    export ENV_VAR_FILES=$SOURCE_IMAGE_ENV
+    echo "$REPO_ROOT"
+    source "$REPO_ROOT/bin/env-vars"
+  else
+    echo "Expecting all images to have same source image, but found $SOURCE_IMAGE_ENV_COUNT"
+    exit 1
+  fi
+fi
+
+# Download source image
+PACKER_UUID=$(uuidgen | tr '[:upper:]' '[:lower:]')
+export PKR_VAR_source_image_name="packer-$PACKER_UUID"
+curl -Lo "$PKR_VAR_source_image_name.download" "$SOURCE_IMAGE_URL"
+openstack image create \
+  --progress \
+  --private \
+  --container-format "${SOURCE_IMAGE_CONTAINER_FORMAT:-bare}" \
+  --disk-format "${SOURCE_IMAGE_DISK_FORMAT:-qcow2}" \
+  --file "$PKR_VAR_source_image_name.download" \
+  "${SOURCE_IMAGE_PROPERTIES[@]}" \
+  "$PKR_VAR_source_image_name"
+
+if [[ $GH_ACTIONS_RUN == "true" ]]; then
+  echo "source_image_name=$PKR_VAR_source_image_name" >>"$GITHUB_OUTPUT"
+fi
