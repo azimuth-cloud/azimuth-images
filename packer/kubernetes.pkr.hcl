@@ -145,7 +145,11 @@ variable "crictl_source_type" {
   type = string
 }
 
-variable "crictl_url" {
+variable "crictl_base_url" {
+  type = string
+}
+
+variable "crictl_filename" {
   type = string
 }
 
@@ -372,8 +376,11 @@ locals {
     crictl_sha256_default = "https://github.com/kubernetes-sigs/cri-tools/releases/download/v${var.crictl_version}/crictl-v${var.crictl_version}-linux-${var.crictl_arch}.tar.gz.sha256"
     crictl_sha256 = element([for e in [var.crictl_sha256, local.crictl_sha256_default]: e if e != ""], 0)
 
-    crictl_url_default = "https://github.com/kubernetes-sigs/cri-tools/releases/download/v${var.crictl_version}/crictl-v${var.crictl_version}-linux-${var.crictl_arch}.tar.gz"
-    crictl_url = element([for e in [var.crictl_url, local.crictl_url_default]: e if e != ""], 0)
+    crictl_filename_default = "crictl-v${var.crictl_version}-linux-${var.crictl_arch}.tar.gz"
+    crictl_filename = element([for e in [var.crictl_filename, local.crictl_filename_default]: e if e != ""], 0)
+
+    crictl_base_url_default = "https://github.com/kubernetes-sigs/cri-tools/releases/download/v${var.crictl_version}"
+    crictl_base_url = element([for e in [var.crictl_base_url, local.crictl_base_url_default]: e if e != ""], 0)
 
     kubernetes_cni_http_checksum_default = "sha256:https://storage.googleapis.com/k8s-artifacts-cni/release/${var.kubernetes_cni_semver}/cni-plugins-linux-${var.kubernetes_cni_http_checksum_arch}-${var.kubernetes_cni_semver}.tgz.sha256"
     kubernetes_cni_http_checksum = element([for e in [var.kubernetes_cni_http_checksum, local.kubernetes_cni_http_checksum_default]: e if e != ""], 0)
@@ -467,7 +474,9 @@ build {
       "--extra-vars",
       "crictl_source_type=${var.crictl_source_type}",
       "--extra-vars",
-      "crictl_url=${local.crictl_url}",
+      "crictl_base_url=${local.crictl_base_url}",
+      "--extra-vars",
+      "crictl_filename=${local.crictl_filename}",
       "--extra-vars",
       "disable_public_repos=${var.disable_public_repos}",
       "--extra-vars",
