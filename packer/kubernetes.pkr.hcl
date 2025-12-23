@@ -360,7 +360,7 @@ variable "ubuntu_security_repo" {
 locals {
     build_timestamp = formatdate("YYMMDD-hhmm", timestamp())
 
-    containerd_url_default = "https://github.com/containerd/containerd/releases/download/v${var.containerd_version}/cri-containerd-cni-${var.containerd_version}-linux-${var.containerd_arch}.tar.gz"
+    containerd_url_default = "https://github.com/containerd/containerd/releases/download/v${var.containerd_version}/containerd-${var.containerd_version}-linux-${var.containerd_arch}.tar.gz"
     containerd_url = element([for e in [var.containerd_url, local.containerd_url_default]: e if e != ""], 0)
 
     containerd_service_url_default = "https://raw.githubusercontent.com/containerd/containerd/refs/tags/v${var.containerd_version}/containerd.service"
