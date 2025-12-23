@@ -105,6 +105,10 @@ variable "containerd_url" {
   type = string
 }
 
+variable "containerd_service_url" {
+  type = string
+}
+
 variable "containerd_version" {
   type = string
 }
@@ -359,6 +363,9 @@ locals {
     containerd_url_default = "https://github.com/containerd/containerd/releases/download/v${var.containerd_version}/cri-containerd-cni-${var.containerd_version}-linux-${var.containerd_arch}.tar.gz"
     containerd_url = element([for e in [var.containerd_url, local.containerd_url_default]: e if e != ""], 0)
 
+    containerd_service_url_default = "https://raw.githubusercontent.com/containerd/containerd/refs/tags/v${var.containerd_version}/containerd.service"
+    containerd_service_url = element([for e in [var.containerd_service_url, local.containerd_service_url_default]: e if e != ""], 0)
+
     containerd_wasm_shims_url_default = "https://github.com/deislabs/containerd-wasm-shims/releases/download/${var.containerd_wasm_shims_version}/containerd-wasm-shims-v1-linux-${var.containerd_wasm_shims_arch}.tar.gz"
     containerd_wasm_shims_url = element([for e in [var.containerd_wasm_shims_url, local.containerd_wasm_shims_url_default]: e if e != ""], 0)
 
@@ -443,6 +450,8 @@ build {
       "containerd_sha256=${var.containerd_sha256}",
       "--extra-vars",
       "containerd_url=${local.containerd_url}",
+      "--extra-vars",
+      "containerd_service_url=${local.containerd_service_url}",
       "--extra-vars",
       "containerd_version=${var.containerd_version}",
       "--extra-vars",
