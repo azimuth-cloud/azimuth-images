@@ -105,6 +105,10 @@ variable "containerd_url" {
   type = string
 }
 
+variable "containerd_service_url" {
+  type = string
+}
+
 variable "containerd_version" {
   type = string
 }
@@ -141,7 +145,11 @@ variable "crictl_source_type" {
   type = string
 }
 
-variable "crictl_url" {
+variable "crictl_baseurl" {
+  type = string
+}
+
+variable "crictl_filename" {
   type = string
 }
 
@@ -356,8 +364,11 @@ variable "ubuntu_security_repo" {
 locals {
     build_timestamp = formatdate("YYMMDD-hhmm", timestamp())
 
-    containerd_url_default = "https://github.com/containerd/containerd/releases/download/v${var.containerd_version}/cri-containerd-cni-${var.containerd_version}-linux-${var.containerd_arch}.tar.gz"
+    containerd_url_default = "https://github.com/containerd/containerd/releases/download/v${var.containerd_version}/containerd-${var.containerd_version}-linux-${var.containerd_arch}.tar.gz"
     containerd_url = element([for e in [var.containerd_url, local.containerd_url_default]: e if e != ""], 0)
+
+    containerd_service_url_default = "https://raw.githubusercontent.com/containerd/containerd/refs/tags/v${var.containerd_version}/containerd.service"
+    containerd_service_url = element([for e in [var.containerd_service_url, local.containerd_service_url_default]: e if e != ""], 0)
 
     containerd_wasm_shims_url_default = "https://github.com/deislabs/containerd-wasm-shims/releases/download/${var.containerd_wasm_shims_version}/containerd-wasm-shims-v1-linux-${var.containerd_wasm_shims_arch}.tar.gz"
     containerd_wasm_shims_url = element([for e in [var.containerd_wasm_shims_url, local.containerd_wasm_shims_url_default]: e if e != ""], 0)
@@ -365,8 +376,11 @@ locals {
     crictl_sha256_default = "https://github.com/kubernetes-sigs/cri-tools/releases/download/v${var.crictl_version}/crictl-v${var.crictl_version}-linux-${var.crictl_arch}.tar.gz.sha256"
     crictl_sha256 = element([for e in [var.crictl_sha256, local.crictl_sha256_default]: e if e != ""], 0)
 
-    crictl_url_default = "https://github.com/kubernetes-sigs/cri-tools/releases/download/v${var.crictl_version}/crictl-v${var.crictl_version}-linux-${var.crictl_arch}.tar.gz"
-    crictl_url = element([for e in [var.crictl_url, local.crictl_url_default]: e if e != ""], 0)
+    crictl_filename_default = "crictl-v${var.crictl_version}-linux-${var.crictl_arch}.tar.gz"
+    crictl_filename = element([for e in [var.crictl_filename, local.crictl_filename_default]: e if e != ""], 0)
+
+    crictl_baseurl_default = "https://github.com/kubernetes-sigs/cri-tools/releases/download/v${var.crictl_version}"
+    crictl_baseurl = element([for e in [var.crictl_baseurl, local.crictl_baseurl_default]: e if e != ""], 0)
 
     kubernetes_cni_http_checksum_default = "sha256:https://storage.googleapis.com/k8s-artifacts-cni/release/${var.kubernetes_cni_semver}/cni-plugins-linux-${var.kubernetes_cni_http_checksum_arch}-${var.kubernetes_cni_semver}.tgz.sha256"
     kubernetes_cni_http_checksum = element([for e in [var.kubernetes_cni_http_checksum, local.kubernetes_cni_http_checksum_default]: e if e != ""], 0)
@@ -444,6 +458,8 @@ build {
       "--extra-vars",
       "containerd_url=${local.containerd_url}",
       "--extra-vars",
+      "containerd_service_url=${local.containerd_service_url}",
+      "--extra-vars",
       "containerd_version=${var.containerd_version}",
       "--extra-vars",
       "containerd_wasm_shims_runtimes=\"${var.containerd_wasm_shims_runtimes}\"",
@@ -458,7 +474,9 @@ build {
       "--extra-vars",
       "crictl_source_type=${var.crictl_source_type}",
       "--extra-vars",
-      "crictl_url=${local.crictl_url}",
+      "crictl_baseurl=${local.crictl_baseurl}",
+      "--extra-vars",
+      "crictl_filename=${local.crictl_filename}",
       "--extra-vars",
       "disable_public_repos=${var.disable_public_repos}",
       "--extra-vars",
