@@ -262,7 +262,7 @@ jobs:
         uses: azimuth-cloud/azimuth-config/.github/actions/provision@devel
 
       - name: Run Azimuth tests
-        uses: azimuth-cloud/azimuth-config/.github/actions/test@devel
+        uses: azimuth-cloud/azimuth-config/.github/actions/test@feat/workload-cluster-debug-bundle
 
       - name: Destroy Azimuth
         uses: azimuth-cloud/azimuth-config/.github/actions/destroy@devel
