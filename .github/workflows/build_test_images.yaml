@@ -252,6 +252,7 @@ jobs:
             generate_tests_caas_test_case_slurm_enabled: false
             generate_tests_kubernetes_test_cases_latest_only: false
             generate_tests_kubernetes_apps_suite_enabled: false
+            generate_tests_caas_suite_enabled: false
         # GitHub terminates jobs after 6 hours
         # We don't want jobs to acquire the lock then get timed out before
         # they can finish, so wait a maximum of 3 hours to acquire the lock,
@@ -262,7 +263,7 @@ jobs:
         uses: azimuth-cloud/azimuth-config/.github/actions/provision@devel
 
       - name: Run Azimuth tests
-        uses: azimuth-cloud/azimuth-config/.github/actions/test@devel
+        uses: azimuth-cloud/azimuth-config/.github/actions/test@will-k8s-upterm
 
       - name: Destroy Azimuth
         uses: azimuth-cloud/azimuth-config/.github/actions/destroy@devel
