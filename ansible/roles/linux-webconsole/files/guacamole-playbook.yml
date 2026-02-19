@@ -77,7 +77,7 @@
           ansible.builtin.set_fact:
             guacamole_user_home: >-
               {{
-                ansible_facts.getent_passwd[guacamole_user][4]
+                ansible_facts['getent_passwd'][guacamole_user][4]
                 }}
 
         - name: Configure user for systemd unit
@@ -144,7 +144,7 @@
               <authorize username="portal" password="portal">
                   <connection name="shell">
                       <protocol>ssh</protocol>
-                      <param name="hostname">{{ ansible_default_ipv4.address }}</param>
+                      <param name="hostname">{{ ansible_facts['default_ipv4']['address'] }}</param>
                       <param name="port">22</param>
                       <param name="username">{{ guacamole_user }}</param>
                       <param name="private-key">{{ guacamole_ssh_private_key }}</param>
@@ -153,7 +153,7 @@
           {% if desktop_enabled %}
                   <connection name="desktop">
                       <protocol>vnc</protocol>
-                      <param name="hostname">{{ ansible_default_ipv4.address }}</param>
+                      <param name="hostname">{{ ansible_facts['default_ipv4']['address'] }}</param>
                       <param name="port">5901</param>
                       <param name="autoretry">3</param>
                       <param name="username">{{ guacamole_user }}</param>
