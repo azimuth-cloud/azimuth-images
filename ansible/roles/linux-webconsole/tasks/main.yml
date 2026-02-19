@@ -88,7 +88,7 @@
     mode: "0644"
   vars:
     guacamole_init_vars:
-      desktop_enabled: "{{ desktop_enabled }}"
+      desktop_enabled: "{{ desktop_enabled | ansible.builtin.bool }}"
       guacamole_user: "{{ guacamole_user }}"
       podman_service_user: "{{ podman_service_user }}"
 
