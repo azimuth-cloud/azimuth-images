@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+# Delete the source image artefacts
+if [ -n "$PKR_VAR_source_image_name" ]; then
+  openstack image delete "$PKR_VAR_source_image_name"
+  if [ -f "$PKR_VAR_source_image_name.download" ]; then
+    rm "$PKR_VAR_source_image_name.download"
+  fi
+else
+  echo "Failed to delete source image, PKR_VAR_source_image_name not set"
+fi
