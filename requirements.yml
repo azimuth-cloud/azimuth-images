@@ -21,4 +21,4 @@ collections:
 roles:
   - src: https://github.com/stackhpc/ansible-role-os-manila-mount.git
     name: stackhpc.os-manila-mount
-    version: feat/ubuntu-noble
+    version: v27.0.0
