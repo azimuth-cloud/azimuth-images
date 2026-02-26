@@ -1,10 +1,17 @@
 ---
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+  register: apt_cache_update
+  timeout: 300
+  retries: 3
+  until: apt_cache_update is not failed
+
 # ACL Required for become to an unprivileged user to work
 # Ensure up-to-date CA certificates
 # Use linux-generic to track linux-modules-extra (IB)
 - name: Install common packages  # noqa package-latest
   ansible.builtin.apt:
-    update_cache: true
     pkg:
       - acl
       - ca-certificates
@@ -32,18 +39,20 @@
 # The cloud-init netplan renderer is default for ubuntu
 # but does not support InfiniBand devices
 - name: Switch cloud-init to alternative network renderer
-  ansible.builtin.lineinfile:
-    path: /etc/cloud/cloud.cfg
-    regexp: "^    renderers:.*"
-    line: "    renderers: ['networkd', 'network-manager']"
-    state: present
-
-- name: Switch cloud-init to alternative network activator
-  ansible.builtin.lineinfile:
-    path: /etc/cloud/cloud.cfg
-    regexp: "^    activators:.*"
-    line: "    activators: ['networkd', 'eni', 'network-manager']"
-    state: present
+  ansible.builtin.copy:
+    dest: /etc/cloud/cloud.cfg.d/10_NetworkManager.yml
+    mode: "0644"
+    owner: root
+    group: root
+    content: |
+      ---
+      merge_type: 'dict(recurse_array)'
+      system_info:
+        network:
+          renderers:
+            - "network-manager"
+          activators:
+            - "network-manager"
 
 - name: Blacklist specified kernel modules
   community.general.kernel_blacklist:

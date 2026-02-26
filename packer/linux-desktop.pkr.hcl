@@ -84,7 +84,7 @@ build {
     extra_arguments = [
       "-v",
       "--extra-vars",
-      "desktop_enabled=yes",
+      "desktop_enabled=true",
     ]
     ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10"]
   }

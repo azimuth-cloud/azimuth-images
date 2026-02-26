@@ -240,6 +240,7 @@ jobs:
       - name: Set up Azimuth environment
         uses: azimuth-cloud/azimuth-config/.github/actions/setup@devel
         with:
+          azimuth-ops-version: feat/noble
           os-clouds: ${{ secrets.OS_CLOUDS }}
           target-cloud: ${{ vars.TARGET_CLOUD }}
           environment-prefix: images-ci
