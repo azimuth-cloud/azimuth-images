@@ -134,7 +134,7 @@ jobs:
           './${{ steps.publish-image.outputs.image-name }}'
 
       - name: Fail if scan has CRITICAL vulnerabilities
-        uses: aquasecurity/trivy-action@0.29.0
+        uses: aquasecurity/trivy-action@0.34.2
         with:
           scan-type: fs
           scan-ref: "./${{ steps.publish-image.outputs.image-name }}"
