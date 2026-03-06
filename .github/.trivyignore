@@ -2,3 +2,9 @@
 # bundled with Ansible as part of cyberark/ark-sdk-python.
 # We don't use Cyberark so safe to ignore.
 CVE-2024-33663
+
+# NOTE(m-bull): Affects the the deepdiff package
+# bundled with the netbox.netbox collection. This package is
+# never actually installed, and only appears in the
+# netbox.netbox poetry.lock file, so it is safe to ignore.
+CVE-2025-58367
