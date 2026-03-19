@@ -62,7 +62,7 @@
 - name: Mount up filesystem using UUID
   ansible.posix.mount:
     # Get the UUID from ansible_devices
-    src: "UUID={{ ansible_devices[data_volume_device].links.uuids[0] }}"
+    src: "UUID={{ ansible_facts['devices'][data_volume_device].links.uuids[0] }}"
     path: "{{ data_volume.mountpoint }}"
     state: mounted
     fstype: "{{ data_volume.get('fs_type', 'ext4') }}"
