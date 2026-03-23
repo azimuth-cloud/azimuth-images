@@ -2,19 +2,6 @@
 
 set -euxo pipefail
 
-# Convert the image to QCOW2 if required
-if [ "$IMAGE_DISK_FORMAT" = "qcow2" ]; then
-  mv "$IMAGE_SOURCE_FILE" "${IMAGE_NAME}.qcow2"
-else
-  qemu-img convert \
-    -f "$IMAGE_DISK_FORMAT" \
-    -O qcow2 \
-    "$IMAGE_SOURCE_FILE" \
-    "${IMAGE_NAME}.qcow2"
-fi
-# output the image size for debug reasons
-ls -alh "${IMAGE_NAME}.qcow2"
-
 # create signature
 cosign sign-blob "${IMAGE_NAME}.qcow2" --bundle "${IMAGE_NAME}.cosign.bundle" -y
 
@@ -34,6 +21,7 @@ signurl_use_https = True
 EOF
 s3cmd put "${IMAGE_NAME}.qcow2" "s3://$S3_BUCKET"
 s3cmd put "${IMAGE_NAME}.cosign.bundle" "s3://$S3_BUCKET"
+s3cmd put "${IMAGE_NAME}-sbom.json" "s3://$S3_BUCKET"
 
 # Make a signed S3 link that lasts for one year
 # IMAGE_URL="$(s3cmd signurl "s3://$S3_BUCKET/${IMAGE_NAME}.qcow2" +31536000)"
@@ -42,6 +30,7 @@ s3cmd put "${IMAGE_NAME}.cosign.bundle" "s3://$S3_BUCKET"
 # Use public Swift URL instead of signed link
 IMAGE_URL="${S3_HOST_PUBLIC_PATH}/${IMAGE_NAME}.qcow2"
 COSIGN_BUNDLE_URL="${S3_HOST_PUBLIC_PATH}/${IMAGE_NAME}.cosign.bundle"
+IMAGE_SBOM_URL="${S3_HOST_PUBLIC_PATH}/${IMAGE_NAME}-sbom.json"
 
 # Get the checksum of the image
 IMAGE_CHECKSUM="sha256:$(sha256sum "${IMAGE_NAME}.qcow2" | awk '{ print $1 }')"
@@ -51,5 +40,6 @@ IMAGE_CHECKSUM="sha256:$(sha256sum "${IMAGE_NAME}.qcow2" | awk '{ print $1 }')"
   echo "image-name=$IMAGE_NAME"
   echo "image-url=$IMAGE_URL"
   echo "image-checksum=$IMAGE_CHECKSUM"
+  echo "image-sbom-url=$IMAGE_SBOM_URL"
   echo "cosign-bundle-url=$COSIGN_BUNDLE_URL"
 } >>"${GITHUB_OUTPUT:-/dev/stdout}"
