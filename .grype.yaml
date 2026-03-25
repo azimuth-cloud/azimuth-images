@@ -1,0 +1,4 @@
+---
+
+# We are most interested in Critical vulnerabilities
+sort-by: "severity"
