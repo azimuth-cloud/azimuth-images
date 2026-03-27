@@ -2,3 +2,268 @@
 
 # We are most interested in Critical vulnerabilities
 sort-by: "severity"
+
+# Ignore vulnerabilities after investigation
+ignore:
+  # Not affected: https://ubuntu.com/security/CVE-2021-47548
+  - vulnerability: CVE-2021-47548
+  # Not affected: https://ubuntu.com/security/CVE-2022-48716
+  - vulnerability: CVE-2022-48716
+  # Not affected, podman and snapd packages rebuilt with fixed golang-1.18.1-1ubuntu1.2
+  - vulnerability: CVE-2023-24531
+  # Not affected, podman and snapd packages rebuilt with fixed golang-1.18.1-1ubuntu1.2
+  - vulnerability: CVE-2023-24538
+  # Not affected, podman and snapd packages rebuilt with fixed golang-1.18.1-1ubuntu1.2
+  - vulnerability: CVE-2023-24540
+  # Not affected, podman and snapd packages rebuilt with fixed golang-1.18.1-1ubuntu1.2
+  - vulnerability: CVE-2023-29402
+  # Not affected, podman and snapd packages rebuilt with fixed golang-1.18.1-1ubuntu1.2
+  - vulnerability: CVE-2023-29404
+  # Not affected, podman and snapd packages rebuilt with fixed golang-1.18.1-1ubuntu1.2
+  - vulnerability: CVE-2023-29405
+  # Not affected, Fixed 5.15.0-72.79 https://ubuntu.com/security/CVE-2023-52735
+  - vulnerability: CVE-2023-52735
+  # Not affected, Fixed 5.15.0-100.110 https://ubuntu.com/security/CVE-2023-52832
+  - vulnerability: CVE-2023-52832
+  # Not affected, podman and snapd packages rebuilt with fixed golang-1.18.1-1ubuntu1.2
+  - vulnerability: CVE-2024-24790
+  # Not affected, Fixed 5.15.0-112.122 https://ubuntu.com/security/CVE-2024-27053
+  - vulnerability: CVE-2024-27053
+  # We don't use Cyberark so safe to ignore.
+  - vulnerability: GHSA-6c5p-j8vq-pqhj
+    package:
+      location: "/usr/lib/ansible-init/lib/python3.10/site-packages/ansible_collections/cyberark/**"
+  # Not affected, Fixed 5.15.0-112.122 https://ubuntu.com/security/CVE-2024-35845
+  - vulnerability: CVE-2024-35845
+  # Not affected, Fixed 5.15.0-116.126 https://ubuntu.com/security/CVE-2024-35960
+  - vulnerability: CVE-2024-35960
+  # Not affected, Fixed 5.15.0-144.157 https://ubuntu.com/security/CVE-2024-38541
+  - vulnerability: CVE-2024-38541
+  # Not affected, Fixed 5.15.0-121.131 https://ubuntu.com/security/CVE-2024-38612
+  - vulnerability: CVE-2024-38612
+  # Not affected https://ubuntu.com/security/CVE-2024-45337
+  - vulnerability: GHSA-v778-237x-gjrc
+    package:
+      location: "/usr/lib/snapd/**"
+  # Not affected https://ubuntu.com/security/CVE-2024-45337
+  - vulnerability: GHSA-v778-237x-gjrc
+    package:
+      location: "/usr/bin/snap"
+  # Not affected https://github.com/kubernetes/kubernetes/issues/129164
+  - vulnerability: GHSA-v778-237x-gjrc
+    package:
+      location: "/usr/bin/kube*"
+  # Not affected https://github.com/kubernetes/kubernetes/issues/129164
+  - vulnerability: GHSA-v778-237x-gjrc
+    package:
+      location: "/usr/local/bin/ctd-decoder"
+  # Not affected https://github.com/kubernetes/kubernetes/issues/129164
+  - vulnerability: GHSA-v778-237x-gjrc
+    package:
+      location: "/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/**"
+  # Not affected, Fixed 5.15.0-127.137 https://ubuntu.com/security/CVE-2024-47685
+  - vulnerability: CVE-2024-47685
+  # Affects the the deepdiff package bundled with the netbox.netbox collection.
+  # This package is never actually installed, and only appears in the netbox.netbox
+  # poetry.lock file, so it is safe to ignore.
+  - vulnerability: GHSA-mw26-5g2v-hqw3
+    package:
+      location: "/usr/lib/ansible-init/lib/python3.10/site-packages/ansible_collections/netbox/netbox/poetry.lock"
+  # Affects NVME-oF which is not in use https://ubuntu.com/security/CVE-2026-23112
+  - vulnerability: CVE-2026-23112
+  # Zenith client (ubuntu:24.04)
+  # Not affected, Fixed 3.0.13-0ubuntu3.2 https://ubuntu.com/security/CVE-2024-5535
+  - vulnerability: CVE-2024-5535
+    package:
+      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
+  # Zenith client (ubuntu:24.04)
+  # Not affected, Fixed 3.12.3-1ubuntu0.7 https://ubuntu.com/security/CVE-2025-4517
+  - vulnerability: CVE-2025-4517
+    package:
+      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
+  # Prometheus, promtool and grafana OCI images
+  # Not exploitable, gRPC servers for all services listen on localhost and are not exposed
+  - vulnerability: GHSA-p77j-4mvh-x3m3
+    package:
+      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
+  # Podman packages
+  # Built with go1.18, fix not backported past go1.22
+  - vulnerability: CVE-2025-22871
+    package:
+      location: "/usr/lib/cni/**"
+  - vulnerability: CVE-2025-22871
+    package:
+      location: "/usr/bin/podman"
+  # Snapd packages
+  # Built with go1.18, fix not backported past go1.22
+  - vulnerability: CVE-2025-22871
+    package:
+      location: "/usr/lib/snapd/**"
+  - vulnerability: CVE-2025-22871
+    package:
+      location: "/usr/bin/snap"
+  # Runc packages
+  # Built with go1.23, not rebuilt with fixed go
+  - vulnerability: CVE-2025-22871
+    package:
+      location: "/usr/**/runc"
+  - vulnerability: CVE-2025-22871
+    package:
+      location: "/usr/bin/pidfd-kill"
+  - vulnerability: CVE-2025-22871
+    package:
+      location: "/usr/bin/memfd-bind"
+  - vulnerability: CVE-2025-22871
+    package:
+      location: "/usr/bin/fs-idmap"
+  - vulnerability: CVE-2025-22871
+    package:
+      location: "/usr/bin/remap-rootfs"
+  - vulnerability: CVE-2025-22871
+    package:
+      location: "/usr/sbin/ipp-usb"
+  # libsysmetrics
+  - vulnerability: CVE-2025-22871
+    package:
+      location: "/usr/lib/x86_64-linux-gnu/libsysmetrics.so.1"
+  # ubuntu-report
+  - vulnerability: CVE-2025-22871
+    package:
+      location: "/usr/bin/ubuntu-report"
+  # kubernetes-cni package is not rebuilt with fixed Go
+  - vulnerability: CVE-2025-22871
+    package:
+      location: "/opt/cni/**"
+  # cri-tools package is not rebuilt with fixed Go
+  - vulnerability: CVE-2025-22871
+    package:
+      location: "/usr/local/bin/crictl"
+  # coredns package is not rebuilt with fixed Go
+  - vulnerability: CVE-2025-22871
+    package:
+      location: "/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/**"
+  # Podman packages
+  # Built with go1.18, fix not backported past go1.22
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/lib/cni/**"
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/bin/podman"
+  # Snapd packages
+  # Built with go1.18, fix not backported past go1.22
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/lib/snapd/**"
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/bin/snap"
+  # node_exporter listens only on localhost, no tls required
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/local/bin/node_exporter"
+  # Runc packages
+  # Built with go1.23, not rebuilt with fixed go
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/*/runc"
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/bin/pidfd-kill"
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/bin/memfd-bind"
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/bin/fs-idmap"
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/bin/remap-rootfs"
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/sbin/ipp-usb"
+  # ubuntu-report
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/bin/ubuntu-report"
+  # libsysmetrics
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/lib/x86_64-linux-gnu/libsysmetrics.so.1"
+  # Not affected, Apptainer built with patched go1.25
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/libexec/apptainer/**"
+  # Not affected, Apptainer built with patched go1.25
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/bin/apptainer"
+  # Not affected, esbuild bundled with rstudio does not use the vulnerable method
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/lib/rstudio-server/bin/quarto/bin/tools/x86_64/esbuild"
+  # Binaries rebuilt with fixed Go in in kubernetes >1.33.9, >1.34.5
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/opt/cni/**"
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/**"
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/local/bin/containerd*"
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/local/bin/cri*"
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/local/**/runc"
+  - vulnerability: CVE-2025-68121
+    package:
+      location: "/usr/local/bin/ct*"
+  # Not affected, Apptainer does not use the vulnerable functionality
+  # https://bugzilla.redhat.com/show_bug.cgi?id=2331927
+  - vulnerability: GHSA-v778-237x-gjrc
+    package:
+      location: "/usr/libexec/apptainer/**"
+  # Not affected, Apptainer does not use the vulnerable functionality,
+  # except in testing (Server.Serve and Server.ServeHTTP)
+  - vulnerability: GHSA-p77j-4mvh-x3m3
+    package:
+      location: "/usr/bin/apptainer"
+  # Not affected, containerd does not use the vulnerable functionality,
+  # https://github.com/containerd/containerd/issues/13096#issuecomment-4111967334
+  - vulnerability: GHSA-p77j-4mvh-x3m3
+    package:
+      location: "/usr/local/bin/containerd*"
+  - vulnerability: GHSA-p77j-4mvh-x3m3
+    package:
+      location: "/usr/local/bin/ctr"
+  - vulnerability: GHSA-p77j-4mvh-x3m3
+    package:
+      location: "/usr/local/bin/ctd*"
+  # Not affected, kubernetes does not use the vulnerable functionality,
+  # https://github.com/kubernetes/kubernetes/pull/137906#issuecomment-4092302596
+  - vulnerability: GHSA-p77j-4mvh-x3m3
+    package:
+      location: "/usr/bin/kubeadm"
+  - vulnerability: GHSA-p77j-4mvh-x3m3
+    package:
+      location: "/usr/bin/kubelet"
+  - vulnerability: GHSA-p77j-4mvh-x3m3
+    package:
+      location: "/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/**"
+  # Fix won't be backported to current version of cri-tools
+  - vulnerability: GHSA-p77j-4mvh-x3m3
+    package:
+      location: "/usr/local/bin/crictl"
+  # Not affected, vulnerability introduced in openjpeg 2.5.1
+  # https://github.com/uclouvain/openjpeg/pull/1573#issuecomment-3187599234
+  - vulnerabilty: CVE-2025-54874
+    package:
+      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
+  # Not affected, fixed in v1.31.0
+  # https://github.com/kubernetes-sigs/cri-tools/releases/tag/v1.31.0
+  - vulnerability: GHSA-v23v-6jw2-98fq
+    package:
+      location: "/usr/local/bin/crictl"
