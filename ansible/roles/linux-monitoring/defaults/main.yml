@@ -25,3 +25,7 @@ prometheus_container_image_name: "prom/prometheus"
 prometheus_container_image: "{{ prometheus_container_image_prefix }}/{{ prometheus_container_image_name }}:{{ prometheus_version }}"
 
 podman_service_user: "podman"
+
+prometheus_node_exporter_listen_address: "127.0.0.1"
+
+prometheus_node_exporter_listen_port: "9100"
