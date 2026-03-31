@@ -22,7 +22,7 @@ BUILD_TEMPLATE = """
 
 name: kubernetes-{major}-{minor}-{distro}
 template: kubernetes
-var-files: common,kvm,linux,ubuntu-{distro},kubernetes,kubernetes_amdgpu,kubernetes_{major}_{minor}
+var-files: common,kvm,linux,ubuntu-{distro},kubernetes,kubernetes_{major}_{minor}
 """
 
 

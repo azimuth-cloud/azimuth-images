@@ -81,21 +81,6 @@ variable "additional_url_images_list" {
   type = string
 }
 
-variable "amd_deb_version" {
-  type = string
-  default = ""
-}
-
-variable "amd_usecase" {
-  type = string
-  default = ""
-}
-
-variable "amd_version" {
-  type = string
-  default = ""
-}
-
 variable "build_target" {
   type = string
 }
@@ -166,11 +151,6 @@ variable "crictl_version" {
 
 variable "disable_public_repos" {
   type = string
-}
-
-variable "gpu_vendor" {
-  type = string
-  default = ""
 }
 
 variable "ecr_credential_provider" {
@@ -454,12 +434,6 @@ build {
       "--extra-vars",
       "additional_url_images_list=${var.additional_url_images_list}",
       "--extra-vars",
-      "amd_deb_version=${var.amd_deb_version}",
-      "--extra-vars",
-      "amd_usecase=${var.amd_usecase}",
-      "--extra-vars",
-      "amd_version=${var.amd_version}",
-      "--extra-vars",
       "build_target=${var.build_target}",
       "--extra-vars",
       "containerd_additional_settings=${var.containerd_additional_settings}",
@@ -497,8 +471,6 @@ build {
       "extra_repos=\"${var.extra_repos}\"",
       "--extra-vars",
       "extra_rpms=\"${var.extra_rpms}\"",
-      "--extra-vars",
-      "gpu_vendor=${var.gpu_vendor}",
       "--extra-vars",
       "firstboot_custom_roles_post=\"${var.firstboot_custom_roles_post}\"",
       "--extra-vars",
