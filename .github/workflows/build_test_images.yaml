@@ -103,20 +103,6 @@ jobs:
       - name: Install cosign
         uses: sigstore/cosign-installer@398d4b0eeef1380460a10c8013a76f728fb906ac # v3
 
-      - name: Publish image
-        id: publish-image
-        run: ./bin/publish-image
-        env:
-          IMAGE_NAME: ${{ steps.build-image.outputs.image-name }}
-          IMAGE_DISK_FORMAT: ${{ steps.build-image.outputs.image-disk-format }}
-          IMAGE_SOURCE_FILE: ${{ steps.build-image.outputs.image-source-file }}
-          # Upload images to a fixed S3 host
-          S3_HOST: ${{ vars.CLOUDFLARE_S3_HOST }}
-          S3_HOST_PUBLIC_PATH: ${{ vars.CLOUDFLARE_S3_HOST_PUBLIC_PATH }}
-          S3_BUCKET: ${{ vars.S3_BUCKET }}
-          S3_ACCESS_KEY: ${{ secrets.CLOUDFLARE_S3_ACCESS_KEY }}
-          S3_SECRET_KEY: ${{ secrets.CLOUDFLARE_S3_SECRET_KEY }}
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3
 
@@ -124,28 +110,44 @@ jobs:
         run: sudo apt-get -y install libguestfs-tools
 
       - name: mkdir for mount
-        run: sudo mkdir -p './${{ steps.publish-image.outputs.image-name }}'
+        run: sudo mkdir -p './${{ steps.build-image.outputs.image-name }}'
 
       - name: mount qcow2 file
         run: >
           sudo guestmount -a
-          ${{ steps.publish-image.outputs.image-name }}.qcow2
+          ${{ steps.build-image.outputs.image-dest-file }}
           -i --ro -o allow_other
-          './${{ steps.publish-image.outputs.image-name }}'
+          './${{ steps.build-image.outputs.image-name }}'
+
+      - name: Generate sbom
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610
+        id: generate-sbom
+        with:
+          path: "${{ steps.build-image.outputs.image-name }}"
+          artifact-name: "${{ steps.build-image.outputs.image-name }}-sbom.json"
+          output-file: "${{ steps.build-image.outputs.image-name }}-sbom.json"
+          format: syft-json
 
       - name: Fail if scan has CRITICAL vulnerabilities
-        uses: aquasecurity/trivy-action@0.34.2
+        uses: anchore/scan-action@7037fa011853d5a11690026fb85feee79f4c946c
         with:
-          scan-type: fs
-          scan-ref: "./${{ steps.publish-image.outputs.image-name }}"
-          scanners: "vuln"
-          format: table
-          exit-code: "1"
-          severity: "CRITICAL"
-          ignore-unfixed: true
-          trivyignores: .github/.trivyignore
+          sbom: "${{ steps.build-image.outputs.image-name }}-sbom.json"
+          output-format: table
+          severity-cutoff: critical
+          only-fixed: true
+
+      - name: Publish image
+        id: publish-image
+        run: ./bin/publish-image
         env:
-          TRIVY_DB_REPOSITORY: ghcr.io/azimuth-cloud/trivy-db:2
+          IMAGE_NAME: ${{ steps.build-image.outputs.image-name }}
+          IMAGE_DISK_FORMAT: ${{ steps.build-image.outputs.image-disk-format }}
+          # Upload images to a fixed S3 host
+          S3_HOST: ${{ vars.CLOUDFLARE_S3_HOST }}
+          S3_HOST_PUBLIC_PATH: ${{ vars.CLOUDFLARE_S3_HOST_PUBLIC_PATH }}
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+          S3_ACCESS_KEY: ${{ secrets.CLOUDFLARE_S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.CLOUDFLARE_S3_SECRET_KEY }}
 
       - name: Write matrix outputs
         uses: cloudposse/github-action-matrix-outputs-write@ed06cf3a6bf23b8dce36d1cf0d63123885bb8375 # v1
@@ -157,6 +159,7 @@ jobs:
             url: ${{ steps.publish-image.outputs.image-url }}
             checksum: ${{ steps.publish-image.outputs.image-checksum }}
             cosign-bundle-url: ${{ steps.publish-image.outputs.cosign-bundle-url }}
+            image-sbom-url: ${{ steps.publish-image.outputs.image-sbom-url }}
             manifest-extra: ${{ steps.build-image.outputs.manifest-extra }}
 
   delete_source_image:
