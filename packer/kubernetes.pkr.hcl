@@ -86,7 +86,7 @@ variable "amd_deb_version" {
   default = ""
 }
 
-variable "amd_usecase" {
+variable "gpu_amd_usecase" {
   type = string
   default = ""
 }
@@ -470,7 +470,7 @@ build {
       "--extra-vars",
       "amd_deb_version=${var.amd_deb_version}",
       "--extra-vars",
-      "amd_usecase=${var.amd_usecase}",
+      "gpu_amd_usecase=${var.gpu_amd_usecase}",
       "--extra-vars",
       "amd_version=${var.amd_version}",
       "--extra-vars",
