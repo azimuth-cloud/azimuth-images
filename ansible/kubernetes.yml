@@ -8,5 +8,15 @@
         blacklisted_kernel_modules:
           - nouveau
 
+- name: Install AMDGPU drivers
+  ansible.builtin.include_role: ../vendor/image-builder/images/capi/ansible/roles/gpu
+  vars:
+    gpu_vendor: "amd"
+    amd_version: "7.0.2"
+    amd_deb_version: "7.0.2.70002-1"
+    gpu_amd_usecase: "dkms"
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
 - name: Import CAPI image playbook
   import_playbook: ../vendor/image-builder/images/capi/ansible/node.yml
