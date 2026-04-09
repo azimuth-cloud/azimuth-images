@@ -1,5 +1,5 @@
 {
   "network": "96b9024a-0591-4db6-b9e6-e19b85192dbf",
-  "flavor": "cc1.large",
+  "flavor": "ec1.medium",
   "volume_type": "unencrypted"
 }
