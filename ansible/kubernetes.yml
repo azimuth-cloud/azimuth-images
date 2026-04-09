@@ -38,8 +38,8 @@
         NEEDRESTART_SUSPEND: "1"
 
     - name: Install amdgpu-dkms
-      ansible.builtin.apt:
-        name: amdgpu-dkms
+      ansible.builtin.shell:
+        cmd: apt-get install -y amdgpu-dkms > /var/log/amdgpu-dkms-install.log 2>&1
       environment:
         DEBIAN_FRONTEND: noninteractive
 
