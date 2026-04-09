@@ -13,13 +13,13 @@
   become: true
   tasks:
     - name: Download amdgpu-install package
-      get_url:
+      ansible.builtin.get_url:
         url: https://repo.radeon.com/amdgpu-install/7.0.2/ubuntu/jammy/amdgpu-install_7.0.2.70002-1_all.deb
         dest: "/tmp/amdgpu-install_7.0.2.70002-1_all.deb"
         mode: "0644"
 
     - name: Install amdgpu-install package
-      apt:
+      ansible.builtin.apt:
         deb: "/tmp/amdgpu-install_7.0.2.70002-1_all.deb"
         state: present
       environment:
@@ -38,13 +38,13 @@
         NEEDRESTART_SUSPEND: "1"
 
     - name: Install amdgpu-dkms
-      apt:
+      ansible.builtin.apt:
         name: amdgpu-dkms
       environment:
         DEBIAN_FRONTEND: noninteractive
 
     - name: Load amdgpu module
-      modprobe:
+      community.general.modprobe:
         name: amdgpu
         state: present
 
