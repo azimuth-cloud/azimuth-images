@@ -46,14 +46,20 @@
         NEEDRESTART_MODE: a
         NEEDRESTART_SUSPEND: "1"
 
+    - name: Test env var stripping
+      ansible.builtin.shell:
+        cmd: echo $MY_ENV_VAR # noqa command-instead-of-module
+      environment:
+        MY_ENV_VAR: hello
+      changed_when: false
+
     - name: Install amdgpu-dkms
       ansible.builtin.shell:
         cmd: apt-get install -y amdgpu-dkms < /dev/null > /var/log/amdgpu-dkms-install.log 2>&1 # noqa command-instead-of-module
       environment:
         DEBIAN_FRONTEND: noninteractive
         DEBCONF_NONINTERACTIVE_SEEN: "true"
-        NEEDRESTART_MODE: "l"
-        NEEDRESTART_SUSPEND: "1"
+        NEEDRESTART_MODE: "a"
       changed_when: true
 
     - name: Load amdgpu module
