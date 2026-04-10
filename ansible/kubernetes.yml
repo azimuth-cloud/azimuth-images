@@ -52,7 +52,7 @@
       environment:
         DEBIAN_FRONTEND: noninteractive
         DEBCONF_NONINTERACTIVE_SEEN: "true"
-        NEEDRESTART_MODE: a
+        NEEDRESTART_MODE: "l"
         NEEDRESTART_SUSPEND: "1"
       changed_when: true
 
