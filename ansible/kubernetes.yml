@@ -48,9 +48,10 @@
 
     - name: Install amdgpu-dkms
       ansible.builtin.shell:
-        cmd: apt-get install -y amdgpu-dkms < /dev/null # noqa command-instead-of-module
+        cmd: apt-get install -y amdgpu-dkms < /dev/null > /var/log/amdgpu-dkms-install.log 2>&1 # noqa command-instead-of-module
       environment:
         DEBIAN_FRONTEND: noninteractive
+        DEBCONF_NONINTERACTIVE_SEEN: "true"
       changed_when: true
 
     - name: Load amdgpu module
