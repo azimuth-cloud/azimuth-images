@@ -28,7 +28,7 @@ variable "volume_type" {
 
 variable "volume_size" {
   type = number
-  default = 15
+  default = 10
 }
 
 variable "disk_format" {
