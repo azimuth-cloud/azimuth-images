@@ -573,6 +573,7 @@ build {
       "ubuntu_security_repo=${var.ubuntu_security_repo}",
     ]
     ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10"]
+    ansible_ssh_extra_args = ["-o", "ControlMaster=auto", "-o", "ControlPersist=60s", "-o", "IdentitiesOnly=yes", "-o", "ServerAliveInterval=60", "-o", "ServerAliveCountMax=30", "-o", "TCPKeepAlive=yes"]
   }
 
   post-processor "manifest" {
