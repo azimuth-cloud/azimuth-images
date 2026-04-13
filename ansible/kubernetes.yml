@@ -18,6 +18,6 @@
     - name: Persist amdgpu module if installed
       community.general.modprobe:
         name: amdgpu
-        persistent: true
-        state: present
+        persistent: present
+        state: absent
       when: '"gpu" in node_custom_roles_pre and gpu_vendor == "amd"'
