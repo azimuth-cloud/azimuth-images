@@ -267,3 +267,6 @@ ignore:
   - vulnerability: GHSA-v23v-6jw2-98fq
     package:
       location: "/usr/local/bin/crictl"
+  # Snapd packages, haven't been rebuilt in Ubuntu and downgraded to moderate
+  # severity by Canonical https://ubuntu.com/security/CVE-2026-27143
+  - vulnerability: CVE-2026-27143
