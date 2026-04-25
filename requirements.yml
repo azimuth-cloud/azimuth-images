@@ -13,7 +13,7 @@ collections:
   - name: containers.podman
     version: 1.19.1
   - name: prometheus.prometheus
-    version: 0.28.0
+    version: 0.29.1
   - name: https://github.com/azimuth-cloud/ansible-collection-image-utils
     type: git
     version: 0.2.0
