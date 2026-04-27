@@ -11,7 +11,6 @@
   "crictl_sha256": "",
   "crictl_baseurl": "",
   "crictl_filename": "",
-  "crictl_source_type": "",
   "enable_containerd_audit": "",
   "extra_debs": "nfs-common",
   "kubernetes_cni_deb_version": "",
