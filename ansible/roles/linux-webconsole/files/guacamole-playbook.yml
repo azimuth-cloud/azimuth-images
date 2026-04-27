@@ -77,7 +77,7 @@
           ansible.builtin.set_fact:
             guacamole_user_home: >-
               {{
-                ansible_facts.getent_passwd[guacamole_user][4]
+                ansible_facts['getent_passwd'][guacamole_user][4]
                 }}
 
         - name: Configure user for systemd unit
@@ -98,10 +98,19 @@
           become: true
           become_user: "{{ guacamole_user }}"
           block:
+            - name: Get path to bash executable
+              ansible.builtin.command: "which bash"
+              register: get_bash_path
+              changed_when: false
+
             - name: Generate VNC password
-              ansible.builtin.command: vncpasswd -f
+              # NOTE(matta): Output must be UTF-8 so base64 encode it
+              ansible.builtin.shell: |
+                set -o pipefail
+                vncpasswd -f | base64
               args:
                 stdin: "{{ guacamole_vnc_password }}"
+                executable: "{{ get_bash_path.stdout }}"
               register: vncpassword
               changed_when: true
 
@@ -115,7 +124,7 @@
 
             - name: Create VNC password file
               ansible.builtin.copy:
-                content: "{{ vncpassword.stdout }}"
+                content: "{{ vncpassword.stdout | ansible.builtin.b64decode }}"
                 dest: "{{ guacamole_user_home }}/.vnc/passwd"
                 owner: "{{ guacamole_user }}"
                 group: "{{ guacamole_user }}"
@@ -135,7 +144,7 @@
               <authorize username="portal" password="portal">
                   <connection name="shell">
                       <protocol>ssh</protocol>
-                      <param name="hostname">{{ ansible_default_ipv4.address }}</param>
+                      <param name="hostname">{{ ansible_facts['default_ipv4']['address'] }}</param>
                       <param name="port">22</param>
                       <param name="username">{{ guacamole_user }}</param>
                       <param name="private-key">{{ guacamole_ssh_private_key }}</param>
@@ -144,7 +153,7 @@
           {% if desktop_enabled %}
                   <connection name="desktop">
                       <protocol>vnc</protocol>
-                      <param name="hostname">{{ ansible_default_ipv4.address }}</param>
+                      <param name="hostname">{{ ansible_facts['default_ipv4']['address'] }}</param>
                       <param name="port">5901</param>
                       <param name="autoretry">3</param>
                       <param name="username">{{ guacamole_user }}</param>
