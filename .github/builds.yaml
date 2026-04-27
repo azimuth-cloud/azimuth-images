@@ -14,11 +14,15 @@
   template: linux-rstudio
   var-files: common,kvm,linux,ubuntu-noble
 
+<<<<<<< feat/noble
 - name: kubernetes-1-32-noble
   template: kubernetes
   var-files: common,kvm,linux,ubuntu-noble,kubernetes,kubernetes_1_32
 
 - name: kubernetes-1-33-noble
+=======
+- name: kubernetes-1-33-jammy
+>>>>>>> main
   template: kubernetes
   var-files: common,kvm,linux,ubuntu-noble,kubernetes,kubernetes_1_33
 

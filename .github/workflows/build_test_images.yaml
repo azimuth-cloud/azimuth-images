@@ -20,7 +20,7 @@ jobs:
       builds: ${{ steps.builds-as-json.outputs.builds }}
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Install script dependencies
         run: pip install -r ./requirements.txt
@@ -37,7 +37,7 @@ jobs:
       source_image: ${{ steps.download_source.outputs.source_image_name }}
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Install script dependencies
         run: pip install -r ./requirements.txt
@@ -73,7 +73,7 @@ jobs:
       security-events: write  # required to upload SARIF files
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           submodules: recursive
 
@@ -101,7 +101,40 @@ jobs:
           SKIP_SOURCE_IMAGE: "true"
 
       - name: Install cosign
-        uses: sigstore/cosign-installer@v3
+        uses: sigstore/cosign-installer@398d4b0eeef1380460a10c8013a76f728fb906ac # v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3
+
+      - name: install libguestfs
+        run: sudo apt-get -y install libguestfs-tools
+
+      - name: mkdir for mount
+        run: sudo mkdir -p './${{ steps.build-image.outputs.image-name }}'
+
+      - name: mount qcow2 file
+        run: >
+          sudo guestmount -a
+          ${{ steps.build-image.outputs.image-dest-file }}
+          -i --ro -o allow_other
+          './${{ steps.build-image.outputs.image-name }}'
+
+      - name: Generate sbom
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610
+        id: generate-sbom
+        with:
+          path: "${{ steps.build-image.outputs.image-name }}"
+          artifact-name: "${{ steps.build-image.outputs.image-name }}-sbom.json"
+          output-file: "${{ steps.build-image.outputs.image-name }}-sbom.json"
+          format: syft-json
+
+      - name: Fail if scan has CRITICAL vulnerabilities
+        uses: anchore/scan-action@7037fa011853d5a11690026fb85feee79f4c946c
+        with:
+          sbom: "${{ steps.build-image.outputs.image-name }}-sbom.json"
+          output-format: table
+          severity-cutoff: critical
+          only-fixed: true
 
       - name: Publish image
         id: publish-image
@@ -109,7 +142,6 @@ jobs:
         env:
           IMAGE_NAME: ${{ steps.build-image.outputs.image-name }}
           IMAGE_DISK_FORMAT: ${{ steps.build-image.outputs.image-disk-format }}
-          IMAGE_SOURCE_FILE: ${{ steps.build-image.outputs.image-source-file }}
           # Upload images to a fixed S3 host
           S3_HOST: ${{ vars.CLOUDFLARE_S3_HOST }}
           S3_HOST_PUBLIC_PATH: ${{ vars.CLOUDFLARE_S3_HOST_PUBLIC_PATH }}
@@ -117,38 +149,8 @@ jobs:
           S3_ACCESS_KEY: ${{ secrets.CLOUDFLARE_S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.CLOUDFLARE_S3_SECRET_KEY }}
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: install libguestfs
-        run: sudo apt-get -y install libguestfs-tools
-
-      - name: mkdir for mount
-        run: sudo mkdir -p './${{ steps.publish-image.outputs.image-name }}'
-
-      - name: mount qcow2 file
-        run: >
-          sudo guestmount -a
-          ${{ steps.publish-image.outputs.image-name }}.qcow2
-          -i --ro -o allow_other
-          './${{ steps.publish-image.outputs.image-name }}'
-
-      - name: Fail if scan has CRITICAL vulnerabilities
-        uses: aquasecurity/trivy-action@0.29.0
-        with:
-          scan-type: fs
-          scan-ref: "./${{ steps.publish-image.outputs.image-name }}"
-          scanners: "vuln"
-          format: table
-          exit-code: "1"
-          severity: "CRITICAL"
-          ignore-unfixed: true
-          trivyignores: .github/.trivyignore
-        env:
-          TRIVY_DB_REPOSITORY: ghcr.io/azimuth-cloud/trivy-db:2
-
       - name: Write matrix outputs
-        uses: cloudposse/github-action-matrix-outputs-write@v1
+        uses: cloudposse/github-action-matrix-outputs-write@ed06cf3a6bf23b8dce36d1cf0d63123885bb8375 # v1
         with:
           matrix-step-name: ${{ github.job }}
           matrix-key: ${{ matrix.name }}
@@ -157,6 +159,7 @@ jobs:
             url: ${{ steps.publish-image.outputs.image-url }}
             checksum: ${{ steps.publish-image.outputs.image-checksum }}
             cosign-bundle-url: ${{ steps.publish-image.outputs.cosign-bundle-url }}
+            image-sbom-url: ${{ steps.publish-image.outputs.image-sbom-url }}
             manifest-extra: ${{ steps.build-image.outputs.manifest-extra }}
 
   delete_source_image:
@@ -167,7 +170,7 @@ jobs:
       - ensure_source_image
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Install script dependencies
         run: pip install -r ./requirements.txt
@@ -193,16 +196,16 @@ jobs:
       manifest-url: ${{ steps.publish-manifest.outputs.manifest-url }}
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Read matrix outputs
         id: matrix-outputs
-        uses: cloudposse/github-action-matrix-outputs-read@v1
+        uses: cloudposse/github-action-matrix-outputs-read@33cac12fa9282a7230a418d859b93fdbc4f27b5a # v1
         with:
           matrix-step-name: build_images
 
       - name: Write outputs
-        uses: DamianReeves/write-file-action@v1.3
+        uses: DamianReeves/write-file-action@6929a9a6d1807689191dcc8bbe62b54d70a32b42 # v1.3
         with:
           path: build-outputs.json
           write-mode: overwrite
@@ -276,7 +279,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Install s3cmd
         run: |
