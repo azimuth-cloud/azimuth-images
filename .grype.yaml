@@ -138,6 +138,10 @@ ignore:
   - vulnerability: CVE-2025-22871
     package:
       location: "/usr/local/bin/crictl"
+  # cri-tools package is not rebuilt with fixed Go
+  - vulnerability: CVE-2025-22871
+    package:
+      location: "/usr/bin/crictl"
   # coredns package is not rebuilt with fixed Go
   - vulnerability: CVE-2025-22871
     package:
@@ -217,6 +221,9 @@ ignore:
       location: "/usr/local/bin/cri*"
   - vulnerability: CVE-2025-68121
     package:
+      location: "/usr/bin/cri*"
+  - vulnerability: CVE-2025-68121
+    package:
       location: "/usr/local/**/runc"
   - vulnerability: CVE-2025-68121
     package:
@@ -257,6 +264,10 @@ ignore:
   - vulnerability: GHSA-p77j-4mvh-x3m3
     package:
       location: "/usr/local/bin/crictl"
+  # Fix won't be backported to current version of cri-tools
+  - vulnerability: GHSA-p77j-4mvh-x3m3
+    package:
+      location: "/usr/bin/crictl"
   # Not affected, vulnerability introduced in openjpeg 2.5.1
   # https://github.com/uclouvain/openjpeg/pull/1573#issuecomment-3187599234
   - vulnerabilty: CVE-2025-54874
