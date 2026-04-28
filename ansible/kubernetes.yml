@@ -10,3 +10,14 @@
 
 - name: Import CAPI image playbook
   import_playbook: ../vendor/image-builder/images/capi/ansible/node.yml
+
+- name: Persist amdgpu module
+  hosts: all
+  become: true
+  tasks:
+    - name: Persist amdgpu module if installed
+      community.general.modprobe:
+        name: amdgpu
+        persistent: present
+        state: absent
+      when: '"gpu" in node_custom_roles_pre and gpu_vendor == "amd"'
