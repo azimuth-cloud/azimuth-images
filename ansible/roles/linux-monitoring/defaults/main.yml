@@ -1,7 +1,7 @@
 ---
 grafana_container_image_prefix: "docker.io"
 
-grafana_version: "12.4.2"
+grafana_version: "13.0.1"
 
 grafana_container_image_name: "grafana/grafana-oss"
 
@@ -17,7 +17,7 @@ grafana_dashboards:
 
 prometheus_container_image_prefix: "docker.io"
 
-prometheus_version: "v3.11.2"
+prometheus_version: "v3.11.3"
 
 prometheus_container_image_name: "prom/prometheus"
 
