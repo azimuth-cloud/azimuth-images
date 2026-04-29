@@ -25,3 +25,7 @@
 - name: kubernetes-1-35-jammy
   template: kubernetes
   var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_amdgpu,kubernetes_1_35
+
+- name: kubernetes-1-36-jammy
+  template: kubernetes
+  var-files: common,kvm,linux,ubuntu-jammy,kubernetes,kubernetes_amdgpu,kubernetes_1_36
