@@ -49,8 +49,8 @@
   community.general.kernel_blacklist:
     name: "{{ item }}"
     state: present
-  loop: "{{ blacklisted_kernel_modules }}"
-  when: blacklisted_kernel_modules | length > 0
+  loop: "{{ blacklisted_kernel_modules_default + blacklisted_kernel_modules_extra }}"
+  when: (blacklisted_kernel_modules_default + blacklisted_kernel_modules_extra) | length > 0
   notify: Regenerate initramfs
 
 - name: Clean up after ourselves
