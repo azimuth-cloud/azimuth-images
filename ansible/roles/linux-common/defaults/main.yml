@@ -1,4 +1,8 @@
 ---
-blacklisted_kernel_modules: []
+blacklisted_kernel_modules_default:
+  - algif_aead
+
+blacklisted_kernel_modules_extra: []
+
 kernel_modules:
   - ib_ipoib
