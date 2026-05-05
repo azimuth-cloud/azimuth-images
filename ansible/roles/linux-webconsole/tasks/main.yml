@@ -19,15 +19,26 @@
     # yamllint disable-line rule:line-length
     - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
 
-- name: Add apptainer repository
-  ansible.builtin.apt_repository:
-    repo: "ppa:apptainer/ppa"
-    update_cache: true
+- name: Get Apptainer latest release information from GitHub
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/apptainer/apptainer/releases/latest
+  register: latest_release_assets
+
+- name: Set Apptainer deb download URL fact
+  ansible.builtin.set_fact:
+    apptainer_download_url: >-
+      {{ latest_release_assets.json.assets
+          | selectattr('name', 'match', name_regex)
+          | map(attribute='browser_download_url')
+          | first
+          }}
+  vars:
+    name_regex: "apptainer_\\d+.\\d+.\\d+_{{ arch }}.deb"
+    arch: "{{ 'amd64' if ansible_facts.architecture == 'x86_64' else ansible_facts.architecture }}"
 
 - name: Install apptainer
   ansible.builtin.apt:
-    name: apptainer
-    state: present
+    deb: "{{ apptainer_download_url }}"
 
 - name: Configure data volumes
   ansible.builtin.include_role:
