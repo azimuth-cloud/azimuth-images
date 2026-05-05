@@ -5,7 +5,7 @@
   roles:
     - role: linux-common
       vars:
-        blacklisted_kernel_modules:
+        blacklisted_kernel_modules_extra:
           - nouveau
 
 - name: Import CAPI image playbook

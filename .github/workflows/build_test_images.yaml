@@ -158,6 +158,7 @@ jobs:
             name: ${{ steps.publish-image.outputs.image-name }}
             url: ${{ steps.publish-image.outputs.image-url }}
             checksum: ${{ steps.publish-image.outputs.image-checksum }}
+            checksum_sha512: ${{ steps.publish-image.outputs.image-checksum-sha512 }}
             cosign-bundle-url: ${{ steps.publish-image.outputs.cosign-bundle-url }}
             image-sbom-url: ${{ steps.publish-image.outputs.image-sbom-url }}
             manifest-extra: ${{ steps.build-image.outputs.manifest-extra }}
