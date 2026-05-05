@@ -59,6 +59,8 @@ ignore:
   - vulnerability: CVE-2026-31608
   # No use of SMB
   - vulnerability: CVE-2026-31609
+  # No fixed kernel available for Jammy [2026-05-05]
+  - vulnerability: CVE-2026-43037
   # Not affected https://ubuntu.com/security/CVE-2024-45337
   - vulnerability: GHSA-v778-237x-gjrc
     package:
