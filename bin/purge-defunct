@@ -217,6 +217,7 @@ def main():
         for image in json.loads(s3.fetch_key(manifest_key)).values():
             purge_keys.discard(f"{image['name']}.qcow2")
             purge_keys.discard(f"{image['name']}.cosign.bundle")
+            purge_keys.discard(f"{image['name']}-sbom.json")
 
     print(f"[INFO ] keeping {initial_key_count - len(purge_keys)} keys")
 
