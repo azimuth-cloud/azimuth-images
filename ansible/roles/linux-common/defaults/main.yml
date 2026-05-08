@@ -1,6 +1,9 @@
 ---
 blacklisted_kernel_modules_default:
   - algif_aead
+  - esp4
+  - esp6
+  - rxrpc
 
 blacklisted_kernel_modules_extra: []
 
