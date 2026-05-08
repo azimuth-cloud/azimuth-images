@@ -61,6 +61,14 @@ ignore:
   - vulnerability: CVE-2026-31609
   # No fixed kernel available for Jammy [2026-05-05]
   - vulnerability: CVE-2026-43037
+  # No fixed kernel available for Jammy [2026-05-08]
+  - vulnerability: CVE-2026-31448
+  # No fixed kernel available for Jammy [2026-05-08]
+  - vulnerability: CVE-2026-31682
+  # No fixed kernel available for Jammy [2026-05-08]
+  - vulnerability: CVE-2026-31685
+  # No fixed kernel available for Jammy [2026-05-08]
+  - vulnerability: CVE-2026-43011
   # Not affected https://ubuntu.com/security/CVE-2024-45337
   - vulnerability: GHSA-v778-237x-gjrc
     package:
