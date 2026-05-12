@@ -49,7 +49,11 @@ vars_files_dir = repo_root / "vars" / "base"
 for vars_file in vars_files_dir.glob("kubernetes_*.json"):
     with vars_file.open() as fh:
         data = json.load(fh)
-    current_version = easysemver.Version(data["kubernetes_semver"])
+    try:
+        current_version = easysemver.Version(data["kubernetes_semver"])
+    except KeyError:
+        print(f"This doesn't look like a Kubernetes vars file, continuing\n {vars_file}")
+        continue
     # Get the latest version for the series and update the file
     latest_version = k8s_latest_version_for_series(data["kubernetes_series"])
     if latest_version > current_version:
