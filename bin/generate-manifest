@@ -3,7 +3,6 @@
 import json
 import os
 
-
 build_outputs_file = os.environ["BUILD_OUTPUTS_FILE"]
 manifest_file = os.environ["MANIFEST_FILE"]
 
@@ -20,4 +19,4 @@ for key in build_outputs:
             manifest.setdefault(image, {})[key] = value
 
 with open(manifest_file, "w") as fh:
-    json.dump(manifest, fh, indent = 4)
+    json.dump(manifest, fh, indent=4)

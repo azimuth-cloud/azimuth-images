@@ -298,7 +298,7 @@ ignore:
       location: "/usr/bin/crictl"
   # Not affected, vulnerability introduced in openjpeg 2.5.1
   # https://github.com/uclouvain/openjpeg/pull/1573#issuecomment-3187599234
-  - vulnerabilty: CVE-2025-54874
+  - vulnerability: CVE-2025-54874
     package:
       location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
   # Not affected, fixed in v1.31.0
