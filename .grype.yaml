@@ -322,3 +322,12 @@ ignore:
   # No fixed kernel for Jammy [2026-05-12],
   # downgraded to medium by Canonical https://ubuntu.com/security/CVE-2026-43198
   - vulnerability: CVE-2026-43198
+  # Only affects 32 bit systems,
+  # downgraded to low by Redhat https://access.redhat.com/security/cve/cve-2026-31789
+  - vulnerability: CVE-2026-31789
+  # Guacamole dependency, unaffected since don't use LDAP,
+  # no fixed version [2026-05-13]
+  - vulnerability: CVE-2026-41635
+  - vulnerability: CVE-2026-41409
+  - vulnerability: CVE-2026-42779
+  - vulnerability: CVE-2026-42778
