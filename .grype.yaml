@@ -331,3 +331,5 @@ ignore:
   - vulnerability: CVE-2026-41409
   - vulnerability: CVE-2026-42779
   - vulnerability: CVE-2026-42778
+  # Not using Postgres as Grafana backend so not affected
+  - vulnerability: CVE-2026-33816
