@@ -327,10 +327,9 @@ ignore:
   - vulnerability: CVE-2026-31789
   # Guacamole dependency, unaffected since don't use LDAP,
   # no fixed version [2026-05-13]
-  - vulnerability: CVE-2026-41635
-  - vulnerability: CVE-2026-41409
-  - vulnerability: CVE-2026-42779
-  - vulnerability: CVE-2026-42778
+  - vulnerability: GHSA-8297-v2rf-2p32
+  - vulnerability: GHSA-f2wh-grmh-r6jm
+  - vulnerability: GHSA-vf5j-865m-mq7c
+  - vulnerability: GHSA-995c-6rp3-4m4x
   # Not using Postgres as Grafana backend so not affected
-  - vulnerability: CVE-2026-33816
-  - vulnerability: GHSA-9jj7-4m8r-rfcm # Grype not respecting CVE alias
+  - vulnerability: GHSA-9jj7-4m8r-rfcm
