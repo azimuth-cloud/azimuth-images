@@ -333,3 +333,4 @@ ignore:
   - vulnerability: CVE-2026-42778
   # Not using Postgres as Grafana backend so not affected
   - vulnerability: CVE-2026-33816
+  - vulnerability: GHSA-9jj7-4m8r-rfcm # Grype not respecting CVE alias
