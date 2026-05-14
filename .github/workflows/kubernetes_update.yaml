@@ -1,14 +1,6 @@
 ---
 name: Update Kubernetes versions
 
-permissions:
-  contents: read
-  packages: write
-  # To report GitHub Actions status checks
-  statuses: write
-  security-events: write
-  id-token: write
-
 on:  # yamllint disable-line rule:truthy
   # Allow manual executions
   workflow_dispatch:
@@ -19,9 +11,15 @@ on:  # yamllint disable-line rule:truthy
 jobs:
   propose_patch_versions:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Install script dependencies
         run: pip install -r ./requirements.txt
@@ -54,9 +52,15 @@ jobs:
 
   propose_next_version:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Install script dependencies
         run: pip install -r ./requirements.txt
@@ -89,11 +93,16 @@ jobs:
 
   propose_image_builder:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           submodules: recursive
+          persist-credentials: false
 
       - name: Check for most recent image-builder release
         id: next
@@ -106,8 +115,10 @@ jobs:
         working-directory: ./vendor/image-builder
 
       - name: Update image-builder submodule
-        run: git checkout ${{ steps.next.outputs.version }}
+        run: git checkout "${STEPS_NEXT_OUTPUTS_VERSION}"
         working-directory: ./vendor/image-builder
+        env:
+          STEPS_NEXT_OUTPUTS_VERSION: ${{ steps.next.outputs.version }}
 
       - name: Generate app token for PR
         uses: azimuth-cloud/github-actions/generate-app-token@master

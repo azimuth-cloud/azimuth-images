@@ -22,4 +22,13 @@ jobs:
   # Build, publish and test the images
   build_test_images:
     uses: ./.github/workflows/build_test_images.yaml
-    secrets: inherit
+    permissions:
+      actions: read
+      contents: write
+      packages: write
+      id-token: write  # required to get an OIDC token for signing
+      security-events: write  # required to upload SARIF files
+    secrets:
+      OS_CLOUDS: ${{ secrets.OS_CLOUDS }}
+      CLOUDFLARE_S3_ACCESS_KEY: ${{ secrets.CLOUDFLARE_S3_ACCESS_KEY }}
+      CLOUDFLARE_S3_SECRET_KEY: ${{ secrets.CLOUDFLARE_S3_SECRET_KEY }}

@@ -1,14 +1,6 @@
 ---
 name: Build and test PR
 
-permissions:
-  contents: read
-  packages: write
-  # To report GitHub Actions status checks
-  statuses: write
-  security-events: write
-  id-token: write
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -27,6 +19,7 @@ jobs:
   # This job exists so that PRs from outside the main repo are rejected
   fail_on_remote:
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
       - name: PR must be from a branch in the azimuth-cloud/azimuth-images repo
         run: |
@@ -36,6 +29,10 @@ jobs:
 
   lint:
     uses: ./.github/workflows/lint.yml
+    permissions:
+      contents: read
+      packages: write
+      statuses: write
     needs:
       - fail_on_remote
 
@@ -47,16 +44,29 @@ jobs:
     # Don't build draft PRs
     if: ${{ !github.event.pull_request.draft }}
     uses: ./.github/workflows/build_test_images.yaml
-    secrets: inherit
+    permissions:
+      actions: read
+      contents: write
+      packages: write
+      id-token: write  # required to get an OIDC token for signing
+      security-events: write  # required to upload SARIF files
+    secrets:
+      OS_CLOUDS: ${{ secrets.OS_CLOUDS }}
+      CLOUDFLARE_S3_ACCESS_KEY: ${{ secrets.CLOUDFLARE_S3_ACCESS_KEY }}
+      CLOUDFLARE_S3_SECRET_KEY: ${{ secrets.CLOUDFLARE_S3_SECRET_KEY }}
 
   # Purge the manifest and images that we just tested from S3
   purge_images:
     needs:
       - build_test_images
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Install s3cmd
         run: |
