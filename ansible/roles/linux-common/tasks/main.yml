@@ -55,8 +55,8 @@
 
 - name: Set sysctl options
   ansible.posix.sysctl:
-    name: "{{ item.value }}"
-    value: "{{ item.option }}"
+    name: "{{ item.option }}"
+    value: "{{ item.value }}"
     sysctl_file: "{{ item.conf_file }}"
   loop: "{{ sysctl_options_default + sysctl_options_extra }}"
 
