@@ -334,5 +334,5 @@ ignore:
   # Not using Postgres as Grafana backend so not affected
   - vulnerability: GHSA-9jj7-4m8r-rfcm
   # No fixed kernel for Jammy [2026-05-18]
-  # downgrade to medium by Canonical
+  # downgraded to medium by Canonical https://ubuntu.com/security/CVE-2026-43304
   - vulnerability: CVE-2026-43304
