@@ -53,14 +53,12 @@
   when: (blacklisted_kernel_modules_default + blacklisted_kernel_modules_extra) | length > 0
   notify: Regenerate initramfs
 
-- name: Limit scope of default ptrace drop-in to mitigate ssh-keysign-pwn
-  ansible.builtin.copy:
-    dest: /etc/sysctl.d/10-ptrace.conf
-    content: |
-      kernel.yama.ptrace_scope=2
-    owner: root
-    group: root
-    mode: "0644"
+- name: Set sysctl options
+  ansible.posix.sysctl:
+    name: "{{ item.value }}"
+    value: "{{ item.option }}"
+    sysctl_file: "{{ item.conf_file }}"
+  loop: "{{ sysctl_options_default + sysctl_options_extra }}"
 
 - name: Clean up after ourselves
   ansible.builtin.apt:
