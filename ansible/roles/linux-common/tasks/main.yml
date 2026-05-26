@@ -58,9 +58,16 @@
   community.general.kernel_blacklist:
     name: "{{ item }}"
     state: present
-  loop: "{{ blacklisted_kernel_modules }}"
-  when: blacklisted_kernel_modules | length > 0
+  loop: "{{ blacklisted_kernel_modules_default + blacklisted_kernel_modules_extra }}"
+  when: (blacklisted_kernel_modules_default + blacklisted_kernel_modules_extra) | length > 0
   notify: Regenerate initramfs
+
+- name: Set sysctl options
+  ansible.posix.sysctl:
+    name: "{{ item.option }}"
+    value: "{{ item.value }}"
+    sysctl_file: "{{ item.conf_file }}"
+  loop: "{{ sysctl_options_default + sysctl_options_extra }}"
 
 - name: Clean up after ourselves
   ansible.builtin.apt:

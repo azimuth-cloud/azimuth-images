@@ -8,7 +8,6 @@ import pathlib
 
 import requests
 
-
 #####
 # This script updates the base images to the latest release
 #####
@@ -43,7 +42,7 @@ products = response.json()["products"]
 # Find the latest version for the distro
 # The versions are of the form YYYYMMDD, so default string sorting works fine
 versions = products[PRODUCT_KEYS[args.distro]]["versions"]
-latest = next(iter(sorted(versions, reverse = True)))
+latest = next(iter(sorted(versions, reverse=True)))
 # Get the URL for the image
 # The paths in the stream are of the form "server{bit that we want}"
 latest_path = versions[latest]["items"]["disk1.img"]["path"]
@@ -51,23 +50,22 @@ latest_url = f"{SERVER_URL}{latest_path.removeprefix('server')}"
 
 # Update the link in the env file
 env_file = repo_root / "env" / "base" / f"ubuntu-{args.distro}.env"
-with fileinput.input(env_file, inplace = True) as fh:
+with fileinput.input(env_file, inplace=True) as fh:
     for line in fh:
         if line.startswith("SOURCE_IMAGE_URL="):
             print(f"SOURCE_IMAGE_URL={latest_url}")
         else:
-            print(line, end = "")
+            print(line, end="")
 
 # Output the title and body for the PR as a JSON document
 pr = {
     "title": f"Update ubuntu-{args.distro} base image ({latest})",
     "body": (
-        "This PR was created automatically to update the "
-        f"`ubuntu-{args.distro}` base image to release `{latest}`."
+        f"This PR was created automatically to update the `ubuntu-{args.distro}` base image to release `{latest}`."
     ),
 }
 
 # Output the new versions so they can be included in the PR
 output_path = os.environ.get("GITHUB_OUTPUT", "/dev/stdout")
 with open(output_path, "a") as fh:
-    print(f"pr={json.dumps(pr)}", file = fh)
+    print(f"pr={json.dumps(pr)}", file=fh)

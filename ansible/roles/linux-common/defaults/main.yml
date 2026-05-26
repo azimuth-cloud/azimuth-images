@@ -1,4 +1,19 @@
 ---
-blacklisted_kernel_modules: []
+blacklisted_kernel_modules_default:
+  - algif_aead
+  - esp4
+  - esp6
+  - rxrpc
+
+blacklisted_kernel_modules_extra: []
+
 kernel_modules:
   - ib_ipoib
+
+sysctl_options_default:
+  # Mitigation for ssh-keysign-pwn
+  - conf_file: /etc/sysctl.d/10-ptrace.conf
+    option: kernel.yama.ptrace_scope
+    value: '2'
+
+sysctl_options_extra: []

@@ -32,14 +32,16 @@ IMAGE_URL="${S3_HOST_PUBLIC_PATH}/${IMAGE_NAME}.qcow2"
 COSIGN_BUNDLE_URL="${S3_HOST_PUBLIC_PATH}/${IMAGE_NAME}.cosign.bundle"
 IMAGE_SBOM_URL="${S3_HOST_PUBLIC_PATH}/${IMAGE_NAME}-sbom.json"
 
-# Get the checksum of the image
+# Get the checksums of the image
 IMAGE_CHECKSUM="sha256:$(sha256sum "${IMAGE_NAME}.qcow2" | awk '{ print $1 }')"
+IMAGE_CHECKSUM_SHA512="sha512:$(sha512sum "${IMAGE_NAME}.qcow2" | awk '{ print $1 }')"
 
 # Produce outputs
 {
   echo "image-name=$IMAGE_NAME"
   echo "image-url=$IMAGE_URL"
   echo "image-checksum=$IMAGE_CHECKSUM"
+  echo "image-checksum-sha512=$IMAGE_CHECKSUM_SHA512"
   echo "image-sbom-url=$IMAGE_SBOM_URL"
   echo "cosign-bundle-url=$COSIGN_BUNDLE_URL"
 } >>"${GITHUB_OUTPUT:-/dev/stdout}"

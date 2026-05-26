@@ -2,25 +2,31 @@
 # yamllint disable rule:line-length
 name: Build, publish and test images
 
-permissions:
-  contents: read
-  packages: write
-  # To report GitHub Actions status checks
-  statuses: write
-  security-events: write
-  id-token: write
-
 on:  # yamllint disable-line rule:truthy
   workflow_call:
-jobs:
+    secrets:
+      OS_CLOUDS:
+        description: clouds.yaml file
+        required: true
+      CLOUDFLARE_S3_ACCESS_KEY:
+        description: S3 access key
+        required: true
+      CLOUDFLARE_S3_SECRET_KEY:
+        description: S3 secret key
+        required: true
 
+jobs:
   read_builds:
     runs-on: ubuntu-latest
     outputs:
       builds: ${{ steps.builds-as-json.outputs.builds }}
+    permissions:
+      contents: read
     steps:
       - name: Check out the repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Install script dependencies
         run: pip install -r ./requirements.txt
@@ -35,9 +41,13 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       source_image: ${{ steps.download_source.outputs.source_image_name }}
+    permissions:
+      contents: read
     steps:
       - name: Check out the repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Install script dependencies
         run: pip install -r ./requirements.txt
@@ -67,7 +77,8 @@ jobs:
         include: ${{ fromJson(needs.read_builds.outputs.builds) }}
     name: ${{ matrix.name }}
     permissions:
-      contents: read
+      actions: read
+      contents: write
       packages: write
       id-token: write  # required to get an OIDC token for signing
       security-events: write  # required to upload SARIF files
@@ -76,6 +87,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           submodules: recursive
+          persist-credentials: false
 
       - name: Write OpenStack credentials
         run: echo "$OS_CLOUDS" > ./clouds.yaml
@@ -110,14 +122,19 @@ jobs:
         run: sudo apt-get -y install libguestfs-tools
 
       - name: mkdir for mount
-        run: sudo mkdir -p './${{ steps.build-image.outputs.image-name }}'
+        run: sudo mkdir -p "./${STEPS_BUILD_IMAGE_OUTPUTS_IMAGE_NAME}"
+        env:
+          STEPS_BUILD_IMAGE_OUTPUTS_IMAGE_NAME: ${{ steps.build-image.outputs.image-name }}
 
       - name: mount qcow2 file
         run: >
           sudo guestmount -a
-          ${{ steps.build-image.outputs.image-dest-file }}
+          "${STEPS_BUILD_IMAGE_OUTPUTS_IMAGE_DEST_FILE}"
           -i --ro -o allow_other
-          './${{ steps.build-image.outputs.image-name }}'
+          "./${STEPS_BUILD_IMAGE_OUTPUTS_IMAGE_NAME}"
+        env:
+          STEPS_BUILD_IMAGE_OUTPUTS_IMAGE_DEST_FILE: ${{ steps.build-image.outputs.image-dest-file }}
+          STEPS_BUILD_IMAGE_OUTPUTS_IMAGE_NAME: ${{ steps.build-image.outputs.image-name }}
 
       - name: Generate sbom
         uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610
@@ -158,6 +175,7 @@ jobs:
             name: ${{ steps.publish-image.outputs.image-name }}
             url: ${{ steps.publish-image.outputs.image-url }}
             checksum: ${{ steps.publish-image.outputs.image-checksum }}
+            checksum_sha512: ${{ steps.publish-image.outputs.image-checksum-sha512 }}
             cosign-bundle-url: ${{ steps.publish-image.outputs.cosign-bundle-url }}
             image-sbom-url: ${{ steps.publish-image.outputs.image-sbom-url }}
             manifest-extra: ${{ steps.build-image.outputs.manifest-extra }}
@@ -168,9 +186,13 @@ jobs:
     needs:
       - build_images
       - ensure_source_image
+    permissions:
+      contents: read
     steps:
       - name: Check out the repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Install script dependencies
         run: pip install -r ./requirements.txt
@@ -194,9 +216,13 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       manifest-url: ${{ steps.publish-manifest.outputs.manifest-url }}
+    permissions:
+      contents: read
     steps:
       - name: Check out the repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Read matrix outputs
         id: matrix-outputs
@@ -237,6 +263,8 @@ jobs:
     needs:
       - publish_manifest
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
 
       # Check out the configuration repository
@@ -277,9 +305,13 @@ jobs:
     needs:
       - run_azimuth_tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Install s3cmd
         run: |

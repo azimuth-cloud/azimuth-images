@@ -4,11 +4,9 @@ import json
 import os
 import pathlib
 
+import easysemver
 import requests
 import ruamel.yaml
-
-import easysemver
-
 
 #####
 # This script adds a new build for a new version of Kubernetes
@@ -22,7 +20,7 @@ BUILD_TEMPLATE = """
 
 name: kubernetes-{major}-{minor}-{distro}
 template: kubernetes
-var-files: common,kvm,linux,ubuntu-{distro},kubernetes,kubernetes_{major}_{minor}
+var-files: common,kvm,linux,ubuntu-{distro},kubernetes,kubernetes_amdgpu,kubernetes_{major}_{minor}
 """
 
 
@@ -32,11 +30,11 @@ def k8s_latest_stable_release():
     """
     # Return the first version without a prerelease part
     next_url = RELEASES_URL
-    headers = { "Content-Type": "application/json" }
+    headers = {"Content-Type": "application/json"}
     if "GITHUB_TOKEN" in os.environ:
         headers["Authorization"] = f"Bearer {os.environ['GITHUB_TOKEN']}"
     while next_url:
-        response = requests.get(next_url, headers = headers)
+        response = requests.get(next_url, headers=headers)
         response.raise_for_status()
         for release in response.json():
             try:
@@ -62,27 +60,27 @@ if latest_vars_file.exists():
     exit()
 
 ##
-## If we get to here, it is a new version that we haven't seen before
+# If we get to here, it is a new version that we haven't seen before
 ##
 
 # Create the vars file
 data = {
-    "kubernetes_deb_version": f"{latest_version.format(prefix = False)}-*",
-    "kubernetes_rpm_version": f"{latest_version.format(prefix = False)}",
+    "kubernetes_deb_version": f"{latest_version.format(prefix=False)}-*",
+    "kubernetes_rpm_version": f"{latest_version.format(prefix=False)}",
     "kubernetes_semver": str(latest_version),
     "kubernetes_series": f"{latest_version.prefix}{latest_version.major}.{latest_version.minor}",
 }
 with latest_vars_file.open("w") as fh:
-    json.dump(data, fh, indent = 2)
+    json.dump(data, fh, indent=2)
     fh.write("\n")
 
 # Create the env file
 env_file = (repo_root / "env" / "base" / latest_filename).with_suffix(".env")
 with env_file.open("w") as fh:
-    fh.write(f"PACKER_VAR_FILES=\"$PACKER_VAR_FILES,{latest_vars_file.relative_to(repo_root)}\"\n")
+    fh.write(f'PACKER_VAR_FILES="$PACKER_VAR_FILES,{latest_vars_file.relative_to(repo_root)}"\n')
 
 # Add the entry to the build file
-yaml = ruamel.yaml.YAML(typ = "rt")
+yaml = ruamel.yaml.YAML(typ="rt")
 yaml.preserve_quotes = True
 yaml.width = 1000000
 yaml.mapping_indent = 2
@@ -110,14 +108,16 @@ with path.open("w") as fh:
 # Output the title and body for the PR as a JSON document
 pr = {
     "title": f"Add new Kubernetes version ({latest_version})",
-    "body": "\n".join([
-        "This PR was created automatically to add a new Kubernetes version:",
-        "",
-        f"  * {latest_version}",
-    ]),
+    "body": "\n".join(
+        [
+            "This PR was created automatically to add a new Kubernetes version:",
+            "",
+            f"  * {latest_version}",
+        ]
+    ),
 }
 
 # Output the new versions so they can be included in the PR
 output_path = os.environ.get("GITHUB_OUTPUT", "/dev/stdout")
 with open(output_path, "a") as fh:
-    print(f"pr={json.dumps(pr)}", file = fh)
+    print(f"pr={json.dumps(pr)}", file=fh)

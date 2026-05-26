@@ -4,7 +4,7 @@
     name: linux-podman
     tasks_from: install.yml
 
-- name: Congfigure data volumes
+- name: Configure data volumes
   ansible.builtin.include_role:
     name: linux-data-volumes
   vars:

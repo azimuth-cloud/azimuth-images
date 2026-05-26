@@ -9,11 +9,10 @@ import subprocess
 
 import pycdlib
 
-
 logging.basicConfig(
-    filename = "/var/log/openstack-disk-tag.log",
-    level = logging.INFO,
-    format = "[%(asctime)s] [%(levelname)-8.8s] %(message)s"
+    filename="/var/log/openstack-disk-tag.log",
+    level=logging.INFO,
+    format="[%(asctime)s] [%(levelname)-8.8s] %(message)s",
 )
 
 
@@ -22,16 +21,7 @@ logger = logging.getLogger(__name__)
 
 def get_config_device():
     logger.info("attempting to locate config device")
-    proc = subprocess.run(
-        [
-            "/usr/sbin/blkid",
-            "-t",
-            "LABEL=config-2",
-            "-o",
-            "device"
-        ],
-        capture_output = True
-    )
+    proc = subprocess.run(["/usr/sbin/blkid", "-t", "LABEL=config-2", "-o", "device"], capture_output=True)
     if proc.returncode == 0:
         return proc.stdout.decode().strip()
     else:
@@ -54,18 +44,14 @@ def get_instance_metadata(config_device):
     logger.info(f"loading instance metadata from config device - {config_device}")
     with iso_open(config_device) as iso:
         data = io.BytesIO()
-        iso.get_file_from_iso_fp(data, iso_path = "/openstack/latest/meta_data.json;1")
+        iso.get_file_from_iso_fp(data, iso_path="/openstack/latest/meta_data.json;1")
         return json.loads(data.getvalue())
 
 
 def find_device_for_serial(metadata, serial):
     logger.info("locating device in instance metadata")
     try:
-        return next(
-            d
-            for d in metadata.get("devices", [])
-            if d.get("serial", "").startswith(serial)
-        )
+        return next(d for d in metadata.get("devices", []) if d.get("serial", "").startswith(serial))
     except StopIteration:
         logger.warning("no metadata device for serial number")
         return None
@@ -82,10 +68,8 @@ def output_tag_for_device(device):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description = "Discovers the tag for an attached OpenStack volume."
-    )
-    parser.add_argument("serial", help = "The serial number of the disk.")
+    parser = argparse.ArgumentParser(description="Discovers the tag for an attached OpenStack volume.")
+    parser.add_argument("serial", help="The serial number of the disk.")
     args = parser.parse_args()
 
     logger.info(f"running for device with serial number - {args.serial}")
@@ -102,6 +86,6 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except BaseException as exc:
-        logger.exception("exception occured during execution")
+    except BaseException:
+        logger.exception("exception occurred during execution")
         raise

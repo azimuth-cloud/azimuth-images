@@ -41,6 +41,34 @@ ignore:
   - vulnerability: CVE-2024-38541
   # Not affected, Fixed 5.15.0-121.131 https://ubuntu.com/security/CVE-2024-38612
   - vulnerability: CVE-2024-38612
+  # No fixed kernel available for Jammy [2026-04-28]
+  - vulnerability: CVE-2026-31637
+  # No fixed kernel available for Jammy [2026-04-28]
+  - vulnerability: CVE-2026-31649
+  # No fixed kernel available for Jammy [2026-04-28]
+  - vulnerability: CVE-2026-31657
+  # No fixed kernel available for Jammy [2026-04-28]
+  - vulnerability: CVE-2026-31659
+  # No fixed kernel available for Jammy [2026-04-28]
+  - vulnerability: CVE-2026-31668
+  # No fixed kernel available for Jammy [2026-04-28]
+  - vulnerability: CVE-2026-31669
+  # No fixed kernel available for Jammy [2026-04-29]
+  - vulnerability: CVE-2026-31607
+  # No use of SMB
+  - vulnerability: CVE-2026-31608
+  # No use of SMB
+  - vulnerability: CVE-2026-31609
+  # No fixed kernel available for Jammy [2026-05-05]
+  - vulnerability: CVE-2026-43037
+  # No fixed kernel available for Jammy [2026-05-08]
+  - vulnerability: CVE-2026-31448
+  # No fixed kernel available for Jammy [2026-05-08]
+  - vulnerability: CVE-2026-31682
+  # No fixed kernel available for Jammy [2026-05-08]
+  - vulnerability: CVE-2026-31685
+  # No fixed kernel available for Jammy [2026-05-08]
+  - vulnerability: CVE-2026-43011
   # Not affected https://ubuntu.com/security/CVE-2024-45337
   - vulnerability: GHSA-v778-237x-gjrc
     package:
@@ -138,6 +166,10 @@ ignore:
   - vulnerability: CVE-2025-22871
     package:
       location: "/usr/local/bin/crictl"
+  # cri-tools package is not rebuilt with fixed Go
+  - vulnerability: CVE-2025-22871
+    package:
+      location: "/usr/bin/crictl"
   # coredns package is not rebuilt with fixed Go
   - vulnerability: CVE-2025-22871
     package:
@@ -217,6 +249,9 @@ ignore:
       location: "/usr/local/bin/cri*"
   - vulnerability: CVE-2025-68121
     package:
+      location: "/usr/bin/cri*"
+  - vulnerability: CVE-2025-68121
+    package:
       location: "/usr/local/**/runc"
   - vulnerability: CVE-2025-68121
     package:
@@ -257,9 +292,13 @@ ignore:
   - vulnerability: GHSA-p77j-4mvh-x3m3
     package:
       location: "/usr/local/bin/crictl"
+  # Fix won't be backported to current version of cri-tools
+  - vulnerability: GHSA-p77j-4mvh-x3m3
+    package:
+      location: "/usr/bin/crictl"
   # Not affected, vulnerability introduced in openjpeg 2.5.1
   # https://github.com/uclouvain/openjpeg/pull/1573#issuecomment-3187599234
-  - vulnerabilty: CVE-2025-54874
+  - vulnerability: CVE-2025-54874
     package:
       location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
   # Not affected, fixed in v1.31.0
@@ -270,3 +309,30 @@ ignore:
   # Snapd packages, haven't been rebuilt in Ubuntu and downgraded to moderate
   # severity by Canonical https://ubuntu.com/security/CVE-2026-27143
   - vulnerability: CVE-2026-27143
+  # No fixed kernel available for Jammy [2026-05-12]
+  - vulnerability: CVE-2026-43038
+  # No fixed kernel for Jammy [2026-05-12],
+  # downgraded to medium by Canonical https://ubuntu.com/security/CVE-2026-43117
+  - vulnerability: CVE-2026-43117
+  # No fixed kernel for Jammy [2026-05-12],
+  # downgraded to medium by Canonical https://ubuntu.com/security/CVE-2026-43125
+  - vulnerability: CVE-2026-43125
+  # No fixed kernel available for Jammy [2026-05-12]
+  - vulnerability: CVE-2026-43114
+  # No fixed kernel for Jammy [2026-05-12],
+  # downgraded to medium by Canonical https://ubuntu.com/security/CVE-2026-43198
+  - vulnerability: CVE-2026-43198
+  # Only affects 32 bit systems,
+  # downgraded to low by Redhat https://access.redhat.com/security/cve/cve-2026-31789
+  - vulnerability: CVE-2026-31789
+  # Guacamole dependency, unaffected since don't use LDAP,
+  # no fixed version [2026-05-13]
+  - vulnerability: GHSA-8297-v2rf-2p32
+  - vulnerability: GHSA-f2wh-grmh-r6jm
+  - vulnerability: GHSA-vf5j-865m-mq7c
+  - vulnerability: GHSA-995c-6rp3-4m4x
+  # Not using Postgres as Grafana backend so not affected
+  - vulnerability: GHSA-9jj7-4m8r-rfcm
+  # No fixed kernel for Jammy [2026-05-18]
+  # downgraded to medium by Canonical https://ubuntu.com/security/CVE-2026-43304
+  - vulnerability: CVE-2026-43304
