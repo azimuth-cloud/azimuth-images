@@ -12,13 +12,11 @@ import requests
 # This script updates the base images to the latest release
 #####
 
-parser = argparse.ArgumentParser(
-    description = "Updates an Ubuntu base image to the latest release."
-)
+parser = argparse.ArgumentParser(description="Updates an Ubuntu base image to the latest release.")
 parser.add_argument(
     "distro",
-    choices = ["focal", "jammy", "noble"],
-    help = "The name of the distro to update."
+    choices=["focal", "jammy", "noble"],
+    help="The name of the distro to update.",
 )
 args = parser.parse_args()
 
