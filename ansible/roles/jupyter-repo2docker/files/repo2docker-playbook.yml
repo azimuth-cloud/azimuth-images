@@ -44,7 +44,7 @@
 
     - name: Build repo2docker image
       ansible.builtin.command: >-
-        jupyter-repo2docker
+          {{ repo2docker_venv_path }}/bin/jupyter-repo2docker
           --image-name repo2docker-notebook-server
           --engine podman
           --no-run

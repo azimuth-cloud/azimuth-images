@@ -1,5 +1,5 @@
 ---
-- name: Ensure Linux webconsole hoss are configured
+- name: Ensure Linux webconsole hosts are configured
   hosts: all
   become: true
   roles:
