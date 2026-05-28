@@ -336,3 +336,15 @@ ignore:
   # No fixed kernel for Jammy [2026-05-18]
   # downgraded to medium by Canonical https://ubuntu.com/security/CVE-2026-43304
   - vulnerability: CVE-2026-43304
+  # Not using NFS so not affected, no fixed kernel for Jammy [2026-05-28]
+  # downgraded to medium by Canonical https://ubuntu.com/security/CVE-2026-31402
+  - vulnerability: CVE-2026-31402
+  # No fixed kernel for Jammy [2026-05-28]
+  # downgraded to medium by Canonical
+  - vulnerability: CVE-2026-31414
+  - vulnerability: CVE-2026-23455
+  - vulnerability: CVE-2026-43406
+  - vulnerability: CVE-2026-43407
+  - vulnerability: CVE-2026-43383
+  - vulnerability: CVE-2026-23240
+  - vulnerability: CVE-2026-31405
