@@ -112,10 +112,6 @@ variable "containerd_cri_socket" {
   type = string
 }
 
-variable "containerd_sha256" {
-  type = string
-}
-
 variable "containerd_url" {
   type = string
 }
@@ -479,8 +475,6 @@ build {
       "containerd_additional_settings=${var.containerd_additional_settings}",
       "--extra-vars",
       "containerd_cri_socket=${var.containerd_cri_socket}",
-      "--extra-vars",
-      "containerd_sha256=${var.containerd_sha256}",
       "--extra-vars",
       "containerd_url=${local.containerd_url}",
       "--extra-vars",
