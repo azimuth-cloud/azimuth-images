@@ -231,11 +231,9 @@ jobs:
           matrix-step-name: build_images
 
       - name: Write outputs
-        uses: DamianReeves/write-file-action@6929a9a6d1807689191dcc8bbe62b54d70a32b42 # v1.3
-        with:
-          path: build-outputs.json
-          write-mode: overwrite
-          contents: ${{ steps.matrix-outputs.outputs.result }}
+        run: echo "$BUILD_OUTPUTS_JSON" > ./build-outputs.json
+        env:
+          BUILD_OUTPUTS_JSON: ${{ steps.matrix-outputs.outputs.result }}
 
       - name: Generate manifest
         run: ./bin/generate-manifest
