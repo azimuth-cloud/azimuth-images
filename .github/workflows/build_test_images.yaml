@@ -152,6 +152,7 @@ jobs:
           output-format: table
           severity-cutoff: critical
           only-fixed: true
+          grype-version: v0.113.0
 
       - name: Publish image
         id: publish-image
