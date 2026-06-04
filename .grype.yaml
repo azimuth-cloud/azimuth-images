@@ -348,3 +348,6 @@ ignore:
   - vulnerability: CVE-2026-43383
   - vulnerability: CVE-2026-23240
   - vulnerability: CVE-2026-31405
+  # No fized kernel for Jammy [2026-06-04]
+  # Downgraded to medium by Canonical
+  - vulnerability: CVE-2026-43071
