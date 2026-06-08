@@ -167,18 +167,31 @@ jobs:
           S3_SECRET_KEY: ${{ secrets.CLOUDFLARE_S3_SECRET_KEY }}
 
       - name: Write matrix outputs
-        uses: cloudposse/github-action-matrix-outputs-write@ed06cf3a6bf23b8dce36d1cf0d63123885bb8375 # v1.0.0
+        run: |
+          mkdir -p matrix-outputs
+          jq -n \
+            --arg key "$MATRIX_NAME" \
+            --argjson build "$BUILD_OUTPUTS" \
+            --argjson publish "$PUBLISH_OUTPUTS" \
+            '{
+              "name": {($key): $publish["image-name"]},
+              "url": {($key): $publish["image-url"]},
+              "checksum": {($key): $publish["image-checksum"]},
+              "checksum_sha512": {($key): $publish["image-checksum-sha512"]},
+              "cosign-bundle-url": {($key): $publish["cosign-bundle-url"]},
+              "image-sbom-url": {($key): $publish["image-sbom-url"]},
+              "manifest-extra": {($key): ($build["manifest-extra"] | fromjson)}
+            }' > "matrix-outputs/${MATRIX_NAME}.json"
+        env:
+          BUILD_OUTPUTS: ${{ toJson(steps.build-image.outputs) }}
+          PUBLISH_OUTPUTS: ${{ toJson(steps.publish-image.outputs) }}
+          MATRIX_NAME: ${{ matrix.name }}
+
+      - name: Upload matrix outputs
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          matrix-step-name: ${{ github.job }}
-          matrix-key: ${{ matrix.name }}
-          outputs: |-
-            name: ${{ steps.publish-image.outputs.image-name }}
-            url: ${{ steps.publish-image.outputs.image-url }}
-            checksum: ${{ steps.publish-image.outputs.image-checksum }}
-            checksum_sha512: ${{ steps.publish-image.outputs.image-checksum-sha512 }}
-            cosign-bundle-url: ${{ steps.publish-image.outputs.cosign-bundle-url }}
-            image-sbom-url: ${{ steps.publish-image.outputs.image-sbom-url }}
-            manifest-extra: ${{ steps.build-image.outputs.manifest-extra }}
+          name: matrix-outputs-${{ matrix.name }}
+          path: matrix-outputs/${{ matrix.name }}.json
 
   delete_source_image:
     runs-on: ubuntu-latest
@@ -224,16 +237,16 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Read matrix outputs
-        id: matrix-outputs
-        uses: cloudposse/github-action-matrix-outputs-read@33cac12fa9282a7230a418d859b93fdbc4f27b5a # 1.0.0
+      - name: Download matrix outputs
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
-          matrix-step-name: build_images
+          pattern: matrix-outputs-*
+          merge-multiple: true
+          path: matrix-outputs
 
-      - name: Write outputs
-        run: echo "$BUILD_OUTPUTS_JSON" > ./build-outputs.json
-        env:
-          BUILD_OUTPUTS_JSON: ${{ steps.matrix-outputs.outputs.result }}
+      - name: Combine matrix outputs
+        run: |
+          jq -s 'reduce .[] as $x ({}; . * $x)' matrix-outputs/*.json > build-outputs.json
 
       - name: Generate manifest
         run: ./bin/generate-manifest
