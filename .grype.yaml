@@ -11,22 +11,36 @@ ignore:
   - vulnerability: CVE-2022-48716
   # Not affected, podman and snapd packages rebuilt with fixed golang-1.18.1-1ubuntu1.2
   - vulnerability: CVE-2023-24531
+  # alias for CVE-2023-24531
+  - vulnerability: GO-2024-2962
   # Not affected, podman and snapd packages rebuilt with fixed golang-1.18.1-1ubuntu1.2
   - vulnerability: CVE-2023-24538
+  # alias for CVE-2023-24538
+  - vulnerability: GO-2023-1703
   # Not affected, podman and snapd packages rebuilt with fixed golang-1.18.1-1ubuntu1.2
   - vulnerability: CVE-2023-24540
+  # alias for CVE-2023-24540
+  - vulnerability: GO-2023-1752
   # Not affected, podman and snapd packages rebuilt with fixed golang-1.18.1-1ubuntu1.2
   - vulnerability: CVE-2023-29402
+  # alias for CVE-2023-29402
+  - vulnerability: GO-2023-1839
   # Not affected, podman and snapd packages rebuilt with fixed golang-1.18.1-1ubuntu1.2
   - vulnerability: CVE-2023-29404
+  # alias for CVE-2023-29404
+  - vulnerability: GO-2023-1841
   # Not affected, podman and snapd packages rebuilt with fixed golang-1.18.1-1ubuntu1.2
   - vulnerability: CVE-2023-29405
+  # alias for CVE-2023-29405
+  - vulnerability: GO-2023-1842
   # Not affected, Fixed 5.15.0-72.79 https://ubuntu.com/security/CVE-2023-52735
   - vulnerability: CVE-2023-52735
   # Not affected, Fixed 5.15.0-100.110 https://ubuntu.com/security/CVE-2023-52832
   - vulnerability: CVE-2023-52832
   # Not affected, podman and snapd packages rebuilt with fixed golang-1.18.1-1ubuntu1.2
   - vulnerability: CVE-2024-24790
+  # alias for CVE-2024-24790
+  - vulnerability: GO-2024-2887
   # Not affected, Fixed 5.15.0-112.122 https://ubuntu.com/security/CVE-2024-27053
   - vulnerability: CVE-2024-27053
   # We don't use Cyberark so safe to ignore.
@@ -71,24 +85,39 @@ ignore:
   - vulnerability: CVE-2026-43011
   # Not affected https://ubuntu.com/security/CVE-2024-45337
   - vulnerability: GHSA-v778-237x-gjrc
-    package:
+    package: &id001
       location: "/usr/lib/snapd/**"
+  # alias for GHSA-v778-237x-gjrc
+  - vulnerability: GO-2024-3321
+    package: *id001
   # Not affected https://ubuntu.com/security/CVE-2024-45337
   - vulnerability: GHSA-v778-237x-gjrc
-    package:
+    package: &id002
       location: "/usr/bin/snap"
+  # alias for GHSA-v778-237x-gjrc
+  - vulnerability: GO-2024-3321
+    package: *id002
   # Not affected https://github.com/kubernetes/kubernetes/issues/129164
   - vulnerability: GHSA-v778-237x-gjrc
-    package:
+    package: &id003
       location: "/usr/bin/kube*"
+  # alias for GHSA-v778-237x-gjrc
+  - vulnerability: GO-2024-3321
+    package: *id003
   # Not affected https://github.com/kubernetes/kubernetes/issues/129164
   - vulnerability: GHSA-v778-237x-gjrc
-    package:
+    package: &id004
       location: "/usr/local/bin/ctd-decoder"
+  # alias for GHSA-v778-237x-gjrc
+  - vulnerability: GO-2024-3321
+    package: *id004
   # Not affected https://github.com/kubernetes/kubernetes/issues/129164
   - vulnerability: GHSA-v778-237x-gjrc
-    package:
+    package: &id005
       location: "/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/**"
+  # alias for GHSA-v778-237x-gjrc
+  - vulnerability: GO-2024-3321
+    package: *id005
   # Not affected, Fixed 5.15.0-127.137 https://ubuntu.com/security/CVE-2024-47685
   - vulnerability: CVE-2024-47685
   # Affects the the deepdiff package bundled with the netbox.netbox collection.
@@ -112,190 +141,340 @@ ignore:
   # Prometheus, promtool and grafana OCI images
   # Not exploitable, gRPC servers for all services listen on localhost and are not exposed
   - vulnerability: GHSA-p77j-4mvh-x3m3
-    package:
+    package: &id006
       location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
+  # alias for GHSA-p77j-4mvh-x3m3
+  - vulnerability: GO-2026-4762
+    package: *id006
   # Podman packages
   # Built with go1.18, fix not backported past go1.22
   - vulnerability: CVE-2025-22871
-    package:
+    package: &id007
       location: "/usr/lib/cni/**"
+  # alias for CVE-2025-22871
+  - vulnerability: GO-2025-3563
+    package: *id007
   - vulnerability: CVE-2025-22871
-    package:
+    package: &id008
       location: "/usr/bin/podman"
+  # alias for CVE-2025-22871
+  - vulnerability: GO-2025-3563
+    package: *id008
   # Snapd packages
   # Built with go1.18, fix not backported past go1.22
   - vulnerability: CVE-2025-22871
-    package:
+    package: &id009
       location: "/usr/lib/snapd/**"
+  # alias for CVE-2025-22871
+  - vulnerability: GO-2025-3563
+    package: *id009
   - vulnerability: CVE-2025-22871
-    package:
+    package: &id010
       location: "/usr/bin/snap"
+  # alias for CVE-2025-22871
+  - vulnerability: GO-2025-3563
+    package: *id010
   # Runc packages
   # Built with go1.23, not rebuilt with fixed go
   - vulnerability: CVE-2025-22871
-    package:
+    package: &id011
       location: "/usr/**/runc"
+  # alias for CVE-2025-22871
+  - vulnerability: GO-2025-3563
+    package: *id011
   - vulnerability: CVE-2025-22871
-    package:
+    package: &id012
       location: "/usr/bin/pidfd-kill"
+  # alias for CVE-2025-22871
+  - vulnerability: GO-2025-3563
+    package: *id012
   - vulnerability: CVE-2025-22871
-    package:
+    package: &id013
       location: "/usr/bin/memfd-bind"
+  # alias for CVE-2025-22871
+  - vulnerability: GO-2025-3563
+    package: *id013
   - vulnerability: CVE-2025-22871
-    package:
+    package: &id014
       location: "/usr/bin/fs-idmap"
+  # alias for CVE-2025-22871
+  - vulnerability: GO-2025-3563
+    package: *id014
   - vulnerability: CVE-2025-22871
-    package:
+    package: &id015
       location: "/usr/bin/remap-rootfs"
+  # alias for CVE-2025-22871
+  - vulnerability: GO-2025-3563
+    package: *id015
   - vulnerability: CVE-2025-22871
-    package:
+    package: &id016
       location: "/usr/sbin/ipp-usb"
+  # alias for CVE-2025-22871
+  - vulnerability: GO-2025-3563
+    package: *id016
   # libsysmetrics
   - vulnerability: CVE-2025-22871
-    package:
+    package: &id017
       location: "/usr/lib/x86_64-linux-gnu/libsysmetrics.so.1"
+  # alias for CVE-2025-22871
+  - vulnerability: GO-2025-3563
+    package: *id017
   # ubuntu-report
   - vulnerability: CVE-2025-22871
-    package:
+    package: &id018
       location: "/usr/bin/ubuntu-report"
+  # alias for CVE-2025-22871
+  - vulnerability: GO-2025-3563
+    package: *id018
   # kubernetes-cni package is not rebuilt with fixed Go
   - vulnerability: CVE-2025-22871
-    package:
+    package: &id019
       location: "/opt/cni/**"
+  # alias for CVE-2025-22871
+  - vulnerability: GO-2025-3563
+    package: *id019
   # cri-tools package is not rebuilt with fixed Go
   - vulnerability: CVE-2025-22871
-    package:
+    package: &id020
       location: "/usr/local/bin/crictl"
+  # alias for CVE-2025-22871
+  - vulnerability: GO-2025-3563
+    package: *id020
   # cri-tools package is not rebuilt with fixed Go
   - vulnerability: CVE-2025-22871
-    package:
+    package: &id021
       location: "/usr/bin/crictl"
+  # alias for CVE-2025-22871
+  - vulnerability: GO-2025-3563
+    package: *id021
   # coredns package is not rebuilt with fixed Go
   - vulnerability: CVE-2025-22871
-    package:
+    package: &id022
       location: "/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/**"
+  # alias for CVE-2025-22871
+  - vulnerability: GO-2025-3563
+    package: *id022
   # Podman packages
   # Built with go1.18, fix not backported past go1.22
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id023
       location: "/usr/lib/cni/**"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id023
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id024
       location: "/usr/bin/podman"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id024
   # Snapd packages
   # Built with go1.18, fix not backported past go1.22
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id025
       location: "/usr/lib/snapd/**"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id025
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id026
       location: "/usr/bin/snap"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id026
   # node_exporter listens only on localhost, no tls required
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id027
       location: "/usr/local/bin/node_exporter"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id027
   # Runc packages
   # Built with go1.23, not rebuilt with fixed go
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id028
       location: "/usr/*/runc"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id028
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id029
       location: "/usr/bin/pidfd-kill"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id029
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id030
       location: "/usr/bin/memfd-bind"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id030
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id031
       location: "/usr/bin/fs-idmap"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id031
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id032
       location: "/usr/bin/remap-rootfs"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id032
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id033
       location: "/usr/sbin/ipp-usb"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id033
   # ubuntu-report
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id034
       location: "/usr/bin/ubuntu-report"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id034
   # libsysmetrics
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id035
       location: "/usr/lib/x86_64-linux-gnu/libsysmetrics.so.1"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id035
   # Not affected, Apptainer built with patched go1.25
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id036
       location: "/usr/libexec/apptainer/**"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id036
   # Not affected, Apptainer built with patched go1.25
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id037
       location: "/usr/bin/apptainer"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id037
   # Not affected, esbuild bundled with rstudio does not use the vulnerable method
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id038
       location: "/usr/lib/rstudio-server/bin/quarto/bin/tools/x86_64/esbuild"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id038
   # Binaries rebuilt with fixed Go in in kubernetes >1.33.9, >1.34.5
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id039
       location: "/opt/cni/**"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id039
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id040
       location: "/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/**"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id040
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id041
       location: "/usr/local/bin/containerd*"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id041
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id042
       location: "/usr/local/bin/cri*"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id042
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id043
       location: "/usr/bin/cri*"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id043
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id044
       location: "/usr/local/**/runc"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id044
   - vulnerability: CVE-2025-68121
-    package:
+    package: &id045
       location: "/usr/local/bin/ct*"
+  # alias for CVE-2025-68121
+  - vulnerability: GO-2026-4337
+    package: *id045
   # Not affected, Apptainer does not use the vulnerable functionality
   # https://bugzilla.redhat.com/show_bug.cgi?id=2331927
   - vulnerability: GHSA-v778-237x-gjrc
-    package:
+    package: &id046
       location: "/usr/libexec/apptainer/**"
+  # alias for GHSA-v778-237x-gjrc
+  - vulnerability: GO-2024-3321
+    package: *id046
   # Not affected, Apptainer does not use the vulnerable functionality,
   # except in testing (Server.Serve and Server.ServeHTTP)
   - vulnerability: GHSA-p77j-4mvh-x3m3
-    package:
+    package: &id047
       location: "/usr/bin/apptainer"
+  # alias for GHSA-p77j-4mvh-x3m3
+  - vulnerability: GO-2026-4762
+    package: *id047
   # Not affected, containerd does not use the vulnerable functionality,
   # https://github.com/containerd/containerd/issues/13096#issuecomment-4111967334
   - vulnerability: GHSA-p77j-4mvh-x3m3
-    package:
+    package: &id048
       location: "/usr/local/bin/containerd*"
+  # alias for GHSA-p77j-4mvh-x3m3
+  - vulnerability: GO-2026-4762
+    package: *id048
   - vulnerability: GHSA-p77j-4mvh-x3m3
-    package:
+    package: &id049
       location: "/usr/local/bin/ctr"
+  # alias for GHSA-p77j-4mvh-x3m3
+  - vulnerability: GO-2026-4762
+    package: *id049
   - vulnerability: GHSA-p77j-4mvh-x3m3
-    package:
+    package: &id050
       location: "/usr/local/bin/ctd*"
+  # alias for GHSA-p77j-4mvh-x3m3
+  - vulnerability: GO-2026-4762
+    package: *id050
   # Not affected, kubernetes does not use the vulnerable functionality,
   # https://github.com/kubernetes/kubernetes/pull/137906#issuecomment-4092302596
   - vulnerability: GHSA-p77j-4mvh-x3m3
-    package:
+    package: &id051
       location: "/usr/bin/kubeadm"
+  # alias for GHSA-p77j-4mvh-x3m3
+  - vulnerability: GO-2026-4762
+    package: *id051
   - vulnerability: GHSA-p77j-4mvh-x3m3
-    package:
+    package: &id052
       location: "/usr/bin/kubelet"
+  # alias for GHSA-p77j-4mvh-x3m3
+  - vulnerability: GO-2026-4762
+    package: *id052
   - vulnerability: GHSA-p77j-4mvh-x3m3
-    package:
+    package: &id053
       location: "/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/**"
+  # alias for GHSA-p77j-4mvh-x3m3
+  - vulnerability: GO-2026-4762
+    package: *id053
   # Fix won't be backported to current version of cri-tools
   - vulnerability: GHSA-p77j-4mvh-x3m3
-    package:
+    package: &id054
       location: "/usr/local/bin/crictl"
+  # alias for GHSA-p77j-4mvh-x3m3
+  - vulnerability: GO-2026-4762
+    package: *id054
   # Fix won't be backported to current version of cri-tools
   - vulnerability: GHSA-p77j-4mvh-x3m3
-    package:
+    package: &id055
       location: "/usr/bin/crictl"
+  # alias for GHSA-p77j-4mvh-x3m3
+  - vulnerability: GO-2026-4762
+    package: *id055
   # Not affected, vulnerability introduced in openjpeg 2.5.1
   # https://github.com/uclouvain/openjpeg/pull/1573#issuecomment-3187599234
   - vulnerability: CVE-2025-54874
@@ -304,8 +483,11 @@ ignore:
   # Not affected, fixed in v1.31.0
   # https://github.com/kubernetes-sigs/cri-tools/releases/tag/v1.31.0
   - vulnerability: GHSA-v23v-6jw2-98fq
-    package:
+    package: &id056
       location: "/usr/local/bin/crictl"
+  # alias for GHSA-v23v-6jw2-98fq
+  - vulnerability: GO-2024-3005
+    package: *id056
   # Snapd packages, haven't been rebuilt in Ubuntu and downgraded to moderate
   # severity by Canonical https://ubuntu.com/security/CVE-2026-27143
   - vulnerability: CVE-2026-27143
@@ -333,6 +515,8 @@ ignore:
   - vulnerability: GHSA-995c-6rp3-4m4x
   # Not using Postgres as Grafana backend so not affected
   - vulnerability: GHSA-9jj7-4m8r-rfcm
+  # alias for GHSA-9jj7-4m8r-rfcm
+  - vulnerability: GO-2026-4772
   # No fixed kernel for Jammy [2026-05-18]
   # downgraded to medium by Canonical https://ubuntu.com/security/CVE-2026-43304
   - vulnerability: CVE-2026-43304
