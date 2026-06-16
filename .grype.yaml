@@ -544,10 +544,127 @@ ignore:
   - vulnerability: CVE-2026-43407
   # No fixed kernel for Jammy [2026-06-16]
   - vulnerability: CVE-2025-68263
+  # No fixed kernel for Jammy [2026-06-16]
+  - vulnerability: CVE-2026-43185
+  # No fixed kernel for Jammy [2026-06-16]
+  - vulnerability: CVE-2026-43501
+  # No fixed kernel for Jammy [2026-06-16]
+  - vulnerability: CVE-2026-45988
+  # No fixed kernel for Jammy [2026-06-16]
+  - vulnerability: CVE-2026-46043
+  # No fixed kernel for Jammy [2026-06-16]
+  - vulnerability: CVE-2026-46135
   # Verified symbols not in grafana binary using govulncheck
   - vulnerability: GO-2026-4771
-    package: *id006
+    package:
+      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
   # Prometheus, promtool and grafana OCI images
   # Not exploitable, gRPC servers for all services listen on localhost and are not exposed
   - vulnerability: CVE-2026-34182
-    package: *id006
+    package:
+      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
+  # Verified symbols not in grafana or prometheus binary using govulncheck
+  - vulnerability: GO-2026-5006
+    package:
+      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
+  # Verified symbols not in grafana or prometheus binary using govulncheck
+  - vulnerability: GO-2026-5017
+    package:
+      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
+  # Verified symbols not in grafana or prometheus binary using govulncheck
+  - vulnerability: GO-2026-5019
+    package:
+      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
+  # Verified symbols not in grafana or prometheus binary using govulncheck
+  - vulnerability: GO-2026-5019
+    package:
+      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
+  # Verified symbols not in grafana or prometheus binary using govulncheck
+  - vulnerability: GO-2026-5020
+    package:
+      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
+  # Verified symbols not in grafana or prometheus binary using govulncheck
+  - vulnerability: GO-2026-5021
+    package:
+      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
+  # Verified symbols not in grafana or prometheus binary using govulncheck
+  - vulnerability: GO-2026-5023
+    package:
+      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
+  # Golang ssh-agent code not relevant for snap
+  - vulnerability: GO-2026-5006
+    package:
+      location: /usr/lib/snapd/**
+  # Golang ssh-agent code not relevant for snap
+  - vulnerability: GO-2026-5006
+    package:
+      location: /usr/bin/snap
+  # Golang ssh-agent code not relevant for snap
+  - vulnerability: GO-2026-5017
+    package:
+      location: /usr/lib/snapd/**
+  # Golang ssh-agent code not relevant for snap
+  - vulnerability: GO-2026-5017
+    package:
+      location: /usr/bin/snap
+  # Golang ssh-agent code not relevant for snap
+  - vulnerability: GO-2026-5019
+    package:
+      location: /usr/lib/snapd/**
+  # Golang ssh-agent code not relevant for snap
+  - vulnerability: GO-2026-5019
+    package:
+      location: /usr/bin/snap
+  # Golang ssh-agent code not relevant for snap
+  - vulnerability: GO-2026-5020
+    package:
+      location: /usr/lib/snapd/**
+  # Golang ssh-agent code not relevant for snap
+  - vulnerability: GO-2026-5020
+    package:
+      location: /usr/bin/snap
+  # Golang ssh-agent code not relevant for snap
+  - vulnerability: GO-2026-5021
+    package:
+      location: /usr/lib/snapd/**
+  # Golang ssh-agent code not relevant for snap
+  - vulnerability: GO-2026-5021
+    package:
+      location: /usr/bin/snap
+  # Golang ssh-agent code not relevant for snap
+  - vulnerability: GO-2026-5023
+    package:
+      location: /usr/lib/snapd/**
+  # Golang ssh-agent code not relevant for snap
+  - vulnerability: GO-2026-5023
+    package:
+      location: /usr/bin/snap
+
+  # Verified symbols not in node_exporter binary using govulncheck
+  - vulnerability: GO-2026-5006
+    package:
+      location: "/usr/local/bin/node_exporter"
+  # Verified symbols not in node_exporter binary using govulncheck
+  - vulnerability: GO-2026-5017
+    package:
+      location: "/usr/local/bin/node_exporter"
+  # Verified symbols not in node_exporter binary using govulncheck
+  - vulnerability: GO-2026-5019
+    package:
+      location: "/usr/local/bin/node_exporter"
+  # Verified symbols not in node_exporter binary using govulncheck
+  - vulnerability: GO-2026-5019
+    package:
+      location: "/usr/local/bin/node_exporter"
+  # Verified symbols not in node_exporter binary using govulncheck
+  - vulnerability: GO-2026-5020
+    package:
+      location: "/usr/local/bin/node_exporter"
+  # Verified symbols not in node_exporter binary using govulncheck
+  - vulnerability: GO-2026-5021
+    package:
+      location: "/usr/local/bin/node_exporter"
+  # Verified symbols not in node_exporter binary using govulncheck
+  - vulnerability: GO-2026-5023
+    package:
+      location: "/usr/local/bin/node_exporter"
