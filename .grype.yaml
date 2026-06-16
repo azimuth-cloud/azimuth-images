@@ -520,3 +520,34 @@ ignore:
   # No fixed kernel for Jammy [2026-05-18]
   # downgraded to medium by Canonical https://ubuntu.com/security/CVE-2026-43304
   - vulnerability: CVE-2026-43304
+  # No fixed kernel for Jammy [2026-06-16]
+  - vulnerability: CVE-2026-31402
+  # No fixed kernel for Jammy [2026-06-16]
+  - vulnerability: CVE-2026-31405
+  # No fixed kernel for Jammy [2026-06-16]
+  - vulnerability: CVE-2026-31414
+  # No fixed kernel for Jammy [2026-06-16]
+  - vulnerability: CVE-2026-43071
+  # No fixed kernel for Jammy [2026-06-16]
+  - vulnerability: CVE-2026-43406
+  # No fixed kernel for Jammy [2026-06-16]
+  - vulnerability: CVE-2026-46195
+  # No fixed kernel for Jammy [2026-06-16]
+  - vulnerability: CVE-2026-46266
+  # No fixed kernel for Jammy [2026-06-16]
+  - vulnerability: CVE-2026-23240
+  # No fixed kernel for Jammy [2026-06-16]
+  - vulnerability: CVE-2026-23455
+  # No fixed kernel for Jammy [2026-06-16]
+  - vulnerability: CVE-2026-43383
+  # No fixed kernel for Jammy [2026-06-16]
+  - vulnerability: CVE-2026-43407
+  # No fixed kernel for Jammy [2026-06-16]
+  - vulnerability: CVE-2025-68263
+  # Verified symbols not in grafana binary using govulncheck
+  - vulnerability: GO-2026-4771
+    package: *id006
+  # Prometheus, promtool and grafana OCI images
+  # Not exploitable, gRPC servers for all services listen on localhost and are not exposed
+  - vulnerability: CVE-2026-34182
+    package: *id006
