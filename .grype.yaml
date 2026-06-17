@@ -563,108 +563,58 @@ ignore:
   - vulnerability: CVE-2026-34182
     package:
       location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
-  # Verified symbols not in grafana or prometheus binary using govulncheck
+  # Go crypto SSH crypt/agent vulnerability.
+  # Verified symbols not in grafana, node_exporter or prometheus binary using govulncheck
+  # Symbols exist in snap and apptainer packages, but there is no fix yet available in ubuntu repos for these.
   - vulnerability: GO-2026-5006
-    package:
-      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
-  # Verified symbols not in grafana or prometheus binary using govulncheck
+  # Go crypto SSH crypt/agent vulnerability.
+  # Verified symbols not in grafana, node_exporter or prometheus binary using govulncheck
+  # Symbols exist in snap and apptainer packages, but there is no fix yet available in ubuntu repos for these.
   - vulnerability: GO-2026-5017
-    package:
-      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
-  # Verified symbols not in grafana or prometheus binary using govulncheck
+  # Go crypto SSH crypt/agent vulnerability.
+  # Verified symbols not in grafana, node_exporter or prometheus binary using govulncheck
+  # Symbols exist in snap and apptainer packages, but there is no fix yet available in ubuntu repos for these.
   - vulnerability: GO-2026-5019
-    package:
-      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
-  # Verified symbols not in grafana or prometheus binary using govulncheck
-  - vulnerability: GO-2026-5019
-    package:
-      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
-  # Verified symbols not in grafana or prometheus binary using govulncheck
+  # Go crypto SSH crypt/agent vulnerability.
+  # Verified symbols not in grafana, node_exporter or prometheus binary using govulncheck
+  # Symbols exist in snap and apptainer packages, but there is no fix yet available in ubuntu repos for these.
   - vulnerability: GO-2026-5020
-    package:
-      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
-  # Verified symbols not in grafana or prometheus binary using govulncheck
+  # Go crypto SSH crypt/agent vulnerability.
+  # Verified symbols not in grafana, node_exporter or prometheus binary using govulncheck
+  # Symbols exist in snap and apptainer packages, but there is no fix yet available in ubuntu repos for these.
   - vulnerability: GO-2026-5021
-    package:
-      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
-  # Verified symbols not in grafana or prometheus binary using govulncheck
+  # Go crypto SSH crypt/agent vulnerability.
+  # Verified symbols not in grafana, node_exporter or prometheus binary using govulncheck
+  # Symbols exist in snap and apptainer packages, but there is no fix yet available in ubuntu repos for these.
   - vulnerability: GO-2026-5023
-    package:
-      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
-  # Golang ssh-agent code not relevant for snap
-  - vulnerability: GO-2026-5006
-    package:
-      location: /usr/lib/snapd/**
-  # Golang ssh-agent code not relevant for snap
-  - vulnerability: GO-2026-5006
-    package:
-      location: /usr/bin/snap
-  # Golang ssh-agent code not relevant for snap
+  # Go crypto SSH crypt/agent vulnerability.
+  # Verified symbols not in grafana, node_exporter or prometheus binary using govulncheck
+  # Symbols exist in snap and apptainer packages, but there is no fix yet available in ubuntu repos for these.
   - vulnerability: GO-2026-5017
-    package:
-      location: /usr/lib/snapd/**
-  # Golang ssh-agent code not relevant for snap
-  - vulnerability: GO-2026-5017
-    package:
-      location: /usr/bin/snap
-  # Golang ssh-agent code not relevant for snap
-  - vulnerability: GO-2026-5019
-    package:
-      location: /usr/lib/snapd/**
-  # Golang ssh-agent code not relevant for snap
-  - vulnerability: GO-2026-5019
-    package:
-      location: /usr/bin/snap
-  # Golang ssh-agent code not relevant for snap
+  # Go crypto SSH crypt/agent vulnerability.
+  # Verified symbols not in grafana, node_exporter or prometheus binary using govulncheck
+  # Symbols exist in snap and apptainer packages, but there is no fix yet available in ubuntu repos for these.
   - vulnerability: GO-2026-5020
-    package:
-      location: /usr/lib/snapd/**
-  # Golang ssh-agent code not relevant for snap
-  - vulnerability: GO-2026-5020
-    package:
-      location: /usr/bin/snap
-  # Golang ssh-agent code not relevant for snap
+  # Go crypto SSH crypt/agent vulnerability.
+  # Verified symbols not in grafana, node_exporter or prometheus binary using govulncheck
+  # Symbols exist in snap and apptainer packages, but there is no fix yet available in ubuntu repos for these.
   - vulnerability: GO-2026-5021
-    package:
-      location: /usr/lib/snapd/**
-  # Golang ssh-agent code not relevant for snap
-  - vulnerability: GO-2026-5021
-    package:
-      location: /usr/bin/snap
-  # Golang ssh-agent code not relevant for snap
+  # Go crypto SSH crypt/agent vulnerability.
+  # Verified symbols not in grafana, node_exporter or prometheus binary using govulncheck
+  # Symbols exist in snap and apptainer packages, but there is no fix yet available in ubuntu repos for these.
   - vulnerability: GO-2026-5023
-    package:
-      location: /usr/lib/snapd/**
-  # Golang ssh-agent code not relevant for snap
-  - vulnerability: GO-2026-5023
-    package:
-      location: /usr/bin/snap
-
-  # Verified symbols not in node_exporter binary using govulncheck
-  - vulnerability: GO-2026-5006
-    package:
-      location: "/usr/local/bin/node_exporter"
-  # Verified symbols not in node_exporter binary using govulncheck
-  - vulnerability: GO-2026-5017
-    package:
-      location: "/usr/local/bin/node_exporter"
-  # Verified symbols not in node_exporter binary using govulncheck
-  - vulnerability: GO-2026-5019
-    package:
-      location: "/usr/local/bin/node_exporter"
-  # Verified symbols not in node_exporter binary using govulncheck
-  - vulnerability: GO-2026-5019
-    package:
-      location: "/usr/local/bin/node_exporter"
-  # Verified symbols not in node_exporter binary using govulncheck
-  - vulnerability: GO-2026-5020
-    package:
-      location: "/usr/local/bin/node_exporter"
-  # Verified symbols not in node_exporter binary using govulncheck
-  - vulnerability: GO-2026-5021
-    package:
-      location: "/usr/local/bin/node_exporter"
-  # Verified symbols not in node_exporter binary using govulncheck
-  - vulnerability: GO-2026-5023
-    package:
-      location: "/usr/local/bin/node_exporter"
+  # Punycode handling in go code.
+  # Only affects when the domain is user input and used as a security boundary.
+  # eg could make xn--example-.com to be the same url as example.com
+  - vulnerability: GO-2026-5026
+  # Go keyring handling problem affecting snap.
+  # No fix yet available [2026-05-17]: https://ubuntu.com/security/CVE-2026-39833
+  - vulnerability: GO-2026-5005
+  # Fixed in ubuntu jammy busybox
+  - vulnerability: CVE-2022-48174
+  # Fixed in ubuntu jammy glib > 2.72 https://ubuntu.com/security/CVE-2024-52533
+  - vulnerability: CVE-2024-52533
+  # Fixed in ubuntu jammy glib > 2.72 https://ubuntu.com/security/CVE-2024-52533
+  - vulnerability: CVE-2025-14087
+  # Python lz2 deccompression use-after-free. No fix for jammy [2026-06-17]
+  - vulnerability: CVE-2026-6100
