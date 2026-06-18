@@ -14,10 +14,6 @@
   template: linux-rstudio
   var-files: common,kvm,linux,ubuntu-noble
 
-- name: kubernetes-1-33-noble
-  template: kubernetes
-  var-files: common,kvm,linux,ubuntu-noble,kubernetes,kubernetes_amdgpu,kubernetes_1_33
-
 - name: kubernetes-1-34-noble
   template: kubernetes
   var-files: common,kvm,linux,ubuntu-noble,kubernetes,kubernetes_amdgpu,kubernetes_1_34
