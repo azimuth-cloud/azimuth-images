@@ -6,6 +6,17 @@
 # https://github.com/exosphere-project/exosphere/
 ###
 
+# Installing network-manager before installing the desktop seems
+# to preserve networking
+- name: Install network-manager
+  ansible.builtin.package:
+    name: network-manager
+    state: present
+
+- name: Run netplan apply
+  ansible.builtin.command: netplan apply
+  changed_when: true
+
 - name: Install graphical environment
   ansible.builtin.package:
     name: "{{ desktop_environment_package }}"
@@ -14,10 +25,6 @@
   async: 3600
   # But poll it every 15s
   poll: 15
-
-- name: Run netplan apply
-  ansible.builtin.command: netplan apply
-  changed_when: true
 
 - name: Enable graphical environment
   ansible.builtin.systemd:
