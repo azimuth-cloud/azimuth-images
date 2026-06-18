@@ -9,7 +9,7 @@ from ruamel.yaml import YAML
 repo_root = pathlib.Path(__file__).parent.parent.resolve()
 
 # Read the builds from the YAML file
-with repo_root / ".github" / "builds.yaml" as fh:
+with open(repo_root / ".github" / "builds.yaml", "r") as fh:
     builds = YAML(typ="safe").load(fh)
 
 # Output the builds as JSON
