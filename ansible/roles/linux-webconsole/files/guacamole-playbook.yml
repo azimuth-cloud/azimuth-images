@@ -21,28 +21,27 @@
       ansible.builtin.command: >-
         ssh-keygen
           -m PEM
-          -t rsa
-          -b 3072
+          -t ed25519
           -q
           -N ""
-          -f /etc/guacamole/id_rsa
+          -f /etc/guacamole/id_ed25519
           -C "Generated-for-Guacamole"
       changed_when: true
 
     - name: Set SSH keypair facts
       ansible.builtin.set_fact:
         # yamllint disable-line rule:line-length
-        guacamole_ssh_public_key: "{{ lookup('file', '/etc/guacamole/id_rsa.pub') }}"
+        guacamole_ssh_public_key: "{{ lookup('file', '/etc/guacamole/id_ed25519.pub') }}"
         # yamllint disable-line rule:line-length
-        guacamole_ssh_private_key: "{{ lookup('file', '/etc/guacamole/id_rsa') }}"
+        guacamole_ssh_private_key: "{{ lookup('file', '/etc/guacamole/id_ed25519') }}"
 
     - name: Remove SSH keypair files
       ansible.builtin.file:
         path: "/etc/guacamole/{{ item }}"
         state: absent
       loop:
-        - id_rsa
-        - id_rsa.pub
+        - id_ed25519
+        - id_ed25519.pub
 
     - name: Add public key to Guacamole user
       ansible.posix.authorized_key:
