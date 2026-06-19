@@ -4,7 +4,7 @@
   "containerd_sha256": "57228ddf39755decf93aaaeee135976657266ba4ce1cba20af8d49fab484077d",
   "containerd_url": "",
   "containerd_service_url": "",
-  "containerd_version": "1.7.30",
+  "containerd_version": "2.3.2",
   "containerd_wasm_shims_arch": "x86_64",
   "containerd_wasm_shims_url": "",
   "crictl_arch": "amd64",
