@@ -7,7 +7,7 @@
     - Server
   become: true
   become_method: ansible.builtin.runas
-  become_user: "{{ ansible_user }}"
+  become_user: "{{ ansible_facts['user'] }}"
 
 - name: Start and enable SSHD service
   ansible.windows.win_service:

@@ -1,13 +1,16 @@
 ---
-- name: Install pip  # noqa package-latest
+
+- name: Install pip
   ansible.builtin.package:
-    name: python3-pip
-    state: latest
+    name: python3-venv
+    state: present
 
 - name: Upgrade pip  # noqa package-latest
   ansible.builtin.pip:
     name: pip
     state: latest
+    virtualenv: "{{ repo2docker_venv_path }}"
+    virtualenv_command: python3 -m venv
 
 - name: Install repo2docker
   ansible.builtin.pip:
@@ -15,6 +18,8 @@
       # yamllint disable-line rule:line-length
       - "git+https://github.com/jupyterhub/repo2docker.git@{{ repo2docker_version }}"
       - "repo2podman=={{ repo2podman_version }}"
+    virtualenv: "{{ repo2docker_venv_path }}"
+    virtualenv_command: python3 -m venv
 
 - name: Install systemd unit for repo2docker pod
   ansible.builtin.include_role:
@@ -34,7 +39,7 @@
     podman_service_image: repo2docker-notebook-server
     podman_service_pod: repo2docker
     podman_service_command: |
-      jupyter notebook \
+        jupyter notebook \
         --ip 127.0.0.1 \
         --NotebookApp.token='' \
         --NotebookApp.allow_remote_access=true \
@@ -55,6 +60,7 @@
     repo2docker_init_vars:
       podman_service_user: "{{ podman_service_user }}"
       jupyter_data_volume: "{{ jupyter_data_volume }}"
+      repo2docker_venv_path: "{{ repo2docker_venv_path }}"
 
 - name: Install repo2docker ansible-init playbook
   ansible.builtin.copy:

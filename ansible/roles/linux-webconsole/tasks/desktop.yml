@@ -6,6 +6,17 @@
 # https://github.com/exosphere-project/exosphere/
 ###
 
+# Installing network-manager before installing the desktop seems
+# to preserve networking
+- name: Install network-manager
+  ansible.builtin.package:
+    name: network-manager
+    state: present
+
+- name: Run netplan apply
+  ansible.builtin.command: netplan apply
+  changed_when: true
+
 - name: Install graphical environment
   ansible.builtin.package:
     name: "{{ desktop_environment_package }}"
@@ -88,3 +99,23 @@
       ResultAny=yes
       ResultInactive=yes
       ResultActive=yes
+  when:
+    - ansible_facts['distribution'] == "Ubuntu"
+    - ansible_facts['distribution_major_version'] == "22"
+
+- name: Prevent authentication prompts for updating system repos
+  ansible.builtin.copy:
+    dest: /etc/polkit-1/rules.d/46-allow-update-repo.rules
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      polkit.addRule(function(action, subject) {
+        if (action.id == "org.freedesktop.packagekit.system-sources-refresh"
+        {
+          return polkit.Result.YES;
+        }
+      });
+  when:
+    - ansible_facts['distribution'] == "Ubuntu"
+    - ansible_facts['distribution_major_version'] == "24"
