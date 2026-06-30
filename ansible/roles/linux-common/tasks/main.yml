@@ -60,6 +60,27 @@
     sysctl_file: "{{ item.conf_file }}"
   loop: "{{ sysctl_options_default + sysctl_options_extra }}"
 
+- name: Configure automatic security updates
+  when:
+    - ansible_os_family == "Debian"
+    - unattended_upgrades_enabled
+  block:
+    - name: Install unattended-upgrades
+      ansible.builtin.apt:
+        pkg:
+          - unattended-upgrades
+        state: present
+
+    - name: Enable automatic updates
+      ansible.builtin.copy:
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        content: |
+          APT::Periodic::Update-Package-Lists "1";
+          APT::Periodic::Unattended-Upgrade "1";
+        mode: "0644"
+        owner: root
+        group: root
+
 - name: Clean up after ourselves
   ansible.builtin.apt:
     clean: true
