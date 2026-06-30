@@ -17,3 +17,5 @@ sysctl_options_default:
     value: '2'
 
 sysctl_options_extra: []
+
+unattended_upgrades_enabled: true
