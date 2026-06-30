@@ -618,3 +618,6 @@ ignore:
   - vulnerability: CVE-2025-14087
   # Python lz2 deccompression use-after-free. No fix for jammy [2026-06-17]
   - vulnerability: CVE-2026-6100
+  # No fix for Jammy as of 2026-06-25
+  - vulnerability: CVE-2026-46137
+  - vulnerability: CVE-2026-46119

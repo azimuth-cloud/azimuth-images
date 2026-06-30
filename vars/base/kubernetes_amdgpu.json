@@ -1,7 +1,7 @@
 {
   "node_custom_roles_pre": "gpu",
   "gpu_vendor": "amd",
-  "amd_version": "7.0.2",
-  "amd_deb_version": "7.0.2.70002-1",
+  "amd_version": "7.2.4",
+  "amd_deb_version": "7.2.4.70204-1",
   "gpu_amd_usecase": "dkms"
 }
