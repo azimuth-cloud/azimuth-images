@@ -4,6 +4,9 @@ blacklisted_kernel_modules_default:
   - esp4
   - esp6
   - rxrpc
+  - act_pedit
+  - rds
+  - rds_tcp
 
 blacklisted_kernel_modules_extra: []
 
