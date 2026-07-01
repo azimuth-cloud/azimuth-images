@@ -621,3 +621,5 @@ ignore:
   # No fix for Jammy as of 2026-06-25
   - vulnerability: CVE-2026-46137
   - vulnerability: CVE-2026-46119
+  # Kernel resource exhaustion vuln which has no fix for jammy [2026-07-01]
+  - vulnerability: CVE-2026-43493
