@@ -621,3 +621,8 @@ ignore:
   # No fix for Jammy as of 2026-06-25
   - vulnerability: CVE-2026-46137
   - vulnerability: CVE-2026-46119
+  # Openssl vulnerability being identified in the zenith-client image.
+  # Verified manually that the image contains a patched version of openssl (3.0.13-0ubuntu3.11).
+  - vulnerability: CVE-2025-15467
+    package:
+      location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
