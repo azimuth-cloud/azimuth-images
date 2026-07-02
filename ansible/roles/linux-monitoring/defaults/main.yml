@@ -1,7 +1,7 @@
 ---
 grafana_container_image_prefix: "docker.io"
 
-grafana_version: "13.0.2"
+grafana_version: "13.1.0"
 
 grafana_container_image_name: "grafana/grafana-oss"
 
