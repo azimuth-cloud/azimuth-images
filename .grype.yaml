@@ -628,3 +628,15 @@ ignore:
       location: "/var/lib/podman/.local/share/containers/storage/overlay/**"
   # Fixed kernel for jammy has not yet been built into the source image.
   - vulnerability: CVE-2026-43493
+  # No fix for Jammy as of 2026-07-03
+  - vulnerability: CVE-2026-53228
+  # No fix for Jammy as of 2026-07-03
+  - vulnerability: CVE-2026-53221
+  # No fix for Jammy as of 2026-07-03
+  - vulnerability: CVE-2026-53215
+  # No fix for Jammy as of 2026-07-03
+  - vulnerability: CVE-2026-53216
+  # No fix for Jammy as of 2026-07-03
+  - vulnerability: CVE-2026-53224
+  # No fix for Jammy as of 2026-07-03
+  - vulnerability: CVE-2026-53225
