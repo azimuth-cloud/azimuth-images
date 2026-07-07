@@ -58,11 +58,14 @@ jobs:
         if: steps.latest.outputs.version != steps.current.outputs.version
         run: |
           jq \
-            --arg v "${{ steps.latest.outputs.version }}" \
-            --arg u "${{ steps.push-image.outputs.image-url }}" \
+            --arg v "$LATEST_VERSION" \
+            --arg u "$IMAGE_URL" \
             '.flatcar_version = $v | .flatcar_image_url = $u' \
             vars/flatcar/versions.json > /tmp/versions.json
           mv /tmp/versions.json vars/flatcar/versions.json
+        env:
+          LATEST_VERSION: ${{ steps.latest.outputs.version }}
+          IMAGE_URL: ${{ steps.push-image.outputs.image-url }}
 
       - name: Generate app token for PR
         uses: azimuth-cloud/github-actions/generate-app-token@master

@@ -23,8 +23,8 @@ push_sysext() {
   local bakery_release="$2"
   local s3_key="flatcar/sysexts/${tag}.raw"
 
-  if [[ "${FORCE_PUSH:-false}" != "true" ]] && \
-     s3cmd info "s3://${S3_BUCKET}/${s3_key}" >/dev/null 2>&1; then
+  if [[ "${FORCE_PUSH:-false}" != "true" ]] &&
+    s3cmd info "s3://${S3_BUCKET}/${s3_key}" >/dev/null 2>&1; then
     echo "${s3_key}: already in S3, skipping upload"
     # Reuse checksum from existing manifest entry if available
     local existing
