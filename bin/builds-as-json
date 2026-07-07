@@ -14,7 +14,9 @@ with open(repo_root / ".github" / "builds.yaml", "r") as fh:
 
 # Output the builds as JSON
 has_ubuntu = any(
-    any(vf.strip().startswith("ubuntu-") for vf in build.get("var-files", "").split(","))
+    any(
+        vf.strip().startswith("ubuntu-") for vf in build.get("var-files", "").split(",")
+    )
     for build in builds
 )
 output_path = os.environ.get("GITHUB_OUTPUT", "/dev/stdout")
