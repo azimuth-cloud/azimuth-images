@@ -1,0 +1,98 @@
+---
+name: Update Flatcar stable version
+
+on:  # yamllint disable-line rule:truthy
+  # Allow manual executions
+  workflow_dispatch:
+  # Run nightly
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  propose-flatcar-update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Get latest Flatcar stable version
+        id: latest
+        run: |
+          version=$(
+            curl -fsSL \
+              https://stable.release.flatcar-linux.net/amd64-usr/current/version.txt \
+              | grep '^FLATCAR_VERSION=' \
+              | cut -d= -f2
+          )
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Get current version
+        id: current
+        run: |
+          version=$(jq -r '.flatcar_version' vars/flatcar/versions.json)
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Install s3cmd
+        if: steps.latest.outputs.version != steps.current.outputs.version
+        run: sudo apt-get update -y && sudo apt-get install -y s3cmd
+
+      - name: Push Flatcar image to S3
+        if: steps.latest.outputs.version != steps.current.outputs.version
+        id: push-image
+        run: ./bin/flatcar-push-image
+        env:
+          FLATCAR_VERSION: ${{ steps.latest.outputs.version }}
+          S3_HOST: ${{ vars.CLOUDFLARE_S3_HOST }}
+          S3_HOST_PUBLIC_PATH: ${{ vars.CLOUDFLARE_S3_HOST_PUBLIC_PATH }}
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+          S3_ACCESS_KEY: ${{ secrets.CLOUDFLARE_S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.CLOUDFLARE_S3_SECRET_KEY }}
+
+      - name: Update versions.json
+        if: steps.latest.outputs.version != steps.current.outputs.version
+        run: |
+          jq \
+            --arg v "${{ steps.latest.outputs.version }}" \
+            --arg u "${{ steps.push-image.outputs.image-url }}" \
+            '.flatcar_version = $v | .flatcar_image_url = $u' \
+            vars/flatcar/versions.json > /tmp/versions.json
+          mv /tmp/versions.json vars/flatcar/versions.json
+
+      - name: Generate app token for PR
+        uses: azimuth-cloud/github-actions/generate-app-token@master
+        id: generate-app-token
+        if: steps.latest.outputs.version != steps.current.outputs.version
+        with:
+          repository: ${{ github.repository }}
+          app-id: ${{ secrets.AUTOMATION_APP_ID }}
+          app-private-key: ${{ secrets.AUTOMATION_APP_PRIVATE_KEY }}
+
+      - name: Propose changes via PR if required
+        if: steps.latest.outputs.version != steps.current.outputs.version
+        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
+        with:
+          token: ${{ steps.generate-app-token.outputs.token }}
+          commit-message: >-
+            feat(flatcar): update Flatcar stable to ${{ steps.latest.outputs.version }}
+          branch: update/flatcar-stable-${{ steps.latest.outputs.version }}
+          delete-branch: true
+          title: >-
+            feat(flatcar): update Flatcar stable to ${{ steps.latest.outputs.version }}
+          body: |
+            Updates Flatcar stable version from
+            `${{ steps.current.outputs.version }}` to
+            `${{ steps.latest.outputs.version }}`.
+
+            The new image has been uploaded to S3:
+            `${{ steps.push-image.outputs.image-url }}`
+
+            See https://www.flatcar.org/releases for release notes.
+          labels: |
+            automation
+            flatcar
