@@ -36,13 +36,39 @@ jobs:
     needs:
       - fail_on_remote
 
+  # Detect whether Ubuntu image files changed so we can skip the expensive
+  # build pipeline for Flatcar-only PRs.
+  check_paths:
+    needs:
+      - fail_on_remote
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      ubuntu_changed: ${{ steps.check.outputs.ubuntu_changed }}
+    steps:
+      - name: Check for Ubuntu image changes
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          ubuntu_changed=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}/files" \
+            --jq '[.[].filename |
+              select(test("^(vars/flatcar/|bin/flatcar-|\\.github/workflows/flatcar-)") | not)
+            ] | length > 0')
+          echo "ubuntu_changed=${ubuntu_changed}" >> "$GITHUB_OUTPUT"
+
   # Build, publish and test the images
   build_test_images:
     needs:
       - fail_on_remote
       - lint
-    # Don't build draft PRs
-    if: ${{ !github.event.pull_request.draft }}
+      - check_paths
+    # Don't build draft PRs or Flatcar-only PRs
+    if: ${{ !github.event.pull_request.draft && needs.check_paths.outputs.ubuntu_changed == 'true' }}
     uses: ./.github/workflows/build_test_images.yaml
     permissions:
       actions: read
