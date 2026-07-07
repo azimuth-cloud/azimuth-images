@@ -47,18 +47,24 @@ jobs:
       pull-requests: read
     outputs:
       ubuntu_changed: ${{ steps.check.outputs.ubuntu_changed }}
+      flatcar_changed: ${{ steps.check.outputs.flatcar_changed }}
     steps:
-      - name: Check for Ubuntu image changes
+      - name: Check for Ubuntu and Flatcar changes
         id: check
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           REPO: ${{ github.repository }}
         run: |
-          ubuntu_changed=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}/files" \
-            --jq '[.[].filename |
-              select(test("^(vars/flatcar/|bin/flatcar-|\\.github/workflows/flatcar-)") | not)
-            ] | length > 0')
+          files=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}/files" \
+            --jq '[.[].filename]')
+          flatcar_changed=$(echo "$files" | jq '
+            any(.[]; test("^(vars/flatcar/|bin/flatcar-|\\.github/workflows/flatcar-)"))
+          ')
+          ubuntu_changed=$(echo "$files" | jq '
+            any(.[]; test("^(vars/flatcar/|bin/flatcar-|\\.github/workflows/flatcar-)") | not)
+          ')
+          echo "flatcar_changed=${flatcar_changed}" >> "$GITHUB_OUTPUT"
           echo "ubuntu_changed=${ubuntu_changed}" >> "$GITHUB_OUTPUT"
 
   # Build, publish and test the images
