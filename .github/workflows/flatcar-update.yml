@@ -43,12 +43,13 @@ jobs:
           echo "version=${version}" >> "$GITHUB_OUTPUT"
 
       - name: Compare versions
+        env:
+          LATEST: ${{ steps.latest.outputs.version }}
+          CURRENT: ${{ steps.current.outputs.version }}
         run: |
-          latest="${{ steps.latest.outputs.version }}"
-          current="${{ steps.current.outputs.version }}"
-          echo "Latest:  ${latest}"
-          echo "Current: ${current:-<empty>}"
-          if [ "${latest}" != "${current}" ]; then
+          echo "Latest:  ${LATEST}"
+          echo "Current: ${CURRENT:-<empty>}"
+          if [ "${LATEST}" != "${CURRENT}" ]; then
             echo "-> Version changed (or first run), build_image will proceed"
           else
             echo "-> Already up to date, skipping build"
@@ -143,9 +144,15 @@ jobs:
           persist-credentials: false
 
       - name: Update versions.json
+        env:
+          LATEST_VERSION: ${{ needs.detect_version.outputs.latest_version }}
+          CURRENT_VERSION: ${{ needs.detect_version.outputs.current_version }}
+          IMAGE_URL: ${{ needs.build_image.outputs.image_url }}
+          IMAGE_SBOM_URL: ${{ needs.build_image.outputs.image_sbom_url }}
+          COSIGN_BUNDLE_URL: ${{ needs.build_image.outputs.cosign_bundle_url }}
         run: |
-          echo "Updating versions.json: ${{ needs.detect_version.outputs.current_version }} -> ${{ needs.detect_version.outputs.latest_version }}"
-          echo "Image URL: ${{ needs.build_image.outputs.image_url }}"
+          echo "Updating versions.json: ${CURRENT_VERSION} -> ${LATEST_VERSION}"
+          echo "Image URL: ${IMAGE_URL}"
           jq \
             --arg v "$LATEST_VERSION" \
             --arg u "$IMAGE_URL" \
@@ -154,11 +161,6 @@ jobs:
             '.flatcar_version = $v | .flatcar_image_url = $u | .flatcar_image_sbom_url = $sbom | .flatcar_cosign_bundle_url = $bundle' \
             vars/flatcar/versions.json > /tmp/versions.json
           mv /tmp/versions.json vars/flatcar/versions.json
-        env:
-          LATEST_VERSION: ${{ needs.detect_version.outputs.latest_version }}
-          IMAGE_URL: ${{ needs.build_image.outputs.image_url }}
-          IMAGE_SBOM_URL: ${{ needs.build_image.outputs.image_sbom_url }}
-          COSIGN_BUNDLE_URL: ${{ needs.build_image.outputs.cosign_bundle_url }}
 
       - name: Generate app token for PR
         uses: azimuth-cloud/github-actions/generate-app-token@master

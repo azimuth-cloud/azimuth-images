@@ -43,12 +43,13 @@ jobs:
           echo "version=${version}" >> "$GITHUB_OUTPUT"
 
       - name: Compare versions
+        env:
+          LATEST: ${{ steps.latest.outputs.version }}
+          CURRENT: ${{ steps.current.outputs.version }}
         run: |
-          latest="${{ steps.latest.outputs.version }}"
-          current="${{ steps.current.outputs.version }}"
-          echo "Latest:  ${latest}"
-          echo "Current: ${current:-<empty>}"
-          if [ "${latest}" != "${current}" ]; then
+          echo "Latest:  ${LATEST}"
+          echo "Current: ${CURRENT:-<empty>}"
+          if [ "${LATEST}" != "${CURRENT}" ]; then
             echo "-> Version changed (or first run), propose_update will proceed"
           else
             echo "-> Already up to date, skipping update"
@@ -68,15 +69,16 @@ jobs:
           persist-credentials: false
 
       - name: Update versions.json
+        env:
+          LATEST_VERSION: ${{ needs.detect_version.outputs.latest_version }}
+          CURRENT_VERSION: ${{ needs.detect_version.outputs.current_version }}
         run: |
-          echo "Updating versions.json: ${{ needs.detect_version.outputs.current_version }} -> ${{ needs.detect_version.outputs.latest_version }}"
+          echo "Updating versions.json: ${CURRENT_VERSION} -> ${LATEST_VERSION}"
           jq \
             --arg v "$LATEST_VERSION" \
             '.containerd_version = $v' \
             vars/flatcar/versions.json > /tmp/versions.json
           mv /tmp/versions.json vars/flatcar/versions.json
-        env:
-          LATEST_VERSION: ${{ needs.detect_version.outputs.latest_version }}
 
       - name: Generate app token for PR
         uses: azimuth-cloud/github-actions/generate-app-token@master
