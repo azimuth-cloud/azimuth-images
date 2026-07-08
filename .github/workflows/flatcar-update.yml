@@ -25,19 +25,34 @@ jobs:
       - name: Get latest Flatcar stable version
         id: latest
         run: |
+          echo "Fetching latest Flatcar stable version from release server..."
           version=$(
             curl -fsSL \
               https://stable.release.flatcar-linux.net/amd64-usr/current/version.txt \
               | grep '^FLATCAR_VERSION=' \
               | cut -d= -f2
           )
+          echo "Latest stable version: ${version}"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
 
       - name: Get current version
         id: current
         run: |
           version=$(jq -r '.flatcar_version' vars/flatcar/versions.json)
+          echo "Current version in versions.json: ${version:-<empty>}"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Compare versions
+        run: |
+          latest="${{ steps.latest.outputs.version }}"
+          current="${{ steps.current.outputs.version }}"
+          echo "Latest:  ${latest}"
+          echo "Current: ${current:-<empty>}"
+          if [ "${latest}" != "${current}" ]; then
+            echo "-> Version changed (or first run), build_image will proceed"
+          else
+            echo "-> Already up to date, skipping build"
+          fi
 
   build_image:
     needs: detect_version
@@ -62,7 +77,9 @@ jobs:
 
       - name: Download Flatcar image
         id: download_image
-        run: ./bin/flatcar-download-image
+        run: |
+          echo "Downloading Flatcar image for version ${FLATCAR_VERSION}..."
+          ./bin/flatcar-download-image
         env:
           FLATCAR_VERSION: ${{ needs.detect_version.outputs.latest_version }}
 
@@ -99,7 +116,9 @@ jobs:
 
       - name: Publish image
         id: publish_image
-        run: ./bin/flatcar-publish-image
+        run: |
+          echo "Publishing image ${IMAGE_NAME} to S3..."
+          ./bin/flatcar-publish-image
         env:
           IMAGE_NAME: ${{ steps.download_image.outputs.image-name }}
           S3_HOST: ${{ vars.CLOUDFLARE_S3_HOST }}
@@ -125,6 +144,8 @@ jobs:
 
       - name: Update versions.json
         run: |
+          echo "Updating versions.json: ${{ needs.detect_version.outputs.current_version }} -> ${{ needs.detect_version.outputs.latest_version }}"
+          echo "Image URL: ${{ needs.build_image.outputs.image_url }}"
           jq \
             --arg v "$LATEST_VERSION" \
             --arg u "$IMAGE_URL" \
