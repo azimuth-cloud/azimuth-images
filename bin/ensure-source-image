@@ -11,7 +11,13 @@ if [[ $GH_ACTIONS_RUN == "true" ]]; then
     ' | sort -u)
   SOURCE_IMAGE_ENV_COUNT=$(echo "$SOURCE_IMAGE_ENV" | grep -c .)
 
-  if [ "$SOURCE_IMAGE_ENV_COUNT" -eq 1 ]; then
+  if [ "$SOURCE_IMAGE_ENV_COUNT" -eq 0 ]; then
+    echo "No Ubuntu builds in matrix, skipping source image download"
+    if [[ $GH_ACTIONS_RUN == "true" ]]; then
+      echo "source_image_name=" >>"$GITHUB_OUTPUT"
+    fi
+    exit 0
+  elif [ "$SOURCE_IMAGE_ENV_COUNT" -eq 1 ]; then
     export ENV_VAR_FILES=$SOURCE_IMAGE_ENV
     echo "$REPO_ROOT"
     source "$REPO_ROOT/bin/env-vars"

@@ -175,9 +175,11 @@ def main():
     # Start with all of the keys, then remove manifest files, images and cosign bundles
     # for the commits that we want to keep
     print("[INFO ] fetching current S3 keys")
-    purge_keys = set(s3.list_keys())
+    # Exclude Flatcar artifacts (image + sysexts) — they are managed independently
+    # of the Packer build cycle and must not be purged with old build manifests.
+    purge_keys = set(k for k in s3.list_keys() if not k.startswith("flatcar/"))
     initial_key_count = len(purge_keys)
-    print(f"[INFO ]   found {initial_key_count} keys")
+    print(f"[INFO ]   found {initial_key_count} keys (excluding flatcar/ prefix)")
 
     manifest_keys = [k for k in purge_keys if k.endswith(".manifest")]
     for manifest_key in manifest_keys:

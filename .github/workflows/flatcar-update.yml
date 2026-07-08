@@ -1,0 +1,173 @@
+---
+name: Update Flatcar stable version
+
+on:  # yamllint disable-line rule:truthy
+  # Allow manual executions
+  workflow_dispatch:
+  # Run nightly
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  detect_version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      latest_version: ${{ steps.latest.outputs.version }}
+      current_version: ${{ steps.current.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Get latest Flatcar stable version
+        id: latest
+        run: |
+          version=$(
+            curl -fsSL \
+              https://stable.release.flatcar-linux.net/amd64-usr/current/version.txt \
+              | grep '^FLATCAR_VERSION=' \
+              | cut -d= -f2
+          )
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Get current version
+        id: current
+        run: |
+          version=$(jq -r '.flatcar_version' vars/flatcar/versions.json)
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+  build_image:
+    needs: detect_version
+    if: needs.detect_version.outputs.latest_version != needs.detect_version.outputs.current_version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      security-events: write
+    outputs:
+      image_url: ${{ steps.publish_image.outputs.image-url }}
+      image_sbom_url: ${{ steps.publish_image.outputs.image-sbom-url }}
+      cosign_bundle_url: ${{ steps.publish_image.outputs.cosign-bundle-url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install s3cmd and libguestfs-tools
+        run: sudo apt-get update -y && sudo apt-get install -y s3cmd libguestfs-tools
+
+      - name: Download Flatcar image
+        id: download_image
+        run: ./bin/flatcar-download-image
+        env:
+          FLATCAR_VERSION: ${{ needs.detect_version.outputs.latest_version }}
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@398d4b0eeef1380460a10c8013a76f728fb906ac # v3.9.1
+
+      - name: Mount Flatcar image
+        run: |
+          sudo mkdir -p flatcar-mount
+          sudo guestmount -a "${IMAGE_NAME}.img" -i --ro -o allow_other flatcar-mount
+        env:
+          IMAGE_NAME: ${{ steps.download_image.outputs.image-name }}
+
+      - name: Generate SBOM
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
+        with:
+          path: flatcar-mount
+          artifact-name: "${{ steps.download_image.outputs.image-name }}-sbom.json"
+          output-file: "${{ steps.download_image.outputs.image-name }}-sbom.json"
+          format: syft-json
+
+      - name: Scan for vulnerabilities
+        uses: anchore/scan-action@e1165082ffb1fe366ebaf02d8526e7c4989ea9d2 # v7.4.0
+        with:
+          sbom: "${{ steps.download_image.outputs.image-name }}-sbom.json"
+          output-format: table
+          severity-cutoff: critical
+          only-fixed: true
+          fail-build: "false"
+
+      - name: Unmount image
+        if: always()
+        run: sudo guestunmount flatcar-mount || true
+
+      - name: Publish image
+        id: publish_image
+        run: ./bin/flatcar-publish-image
+        env:
+          IMAGE_NAME: ${{ steps.download_image.outputs.image-name }}
+          S3_HOST: ${{ vars.CLOUDFLARE_S3_HOST }}
+          S3_HOST_PUBLIC_PATH: ${{ vars.CLOUDFLARE_S3_HOST_PUBLIC_PATH }}
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+          S3_ACCESS_KEY: ${{ secrets.CLOUDFLARE_S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.CLOUDFLARE_S3_SECRET_KEY }}
+
+  propose_update:
+    needs:
+      - detect_version
+      - build_image
+    if: needs.detect_version.outputs.latest_version != needs.detect_version.outputs.current_version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Update versions.json
+        run: |
+          jq \
+            --arg v "$LATEST_VERSION" \
+            --arg u "$IMAGE_URL" \
+            --arg sbom "$IMAGE_SBOM_URL" \
+            --arg bundle "$COSIGN_BUNDLE_URL" \
+            '.flatcar_version = $v | .flatcar_image_url = $u | .flatcar_image_sbom_url = $sbom | .flatcar_cosign_bundle_url = $bundle' \
+            vars/flatcar/versions.json > /tmp/versions.json
+          mv /tmp/versions.json vars/flatcar/versions.json
+        env:
+          LATEST_VERSION: ${{ needs.detect_version.outputs.latest_version }}
+          IMAGE_URL: ${{ needs.build_image.outputs.image_url }}
+          IMAGE_SBOM_URL: ${{ needs.build_image.outputs.image_sbom_url }}
+          COSIGN_BUNDLE_URL: ${{ needs.build_image.outputs.cosign_bundle_url }}
+
+      - name: Generate app token for PR
+        uses: azimuth-cloud/github-actions/generate-app-token@master
+        id: generate-app-token
+        with:
+          repository: ${{ github.repository }}
+          app-id: ${{ secrets.AUTOMATION_APP_ID }}
+          app-private-key: ${{ secrets.AUTOMATION_APP_PRIVATE_KEY }}
+
+      - name: Propose changes via PR
+        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
+        with:
+          token: ${{ steps.generate-app-token.outputs.token }}
+          commit-message: >-
+            feat(flatcar): update Flatcar stable to ${{ needs.detect_version.outputs.latest_version }}
+          branch: update/flatcar-stable-${{ needs.detect_version.outputs.latest_version }}
+          delete-branch: true
+          title: >-
+            feat(flatcar): update Flatcar stable to ${{ needs.detect_version.outputs.latest_version }}
+          body: |
+            Updates Flatcar stable version from
+            `${{ needs.detect_version.outputs.current_version }}` to
+            `${{ needs.detect_version.outputs.latest_version }}`.
+
+            The new image has been uploaded to S3:
+            `${{ needs.build_image.outputs.image_url }}`
+
+            SBOM: `${{ needs.build_image.outputs.image_sbom_url }}`
+
+            See https://www.flatcar.org/releases for release notes.
+          labels: |
+            automation
+            flatcar

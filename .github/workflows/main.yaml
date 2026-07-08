@@ -17,6 +17,10 @@ on:  # yamllint disable-line rule:truthy
   push:
     branches:
       - main
+    paths-ignore:
+      - "vars/flatcar/**"
+      - "bin/flatcar-*"
+      - ".github/workflows/flatcar-*.yml"
 
 jobs:
   # Build, publish and test the images
