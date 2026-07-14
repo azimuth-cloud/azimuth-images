@@ -13,6 +13,12 @@ with open(repo_root / ".github" / "builds.yaml", "r") as fh:
     builds = YAML(typ="safe").load(fh)
 
 # Output the builds as JSON
+has_ubuntu = any(
+    vf.strip().startswith("ubuntu-")
+    for build in builds
+    for vf in build.get("var-files", "").split(",")
+)
 output_path = os.environ.get("GITHUB_OUTPUT", "/dev/stdout")
 with open(output_path, "a") as fh:
     print(f"builds={json.dumps(builds)}", file=fh)
+    print(f"has_ubuntu_builds={'true' if has_ubuntu else 'false'}", file=fh)

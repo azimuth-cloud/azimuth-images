@@ -6,5 +6,8 @@ skip-check:
   # GITHUB_TOKEN is not write-all. azimuth-cloud org has GITHUB_TOKEN default
   # set to read-only, so not required.
   - CKV2_GHA_1
+  # Requires workflow_dispatch inputs to be empty. Some workflows intentionally
+  # use inputs for operational parameters (e.g. force-push in flatcar-sysexts).
+  - CKV_GHA_7
 skip-path:
   - vendor/

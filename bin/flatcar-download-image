@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -euxo pipefail
+
+image_name="flatcar-stable-${FLATCAR_VERSION}"
+
+curl -fSL \
+  "https://stable.release.flatcar-linux.net/amd64-usr/${FLATCAR_VERSION}/flatcar_production_openstack_image.img.bz2" \
+  -o flatcar_production_openstack_image.img.bz2
+
+bunzip2 flatcar_production_openstack_image.img.bz2
+mv flatcar_production_openstack_image.img "${image_name}.img"
+
+echo "image-name=${image_name}" >>"${GITHUB_OUTPUT:-/dev/stdout}"
