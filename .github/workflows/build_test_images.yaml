@@ -145,13 +145,39 @@ jobs:
           output-file: "${{ steps.build-image.outputs.image-name }}-sbom.json"
           format: syft-json
 
-      - name: Fail if scan has CRITICAL vulnerabilities
+      - name: Scan sbom with Grype
         uses: anchore/scan-action@e1165082ffb1fe366ebaf02d8526e7c4989ea9d2 # v7.4.0
+        id: scan
         with:
           sbom: "${{ steps.build-image.outputs.image-name }}-sbom.json"
-          output-format: table
-          severity-cutoff: critical
+          severity-cutoff: low
           only-fixed: true
+          output-format: json
+          fail-build: false
+
+      - name: Analyse scan and fail workflow if fixed CRITICAL vulnerabilities are not ignored
+        run: |
+          pip install git+https://github.com/stackhpc/grype-analyse@main
+          GRYPE=$(find /tmp -name grype -type f 2>/dev/null | head -1)
+          if [ -z "$GRYPE" ]; then
+            echo "grype binary not found in /tmp"
+            exit 1
+          fi
+          $GRYPE \
+            -c "${GRYPE_CONFIG_FILE}" \
+            --only-fixed \
+            "sbom:${SBOM}" \
+            -o json \
+            --file "${GRYPE_OUTPUT_FILE}"
+          grype-analyse \
+            --config "${GRYPE_CONFIG_FILE}" \
+            --github-checks "${GRYPE_OUTPUT_FILE}"
+        env:
+          SBOM: ${{ steps.build-image.outputs.image-name }}-sbom.json
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GRYPE_ANALYSE_MATRIX: ${{ steps.build-image.outputs.image-name }}
+          GRYPE_OUTPUT_FILE: ${{ steps.build-image.outputs.image-name }}.grype.json
+          GRYPE_CONFIG_FILE: grype-config/${{ matrix.name }}.yaml
 
       - name: Publish image
         id: publish-image
