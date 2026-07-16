@@ -1,3 +1,556 @@
+# yamllint disable-file
 ---
 
-ignore: []
+ignore:
+  ### CVE-2024-24790
+  # FIXME:
+  - vulnerability: GO-2024-2887
+    package:
+      location: /usr/bin/snap
+  # FIXME:
+  - vulnerability: GO-2024-2887
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME:
+  - vulnerability: CVE-2024-24790
+    package:
+      location: /usr/bin/snap
+  # FIXME:
+  - vulnerability: CVE-2024-24790
+    package:
+      location: /usr/lib/snapd/**
+  ### CVE-2024-35960
+  # FIXME:
+  - vulnerability: CVE-2024-35960
+  ### CVE-2024-36031
+  # FIXME:
+  - vulnerability: CVE-2024-36031
+  ### CVE-2024-36896
+  # FIXME:
+  - vulnerability: CVE-2024-36896
+  ### CVE-2024-38541
+  # FIXME:
+  - vulnerability: CVE-2024-38541
+  ### CVE-2024-38612
+  # FIXME:
+  - vulnerability: CVE-2024-38612
+  ### CVE-2024-38623
+  # FIXME:
+  - vulnerability: CVE-2024-38623
+  ### CVE-2024-39462
+  # FIXME:
+  - vulnerability: CVE-2024-39462
+  ### CVE-2024-45337
+  # FIXME:
+  - vulnerability: GHSA-v778-237x-gjrc
+    package:
+      location: /usr/bin/snap
+  # FIXME:
+  - vulnerability: GHSA-v778-237x-gjrc
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME:
+  - vulnerability: GO-2024-3321
+    package:
+      location: /usr/bin/snap
+  # FIXME:
+  - vulnerability: GO-2024-3321
+    package:
+      location: /usr/lib/snapd/**
+  ### CVE-2024-47685
+  # FIXME:
+  - vulnerability: CVE-2024-47685
+  ### CVE-2025-22871
+  # FIXME:
+  - vulnerability: GO-2025-3563
+    package:
+      location: /usr/bin/snap
+  # FIXME:
+  - vulnerability: GO-2025-3563
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME:
+  - vulnerability: GO-2025-3563
+    package:
+      location: /usr/local/bin/crictl
+  # FIXME:
+  - vulnerability: CVE-2025-22871
+    package:
+      location: /usr/bin/snap
+  # FIXME:
+  - vulnerability: CVE-2025-22871
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME:
+  - vulnerability: CVE-2025-22871
+    package:
+      location: /usr/local/bin/crictl
+  ### CVE-2025-68121
+  # FIXME:
+  - vulnerability: CVE-2025-68121
+    package:
+      location: /usr/bin/snap
+  # FIXME:
+  - vulnerability: CVE-2025-68121
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME:
+  - vulnerability: CVE-2025-68121
+    package:
+      location: /usr/local/bin/crictl
+  # FIXME:
+  - vulnerability: CVE-2025-68121
+    package:
+      location: /usr/local/sbin/runc
+  # FIXME:
+  - vulnerability: GO-2026-4337
+    package:
+      location: /usr/bin/snap
+  # FIXME:
+  - vulnerability: GO-2026-4337
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME:
+  - vulnerability: GO-2026-4337
+    package:
+      location: /usr/local/bin/crictl
+  # FIXME:
+  - vulnerability: GO-2026-4337
+    package:
+      location: /usr/local/sbin/runc
+  ### CVE-2026-23112
+  # FIXME:
+  - vulnerability: CVE-2026-23112
+  ### CVE-2026-23240
+  # FIXME:
+  - vulnerability: CVE-2026-23240
+  ### CVE-2026-23450
+  # FIXME:
+  - vulnerability: CVE-2026-23450
+  ### CVE-2026-23455
+  # FIXME:
+  - vulnerability: CVE-2026-23455
+  ### CVE-2026-27143
+  # FIXME:
+  - vulnerability: CVE-2026-27143
+    package:
+      location: /opt/cni/bin/**
+  # FIXME:
+  - vulnerability: CVE-2026-27143
+    package:
+      location: /usr/bin/snap
+  # FIXME:
+  - vulnerability: CVE-2026-27143
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME:
+  - vulnerability: CVE-2026-27143
+    package:
+      location: /usr/local/bin/crictl
+  # FIXME:
+  - vulnerability: CVE-2026-27143
+    package:
+      location: /usr/local/sbin/runc
+  # FIXME:
+  - vulnerability: CVE-2026-27143
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  ### CVE-2026-31405
+  # FIXME:
+  - vulnerability: CVE-2026-31405
+  ### CVE-2026-31414
+  # FIXME:
+  - vulnerability: CVE-2026-31414
+  ### CVE-2026-31448
+  # FIXME:
+  - vulnerability: CVE-2026-31448
+  ### CVE-2026-31478
+  # FIXME:
+  - vulnerability: CVE-2026-31478
+  ### CVE-2026-31533
+  # FIXME:
+  - vulnerability: CVE-2026-31533
+  ### CVE-2026-31536
+  # FIXME:
+  - vulnerability: CVE-2026-31536
+  ### CVE-2026-31608
+  # FIXME:
+  - vulnerability: CVE-2026-31608
+  ### CVE-2026-31609
+  # FIXME:
+  - vulnerability: CVE-2026-31609
+  ### CVE-2026-31637
+  # FIXME:
+  - vulnerability: CVE-2026-31637
+  ### CVE-2026-31649
+  # FIXME:
+  - vulnerability: CVE-2026-31649
+  ### CVE-2026-31657
+  # FIXME:
+  - vulnerability: CVE-2026-31657
+  ### CVE-2026-31659
+  # FIXME:
+  - vulnerability: CVE-2026-31659
+  ### CVE-2026-31668
+  # FIXME:
+  - vulnerability: CVE-2026-31668
+  ### CVE-2026-31669
+  # FIXME:
+  - vulnerability: CVE-2026-31669
+  ### CVE-2026-31682
+  # FIXME:
+  - vulnerability: CVE-2026-31682
+  ### CVE-2026-31685
+  # FIXME:
+  - vulnerability: CVE-2026-31685
+  ### CVE-2026-31705
+  # FIXME:
+  - vulnerability: CVE-2026-31705
+  ### CVE-2026-33186
+  # FIXME:
+  - vulnerability: GHSA-p77j-4mvh-x3m3
+    package:
+      location: /usr/local/bin/crictl
+  # FIXME:
+  - vulnerability: GHSA-p77j-4mvh-x3m3
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  ### CVE-2026-39830
+  # FIXME:
+  - vulnerability: GHSA-vgwf-h737-ff37
+    package:
+      location: /usr/bin/kubeadm
+  # FIXME:
+  - vulnerability: GHSA-vgwf-h737-ff37
+    package:
+      location: /usr/bin/kubelet
+  # FIXME:
+  - vulnerability: GHSA-vgwf-h737-ff37
+    package:
+      location: /usr/bin/snap
+  # FIXME:
+  - vulnerability: GHSA-vgwf-h737-ff37
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME:
+  - vulnerability: GHSA-vgwf-h737-ff37
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  ### CVE-2026-39831
+  # FIXME:
+  - vulnerability: GHSA-89gr-r52h-f8rx
+    package:
+      location: /usr/bin/kubeadm
+  # FIXME:
+  - vulnerability: GHSA-89gr-r52h-f8rx
+    package:
+      location: /usr/bin/kubelet
+  # FIXME:
+  - vulnerability: GHSA-89gr-r52h-f8rx
+    package:
+      location: /usr/bin/snap
+  # FIXME:
+  - vulnerability: GHSA-89gr-r52h-f8rx
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME:
+  - vulnerability: GHSA-89gr-r52h-f8rx
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  # FIXME:
+  - vulnerability: GO-2026-5019
+    package:
+      location: /usr/bin/kubeadm
+  # FIXME:
+  - vulnerability: GO-2026-5019
+    package:
+      location: /usr/bin/kubelet
+  # FIXME:
+  - vulnerability: GO-2026-5019
+    package:
+      location: /usr/bin/snap
+  # FIXME:
+  - vulnerability: GO-2026-5019
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME:
+  - vulnerability: GO-2026-5019
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  ### CVE-2026-39832
+  # FIXME:
+  - vulnerability: GHSA-f5wc-c3c7-36mc
+    package:
+      location: /usr/bin/kubeadm
+  # FIXME:
+  - vulnerability: GHSA-f5wc-c3c7-36mc
+    package:
+      location: /usr/bin/kubelet
+  # FIXME:
+  - vulnerability: GHSA-f5wc-c3c7-36mc
+    package:
+      location: /usr/bin/snap
+  # FIXME:
+  - vulnerability: GHSA-f5wc-c3c7-36mc
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME:
+  - vulnerability: GHSA-f5wc-c3c7-36mc
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  ### CVE-2026-39833
+  # FIXME:
+  - vulnerability: GHSA-jppx-rxg9-jmrx
+    package:
+      location: /usr/bin/kubeadm
+  # FIXME:
+  - vulnerability: GHSA-jppx-rxg9-jmrx
+    package:
+      location: /usr/bin/kubelet
+  # FIXME:
+  - vulnerability: GHSA-jppx-rxg9-jmrx
+    package:
+      location: /usr/bin/snap
+  # FIXME:
+  - vulnerability: GHSA-jppx-rxg9-jmrx
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME:
+  - vulnerability: GHSA-jppx-rxg9-jmrx
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  # FIXME:
+  - vulnerability: GO-2026-5005
+    package:
+      location: /usr/bin/kubeadm
+  # FIXME:
+  - vulnerability: GO-2026-5005
+    package:
+      location: /usr/bin/kubelet
+  # FIXME:
+  - vulnerability: GO-2026-5005
+    package:
+      location: /usr/bin/snap
+  # FIXME:
+  - vulnerability: GO-2026-5005
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME:
+  - vulnerability: GO-2026-5005
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  ### CVE-2026-39834
+  # FIXME:
+  - vulnerability: GHSA-rm3j-f69w-wqmq
+    package:
+      location: /usr/bin/kubeadm
+  # FIXME:
+  - vulnerability: GHSA-rm3j-f69w-wqmq
+    package:
+      location: /usr/bin/kubelet
+  # FIXME:
+  - vulnerability: GHSA-rm3j-f69w-wqmq
+    package:
+      location: /usr/bin/snap
+  # FIXME:
+  - vulnerability: GHSA-rm3j-f69w-wqmq
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME:
+  - vulnerability: GHSA-rm3j-f69w-wqmq
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  # FIXME:
+  - vulnerability: GO-2026-5020
+    package:
+      location: /usr/bin/kubeadm
+  # FIXME:
+  - vulnerability: GO-2026-5020
+    package:
+      location: /usr/bin/kubelet
+  # FIXME:
+  - vulnerability: GO-2026-5020
+    package:
+      location: /usr/bin/snap
+  # FIXME:
+  - vulnerability: GO-2026-5020
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME:
+  - vulnerability: GO-2026-5020
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  ### CVE-2026-42508
+  # FIXME:
+  - vulnerability: GHSA-5cgq-3rg8-m6cv
+    package:
+      location: /usr/bin/kubeadm
+  # FIXME:
+  - vulnerability: GHSA-5cgq-3rg8-m6cv
+    package:
+      location: /usr/bin/kubelet
+  # FIXME:
+  - vulnerability: GHSA-5cgq-3rg8-m6cv
+    package:
+      location: /usr/bin/snap
+  # FIXME:
+  - vulnerability: GHSA-5cgq-3rg8-m6cv
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME:
+  - vulnerability: GHSA-5cgq-3rg8-m6cv
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  ### CVE-2026-43011
+  # FIXME:
+  - vulnerability: CVE-2026-43011
+  ### CVE-2026-43071
+  # FIXME:
+  - vulnerability: CVE-2026-43071
+  ### CVE-2026-43083
+  # FIXME:
+  - vulnerability: CVE-2026-43083
+  ### CVE-2026-43117
+  # FIXME:
+  - vulnerability: CVE-2026-43117
+  ### CVE-2026-43185
+  # FIXME:
+  - vulnerability: CVE-2026-43185
+  ### CVE-2026-43186
+  # FIXME:
+  - vulnerability: CVE-2026-43186
+  ### CVE-2026-43197
+  # FIXME:
+  - vulnerability: CVE-2026-43197
+  ### CVE-2026-43304
+  # FIXME:
+  - vulnerability: CVE-2026-43304
+  ### CVE-2026-43341
+  # FIXME:
+  - vulnerability: CVE-2026-43341
+  ### CVE-2026-43383
+  # FIXME:
+  - vulnerability: CVE-2026-43383
+  ### CVE-2026-43384
+  # FIXME:
+  - vulnerability: CVE-2026-43384
+  ### CVE-2026-43406
+  # FIXME:
+  - vulnerability: CVE-2026-43406
+  ### CVE-2026-43407
+  # FIXME:
+  - vulnerability: CVE-2026-43407
+  ### CVE-2026-43414
+  # FIXME:
+  - vulnerability: CVE-2026-43414
+  ### CVE-2026-43493
+  # FIXME:
+  - vulnerability: CVE-2026-43493
+  ### CVE-2026-45988
+  # FIXME:
+  - vulnerability: CVE-2026-45988
+  ### CVE-2026-46043
+  # FIXME:
+  - vulnerability: CVE-2026-46043
+  ### CVE-2026-46115
+  # FIXME:
+  - vulnerability: CVE-2026-46115
+  ### CVE-2026-46119
+  # FIXME:
+  - vulnerability: CVE-2026-46119
+  ### CVE-2026-46135
+  # FIXME:
+  - vulnerability: CVE-2026-46135
+  ### CVE-2026-46137
+  # FIXME:
+  - vulnerability: CVE-2026-46137
+  ### CVE-2026-46185
+  # FIXME:
+  - vulnerability: CVE-2026-46185
+  ### CVE-2026-46266
+  # FIXME:
+  - vulnerability: CVE-2026-46266
+  ### CVE-2026-46289
+  # FIXME:
+  - vulnerability: CVE-2026-46289
+  ### CVE-2026-46325
+  # FIXME:
+  - vulnerability: CVE-2026-46325
+  ### CVE-2026-46595
+  # FIXME:
+  - vulnerability: GHSA-x527-x647-q7gg
+    package:
+      location: /usr/bin/kubeadm
+  # FIXME:
+  - vulnerability: GHSA-x527-x647-q7gg
+    package:
+      location: /usr/bin/kubelet
+  # FIXME:
+  - vulnerability: GHSA-x527-x647-q7gg
+    package:
+      location: /usr/bin/snap
+  # FIXME:
+  - vulnerability: GHSA-x527-x647-q7gg
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME:
+  - vulnerability: GHSA-x527-x647-q7gg
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  ### CVE-2026-52914
+  # FIXME:
+  - vulnerability: CVE-2026-52914
+  ### CVE-2026-52931
+  # FIXME:
+  - vulnerability: CVE-2026-52931
+  ### CVE-2026-52958
+  # FIXME:
+  - vulnerability: CVE-2026-52958
+  ### CVE-2026-52982
+  # FIXME:
+  - vulnerability: CVE-2026-52982
+  ### CVE-2026-52986
+  # FIXME:
+  - vulnerability: CVE-2026-52986
+  ### CVE-2026-52999
+  # FIXME:
+  - vulnerability: CVE-2026-52999
+  ### CVE-2026-53043
+  # FIXME:
+  - vulnerability: CVE-2026-53043
+  ### CVE-2026-53131
+  # FIXME:
+  - vulnerability: CVE-2026-53131
+  ### CVE-2026-53151
+  # FIXME:
+  - vulnerability: CVE-2026-53151
+  ### CVE-2026-53186
+  # FIXME:
+  - vulnerability: CVE-2026-53186
+  ### CVE-2026-53215
+  # FIXME:
+  - vulnerability: CVE-2026-53215
+  ### CVE-2026-53216
+  # FIXME:
+  - vulnerability: CVE-2026-53216
+  ### CVE-2026-53221
+  # FIXME:
+  - vulnerability: CVE-2026-53221
+  ### CVE-2026-53224
+  # FIXME:
+  - vulnerability: CVE-2026-53224
+  ### CVE-2026-53225
+  # FIXME:
+  - vulnerability: CVE-2026-53225
+  ### CVE-2026-53228
+  # FIXME:
+  - vulnerability: CVE-2026-53228
+  ### CVE-2026-53246
+  # FIXME:
+  - vulnerability: CVE-2026-53246
+  ### CVE-2026-53247
+  # FIXME:
+  - vulnerability: CVE-2026-53247
+  ### CVE-2026-53309
+  # FIXME:
+  - vulnerability: CVE-2026-53309

@@ -82,6 +82,7 @@ jobs:
       packages: write
       id-token: write  # required to get an OIDC token for signing
       security-events: write  # required to upload SARIF files
+      checks: write # to write check-runs statuses
     secrets:
       OS_CLOUDS: ${{ secrets.OS_CLOUDS }}
       CLOUDFLARE_S3_ACCESS_KEY: ${{ secrets.CLOUDFLARE_S3_ACCESS_KEY }}
