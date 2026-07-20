@@ -309,11 +309,6 @@ ignore:
   - vulnerability: GO-2026-4337
     package:
       location: /usr/sbin/runc
-  ### CVE-2026-10536
-  # FIXME:
-  - vulnerability: CVE-2026-10536
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/**
   # FIXME:
   - vulnerability: CVE-2026-10536
     package:
@@ -491,10 +486,6 @@ ignore:
   - vulnerability: GHSA-vgwf-h737-ff37
     package:
       location: /usr/local/bin/node_exporter
-  # FIXME:
-  - vulnerability: GHSA-vgwf-h737-ff37
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-39831
   # FIXME:
   - vulnerability: GO-2026-5019

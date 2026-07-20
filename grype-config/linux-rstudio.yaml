@@ -246,11 +246,6 @@ ignore:
   - vulnerability: GO-2026-4337
     package:
       location: /usr/sbin/runc
-  ### CVE-2026-10536
-  # FIXME:
-  - vulnerability: CVE-2026-10536
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-11564
   # FIXME:
   - vulnerability: CVE-2026-11564
@@ -394,10 +389,6 @@ ignore:
   - vulnerability: GHSA-vgwf-h737-ff37
     package:
       location: /usr/local/bin/node_exporter
-  # FIXME:
-  - vulnerability: GHSA-vgwf-h737-ff37
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/4a0c42ab0f87478e4b3acd137dafa7a20d6497e576e54085ae855f6cb100e38f/diff/usr/share/grafana/data/plugins-bundled/elasticsearch/gpx_grafana_elasticsearch_datasource_linux_amd64
   ### CVE-2026-39831
   # FIXME:
   - vulnerability: GO-2026-5019

@@ -70,10 +70,6 @@ ignore:
     package:
       location: /usr/lib/snapd/**
   # FIXME:
-  - vulnerability: GO-2025-3563
-    package:
-      location: /usr/local/bin/crictl
-  # FIXME:
   - vulnerability: CVE-2025-22871
     package:
       location: /usr/bin/snap
@@ -114,10 +110,6 @@ ignore:
   - vulnerability: GO-2026-4337
     package:
       location: /usr/local/bin/crictl
-  # FIXME:
-  - vulnerability: GO-2026-4337
-    package:
-      location: /usr/local/sbin/runc
   ### CVE-2026-23112
   # FIXME:
   - vulnerability: CVE-2026-23112
