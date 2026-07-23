@@ -362,12 +362,12 @@ jobs:
         env:
           OS_CLOUDS: ${{ secrets.OS_CLOUDS }}
 
-      - name: Purge images for manifest
-        run: ./bin/purge-images "${GITHUB_SHA}.manifest"
-        env:
-          REPO_ROOT: ${{ github.workspace }}
-          OS_CLOUD: ${{ vars.TARGET_CLOUD }}
-          S3_HOST: ${{ vars.CLOUDFLARE_S3_HOST }}
-          S3_BUCKET: ${{ vars.S3_BUCKET }}
-          S3_ACCESS_KEY: ${{ secrets.CLOUDFLARE_S3_ACCESS_KEY }}
-          S3_SECRET_KEY: ${{ secrets.CLOUDFLARE_S3_SECRET_KEY }}
+      #- name: Purge images for manifest
+      #  run: ./bin/purge-images "${GITHUB_SHA}.manifest"
+      #  env:
+      #    REPO_ROOT: ${{ github.workspace }}
+      #    OS_CLOUD: ${{ vars.TARGET_CLOUD }}
+      #    S3_HOST: ${{ vars.CLOUDFLARE_S3_HOST }}
+      #    S3_BUCKET: ${{ vars.S3_BUCKET }}
+      #    S3_ACCESS_KEY: ${{ secrets.CLOUDFLARE_S3_ACCESS_KEY }}
+      #    S3_SECRET_KEY: ${{ secrets.CLOUDFLARE_S3_SECRET_KEY }}

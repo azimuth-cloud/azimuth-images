@@ -59,7 +59,7 @@ if [ -f "./packer-manifest.json" ]; then
   IMAGE_DISK_FORMAT="$(openstack image show -f value -c disk_format "$IMAGE_ID")"
   IMAGE_SOURCE_FILE="${IMAGE_NAME}.source.${IMAGE_DISK_FORMAT}"
   openstack image save --file "$IMAGE_SOURCE_FILE" "$IMAGE_ID"
-  openstack image delete "$IMAGE_ID"
+  #openstack image delete "$IMAGE_ID"
 
   # Convert the image to QCOW2 if required
   IMAGE_DEST_FILE="${IMAGE_NAME}.qcow2"
