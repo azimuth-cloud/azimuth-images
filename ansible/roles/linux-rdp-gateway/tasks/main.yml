@@ -49,6 +49,7 @@
     zenith_registrar_token_metadata_key: zenith_registrar_token_webconsole
     zenith_client_playbook_priority: "51"
 
-- name: Run cloud-init cleanup
-  ansible.builtin.command: cloud-init clean --logs --seed
-  changed_when: true
+- name: Cleanup
+  ansible.builtin.include_role:
+    name: linux-common
+    tasks_from: post.yml
