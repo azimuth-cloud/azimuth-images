@@ -683,6 +683,12 @@ ignore:
   ### CVE-2026-53049
   # Fixed in 6.8.0-136.136 [https://ubuntu.com/security/CVE-2026-53046]
   - vulnerability: CVE-2026-53049
+  ### CVE-2026-53086
+  # Fixed in 6.8.0-136.136 [https://ubuntu.com/security/CVE-2026-53086]
+  - vulnerability: CVE-2026-53086
+  ### CVE-2026-53088
+  # Fixed in 6.8.0-136.136 [https://ubuntu.com/security/CVE-2026-53088]
+  - vulnerability: CVE-2026-53088
   ### CVE-2026-53131
   # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-53131]
   - vulnerability: CVE-2026-53131
@@ -737,3 +743,18 @@ ignore:
   ### CVE-2026-53355
   # FIXME: Vulnerable, no fix 2026-07-23 [https://ubuntu.com/security/CVE-2026-53355]
   - vulnerability: CVE-2026-53355
+  ### CVE-2026-53384
+  # FIXME: Vulnerable, no fix 2026-08-05 [https://ubuntu.com/security/CVE-2026-53384]
+  - vulnerability: CVE-2026-53384
+  ### CVE-2026-53398
+  # FIXME: Vulnerable, no fix 2026-08-05 [https://ubuntu.com/security/CVE-2026-53398]
+  - vulnerability: CVE-2026-53398
+  ### CVE-2026-53399
+  # FIXME: Vulnerable, no fix 2026-08-05 [https://ubuntu.com/security/CVE-2026-53399]
+  - vulnerability: CVE-2026-53399
+  ### CVE-2026-63795
+  # FIXME: Vulnerable, no fix 2026-08-05 [https://ubuntu.com/security/CVE-2026-63795]
+  - vulnerability: CVE-2026-63795
+  ### CVE-2026-63800
+  # FIXME: Vulnerable, no fix 2026-08-05 [https://ubuntu.com/security/CVE-2026-63800]
+  - vulnerability: CVE-2026-63800
