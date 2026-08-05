@@ -512,11 +512,6 @@ ignore:
       location: /usr/local/bin/node_exporter
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
-  - vulnerability: GO-2026-5019
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/**
-  # Vulnerable symbols found but no updated Ubuntu package
-  # SSH unlikely to be used so limited exploitability
   - vulnerability: GHSA-89gr-r52h-f8rx
     package:
       location: /usr/bin/apptainer

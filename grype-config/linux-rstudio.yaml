@@ -413,11 +413,6 @@ ignore:
   - vulnerability: GO-2026-5019
     package:
       location: /usr/local/bin/node_exporter
-  # Vulnerable symbols found but no updated Ubuntu package
-  # SSH unlikely to be used so limited exploitability
-  - vulnerability: GO-2026-5019
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-39832
   ### CVE-2026-39832
   # Vulnerable symbols found but no updated Ubuntu package

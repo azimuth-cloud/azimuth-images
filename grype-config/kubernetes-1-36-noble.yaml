@@ -98,10 +98,6 @@ ignore:
   - vulnerability: CVE-2025-68121
     package:
       location: /usr/lib/snapd/**
-  # Not vulnerable, does not contain affected symbols
-  - vulnerability: CVE-2025-68121
-    package:
-      location: /usr/local/bin/crictl
   # FIXME: Vulnerable but version is fixed by kubeadm [etcd]
   - vulnerability: CVE-2025-68121
     package:
@@ -155,10 +151,6 @@ ignore:
   - vulnerability: CVE-2026-27143
     package:
       location: /usr/local/bin/crictl
-  # Invalid, no vulnerable symbols included in binary
-  - vulnerability: CVE-2026-27143
-    package:
-      location: /usr/local/sbin/runc
   # Invalid, no vulnerable symbols included in binary
   - vulnerability: CVE-2026-27143
     package:
