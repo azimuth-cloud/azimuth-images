@@ -20,7 +20,7 @@
       # Node exporter will get hostname instead of IP address
       ansible.builtin.lineinfile:
         path: /etc/hosts
-        regexp: "{{ ansible_hostname }}"
+        regexp: "{{ ansible_facts['hostname'] }}"
         line: "{{ ansible_facts['default_ipv4']['address'] }} {{ ansible_facts['hostname'] }}"
 
     # Workaround for https://github.com/azimuth-cloud/azimuth-images/issues/370
