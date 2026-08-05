@@ -3,7 +3,7 @@
   "containerd_arch": "amd64",
   "containerd_url": "",
   "containerd_service_url": "",
-  "containerd_version": "2.3.2",
+  "containerd_version": "2.3.3",
   "containerd_wasm_shims_arch": "x86_64",
   "containerd_wasm_shims_url": "",
   "crictl_arch": "amd64",
