@@ -38,20 +38,27 @@
 
 # The cloud-init netplan renderer is default for ubuntu
 # but does not support InfiniBand devices
-- name: Switch cloud-init to alternative network renderer
+- name: Switch cloud-init to alternative network renderer and activator
   ansible.builtin.copy:
-    dest: /etc/cloud/cloud.cfg.d/10_NetworkManager.yml
+    dest: /etc/cloud/cloud.cfg.d/10_networkd.cfg
     mode: "0644"
     owner: root
     group: root
     content: |
       ---
-      merge_type: 'dict(recurse_array)'
+      merge_how:
+        - name: list
+          settings: [replace]
+        - name: dict
+          settings: [replace]
       system_info:
         network:
           renderers:
+            - "networkd"
             - "network-manager"
           activators:
+            - "networkd"
+            - "eni"
             - "network-manager"
 
 - name: Blacklist specified kernel modules
