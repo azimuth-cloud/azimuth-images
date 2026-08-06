@@ -1,0 +1,629 @@
+# yamllint disable-file
+---
+
+ignore:
+  ### CVE-2024-24790
+  # FIXME: Vulnerable symbols found but no updated Ubuntu package
+  - vulnerability: GO-2024-2887
+    package:
+      location: /usr/bin/snap
+  # FIXME: Vulnerable symbols found but no updated Ubuntu package
+  - vulnerability: GO-2024-2887
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME: Vulnerable symbols found but no updated Ubuntu package
+  - vulnerability: CVE-2024-24790
+    package:
+      location: /usr/bin/snap
+  # FIXME: Vulnerable symbols found but no updated Ubuntu package
+  - vulnerability: CVE-2024-24790
+    package:
+      location: /usr/lib/snapd/**
+  ### CVE-2024-35960
+  # Fixed in 6.8.0-38.38 [https://ubuntu.com/security/CVE-2024-35960]
+  - vulnerability: CVE-2024-35960
+  ### CVE-2024-36031
+  # Fixed in 6.8.0-40.40 [https://ubuntu.com/security/CVE-2024-36031]
+  - vulnerability: CVE-2024-36031
+  ### CVE-2024-36896
+  # Fixed in 6.8.0-40.40 [https://ubuntu.com/security/CVE-2024-36896]
+  - vulnerability: CVE-2024-36896
+  ### CVE-2024-38541
+  # Fixed in 6.8.0-40.40 [https://ubuntu.com/security/CVE-2024-38541]
+  - vulnerability: CVE-2024-38541
+  ### CVE-2024-38612
+  # Fixed in 6.8.0-40.40 [https://ubuntu.com/security/CVE-2024-38612]
+  - vulnerability: CVE-2024-38612
+  ### CVE-2024-38623
+  # Fixed in 6.8.0-44.44 [https://ubuntu.com/security/CVE-2024-38623]
+  - vulnerability: CVE-2024-38623
+  ### CVE-2024-39462
+  # Fixed in 6.8.0-44.44 [https://ubuntu.com/security/CVE-2024-39462]
+  - vulnerability: CVE-2024-39462
+  ### CVE-2024-45337
+  # FIXME: Vulnerable symbols found but no updated Ubuntu package
+  - vulnerability: GO-2024-3321
+    package:
+      location: /usr/bin/snap
+  # FIXME: Vulnerable symbols found but no updated Ubuntu package
+  - vulnerability: GO-2024-3321
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME: Vulnerable symbols found but no updated Ubuntu package
+  - vulnerability: GHSA-v778-237x-gjrc
+    package:
+      location: /usr/bin/snap
+  # FIXME: Vulnerable symbols found but no updated Ubuntu package
+  - vulnerability: GHSA-v778-237x-gjrc
+    package:
+      location: /usr/lib/snapd/**
+  ### CVE-2024-47685
+  # Fixed in 6.8.0-54.56 [https://ubuntu.com/security/CVE-2024-47685]
+  - vulnerability: CVE-2024-47685
+  ### CVE-2025-22871
+  # FIXME: Vulnerable symbols found but no updated Ubuntu package
+  - vulnerability: CVE-2025-22871
+    package:
+      location: /usr/bin/snap
+  # FIXME: Vulnerable symbols found but no updated Ubuntu package
+  - vulnerability: CVE-2025-22871
+    package:
+      location: /usr/lib/snapd/**
+  # Not vulnerable, symbols not present [coredns]
+  - vulnerability: CVE-2025-22871
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  # FIXME: Vulnerable symbols found but no updated Ubuntu package
+  - vulnerability: GO-2025-3563
+    package:
+      location: /usr/bin/snap
+  # FIXME: Vulnerable symbols found but no updated Ubuntu package
+  - vulnerability: GO-2025-3563
+    package:
+      location: /usr/lib/snapd/**
+  # Not vulnerable, symbols not present [coredns]
+  - vulnerability: GO-2025-3563
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  ### CVE-2025-68121
+  # FIXME: Vulnerable symbols found but no updated Ubuntu package
+  - vulnerability: CVE-2025-68121
+    package:
+      location: /opt/cni/bin/**
+  # FIXME: Vulnerable symbols found but no updated Ubuntu package
+  - vulnerability: CVE-2025-68121
+    package:
+      location: /usr/bin/snap
+  # FIXME: Vulnerable symbols found but no updated Ubuntu package
+  - vulnerability: CVE-2025-68121
+    package:
+      location: /usr/lib/snapd/**
+  # FIXME: Vulnerable but version is fixed by kubeadm [etcd]
+  - vulnerability: CVE-2025-68121
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  # FIXME: Vulnerable symbols found but no updated Ubuntu package
+  - vulnerability: GO-2026-4337
+    package:
+      location: /opt/cni/bin/**
+  # FIXME: Vulnerable symbols found but no updated Ubuntu package
+  - vulnerability: GO-2026-4337
+    package:
+      location: /usr/bin/snap
+  # FIXME: Vulnerable symbols found but no updated Ubuntu package
+  - vulnerability: GO-2026-4337
+    package:
+      location: /usr/lib/snapd/**
+  # Not vulnerable, does not contain affected symbols
+  - vulnerability: GO-2026-4337
+    package:
+      location: /usr/local/bin/crictl
+  # FIXME: Vulnerable but version is fixed by kubeadm [etcd]
+  - vulnerability: GO-2026-4337
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  ### CVE-2026-23112
+  # Fixed in 6.8.0-111.111 [https://ubuntu.com/security/CVE-2026-23112]
+  - vulnerability: CVE-2026-23112
+  ### CVE-2026-23240
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-23240]
+  - vulnerability: CVE-2026-23240
+  ### CVE-2026-23450
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-23450]
+  - vulnerability: CVE-2026-23450
+  ### CVE-2026-23455
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-23455]
+  - vulnerability: CVE-2026-23455
+  ### CVE-2026-27143
+  # Invalid, no vulnerable symbols included in binary
+  - vulnerability: CVE-2026-27143
+    package:
+      location: /opt/cni/bin/**
+  # Invalid, no vulnerable symbols included in binary
+  - vulnerability: CVE-2026-27143
+    package:
+      location: /usr/bin/snap
+  # Invalid, no vulnerable symbols included in binary
+  - vulnerability: CVE-2026-27143
+    package:
+      location: /usr/lib/snapd/**
+  # Invalid, no vulnerable symbols included in binary
+  - vulnerability: CVE-2026-27143
+    package:
+      location: /usr/local/bin/crictl
+  # Invalid, no vulnerable symbols included in binary
+  - vulnerability: CVE-2026-27143
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+   ### CVE-2026-31405
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-31405]
+  - vulnerability: CVE-2026-31405
+  ### CVE-2026-31414
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-31414]
+  - vulnerability: CVE-2026-31414
+  ### CVE-2026-31448
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-31448]
+  - vulnerability: CVE-2026-31448
+  ### CVE-2026-31478
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-31478]
+  - vulnerability: CVE-2026-31478
+  ### CVE-2026-31533
+  # Fixed in 6.8.0-117.117 [https://ubuntu.com/security/CVE-2026-31533]
+  - vulnerability: CVE-2026-31533
+  ### CVE-2026-31536
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-31536]
+  - vulnerability: CVE-2026-31536
+  ### CVE-2026-31608
+  # Not affected [https://ubuntu.com/security/CVE-2026-31608]
+  - vulnerability: CVE-2026-31608
+  ### CVE-2026-31609
+  # Not affected [https://ubuntu.com/security/CVE-2026-31609]
+  - vulnerability: CVE-2026-31609
+  ### CVE-2026-31637
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-31637]
+  - vulnerability: CVE-2026-31637
+  ### CVE-2026-31649
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-31649]
+  - vulnerability: CVE-2026-31649
+  ### CVE-2026-31657
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-31657]
+  - vulnerability: CVE-2026-31657
+  ### CVE-2026-31659
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-31659]
+  - vulnerability: CVE-2026-31659
+  ### CVE-2026-31668
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-31668]
+  - vulnerability: CVE-2026-31668
+  ### CVE-2026-31669
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-31669]
+  - vulnerability: CVE-2026-31669
+  ### CVE-2026-31682
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-31682]
+  - vulnerability: CVE-2026-31682
+  ### CVE-2026-31685
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-31685]
+  - vulnerability: CVE-2026-31685
+  ### CVE-2026-31705
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-31705]
+  - vulnerability: CVE-2026-31705
+ ### CVE-2026-33186
+  # Not vulnerable, doesn't contain affected symbols
+  - vulnerability: GHSA-p77j-4mvh-x3m3
+    package:
+      location: /usr/bin/kubeadm
+  # Not vulnerable, doesn't contain affected symbols
+  - vulnerability: GHSA-p77j-4mvh-x3m3
+    package:
+      location: /usr/bin/kubelet
+  # Not vulnerable, doesn't contain affected symbols
+  - vulnerability: GHSA-p77j-4mvh-x3m3
+    package:
+      location: /usr/local/bin/crictl
+  # FIXME: Vulnerable, contains affected symbols
+  - vulnerability: GHSA-p77j-4mvh-x3m3
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+ ### CVE-2026-39830
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-vgwf-h737-ff37
+    package:
+      location: /usr/bin/kubeadm
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-vgwf-h737-ff37
+    package:
+      location: /usr/bin/kubelet
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-vgwf-h737-ff37
+    package:
+      location: /usr/bin/snap
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-vgwf-h737-ff37
+    package:
+      location: /usr/lib/snapd/**
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-vgwf-h737-ff37
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  ### CVE-2026-39831
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-89gr-r52h-f8rx
+    package:
+      location: /usr/bin/kubeadm
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-89gr-r52h-f8rx
+    package:
+      location: /usr/bin/kubelet
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-89gr-r52h-f8rx
+    package:
+      location: /usr/bin/snap
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-89gr-r52h-f8rx
+    package:
+      location: /usr/lib/snapd/**
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-89gr-r52h-f8rx
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GO-2026-5019
+    package:
+      location: /usr/bin/kubeadm
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GO-2026-5019
+    package:
+      location: /usr/bin/kubelet
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GO-2026-5019
+    package:
+      location: /usr/bin/snap
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GO-2026-5019
+    package:
+      location: /usr/lib/snapd/**
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GO-2026-5019
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+### CVE-2026-39832
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-f5wc-c3c7-36mc
+    package:
+      location: /usr/bin/kubeadm
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-f5wc-c3c7-36mc
+    package:
+      location: /usr/bin/kubelet
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-f5wc-c3c7-36mc
+    package:
+      location: /usr/bin/snap
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-f5wc-c3c7-36mc
+    package:
+      location: /usr/lib/snapd/**
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-f5wc-c3c7-36mc
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  ### CVE-2026-39833
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GO-2026-5005
+    package:
+      location: /usr/bin/kubeadm
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GO-2026-5005
+    package:
+      location: /usr/bin/kubelet
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GO-2026-5005
+    package:
+      location: /usr/bin/snap
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GO-2026-5005
+    package:
+      location: /usr/lib/snapd/**
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GO-2026-5005
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-jppx-rxg9-jmrx
+    package:
+      location: /usr/bin/kubeadm
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-jppx-rxg9-jmrx
+    package:
+      location: /usr/bin/kubelet
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-jppx-rxg9-jmrx
+    package:
+      location: /usr/bin/snap
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-jppx-rxg9-jmrx
+    package:
+      location: /usr/lib/snapd/**
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-jppx-rxg9-jmrx
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  ### CVE-2026-39834
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-rm3j-f69w-wqmq
+    package:
+      location: /usr/bin/kubeadm
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-rm3j-f69w-wqmq
+    package:
+      location: /usr/bin/kubelet
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-rm3j-f69w-wqmq
+    package:
+      location: /usr/bin/snap
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-rm3j-f69w-wqmq
+    package:
+      location: /usr/lib/snapd/**
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-rm3j-f69w-wqmq
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GO-2026-5020
+    package:
+      location: /usr/bin/kubeadm
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GO-2026-5020
+    package:
+      location: /usr/bin/kubelet
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GO-2026-5020
+    package:
+      location: /usr/bin/snap
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GO-2026-5020
+    package:
+      location: /usr/lib/snapd/**
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability [coredns]
+  - vulnerability: GO-2026-5020
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  ### CVE-2026-42508
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-5cgq-3rg8-m6cv
+    package:
+      location: /usr/bin/kubeadm
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-5cgq-3rg8-m6cv
+    package:
+      location: /usr/bin/kubelet
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-5cgq-3rg8-m6cv
+    package:
+      location: /usr/bin/snap
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-5cgq-3rg8-m6cv
+    package:
+      location: /usr/lib/snapd/**
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-5cgq-3rg8-m6cv
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  ### CVE-2026-43011
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-43011]
+  - vulnerability: CVE-2026-43011
+  ### CVE-2026-43071
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-43071]
+  - vulnerability: CVE-2026-43071
+  ### CVE-2026-43083
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-43083]
+  - vulnerability: CVE-2026-43083
+  ### CVE-2026-43117
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-43117]
+  - vulnerability: CVE-2026-43117
+  ### CVE-2026-43185
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-43185]
+  - vulnerability: CVE-2026-43185
+  ### CVE-2026-43186
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-43186]
+  - vulnerability: CVE-2026-43186
+  ### CVE-2026-43197
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-43197]
+  - vulnerability: CVE-2026-43197
+  ### CVE-2026-43304
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-43304]
+  - vulnerability: CVE-2026-43304
+  ### CVE-2026-43341
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-43341]
+  - vulnerability: CVE-2026-43341
+  ### CVE-2026-43383
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-43383]
+  - vulnerability: CVE-2026-43383
+  ### CVE-2026-43384
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-43384]
+  - vulnerability: CVE-2026-43384
+  ### CVE-2026-43406
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-43406]
+  - vulnerability: CVE-2026-43406
+  ### CVE-2026-43407
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-43407]
+  - vulnerability: CVE-2026-43407
+  ### CVE-2026-43414
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-43414]
+  - vulnerability: CVE-2026-43414
+  ### CVE-2026-43493
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-43493]
+  - vulnerability: CVE-2026-43493
+  ### CVE-2026-45988
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-45988]
+  - vulnerability: CVE-2026-45988
+  ### CVE-2026-46043
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-46043]
+  - vulnerability: CVE-2026-46043
+  ### CVE-2026-46115
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-46115]
+  - vulnerability: CVE-2026-46115
+  ### CVE-2026-46119
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-46119]
+  - vulnerability: CVE-2026-46119
+  ### CVE-2026-46135
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-46135]
+  - vulnerability: CVE-2026-46135
+  ### CVE-2026-46137
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-46137]
+  - vulnerability: CVE-2026-46137
+  ### CVE-2026-46185
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-46185]
+  - vulnerability: CVE-2026-46185
+  ### CVE-2026-46266
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-46266]
+  - vulnerability: CVE-2026-46266
+  ### CVE-2026-46289
+  # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-46289]
+  - vulnerability: CVE-2026-46289
+  ### CVE-2026-46325
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-46325]
+  - vulnerability: CVE-2026-46325
+    ### CVE-2026-46595
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-x527-x647-q7gg
+    package:
+      location: /usr/bin/kubeadm
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-x527-x647-q7gg
+    package:
+      location: /usr/bin/kubelet
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-x527-x647-q7gg
+    package:
+      location: /usr/bin/snap
+  # Vulnerable symbols found but no updated Ubuntu package
+  # SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-x527-x647-q7gg
+    package:
+      location: /usr/lib/snapd/**
+  # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
+  - vulnerability: GHSA-x527-x647-q7gg
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  ### CVE-2026-52914
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-52914]
+  - vulnerability: CVE-2026-52914
+  ### CVE-2026-52931
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-52931]
+  - vulnerability: CVE-2026-52931
+  ### CVE-2026-52958
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-52958]
+  - vulnerability: CVE-2026-52958
+  ### CVE-2026-52982
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-52982]
+  - vulnerability: CVE-2026-52982
+  ### CVE-2026-52986
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-52986]
+  - vulnerability: CVE-2026-52986
+  ### CVE-2026-52989
+  # Fixed in 6.8.0-136.136 [https://ubuntu.com/security/CVE-2026-52989]
+  - vulnerability: CVE-2026-52989
+  ### CVE-2026-52955
+  # Fixed in 6.8.0-136.136 [https://ubuntu.com/security/CVE-2026-52989]
+  - vulnerability: CVE-2026-52955
+  ### CVE-2026-52993
+  # Fixed in 6.8.0-136.136 [https://ubuntu.com/security/CVE-2026-52989]
+  - vulnerability: CVE-2026-52993
+  ### CVE-2026-52999
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-52999]
+  - vulnerability: CVE-2026-52999
+  ### CVE-2026-53002
+  # Fixed in 6.8.0-136.136 [https://ubuntu.com/security/CVE-2026-52989]
+  - vulnerability: CVE-2026-53002
+  ### CVE-2026-53043
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-53043]
+  - vulnerability: CVE-2026-53043
+  ### CVE-2026-53045
+  # Fixed in 6.8.0-136.136 [https://ubuntu.com/security/CVE-2026-53045]
+  - vulnerability: CVE-2026-53045
+  ### CVE-2026-53046
+  # Fixed in 6.8.0-136.136 [https://ubuntu.com/security/CVE-2026-53046]
+  - vulnerability: CVE-2026-53046
+  ### CVE-2026-53049
+  # Fixed in 6.8.0-136.136 [https://ubuntu.com/security/CVE-2026-53046]
+  - vulnerability: CVE-2026-53049
+  ### CVE-2026-53086
+  # Fixed in 6.8.0-136.136 [https://ubuntu.com/security/CVE-2026-53086]
+  - vulnerability: CVE-2026-53086
+  ### CVE-2026-53088
+  # Fixed in 6.8.0-136.136 [https://ubuntu.com/security/CVE-2026-53088]
+  - vulnerability: CVE-2026-53088
+  ### CVE-2026-53131
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-53131]
+  - vulnerability: CVE-2026-53131
+  ### CVE-2026-53151
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-53151]
+  - vulnerability: CVE-2026-53151
+  ### CVE-2026-53186
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-53186]
+  - vulnerability: CVE-2026-53186
+  ### CVE-2026-53215
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-53215]
+  - vulnerability: CVE-2026-53215
+  ### CVE-2026-53216
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-53216]
+  - vulnerability: CVE-2026-53216
+  ### CVE-2026-53221
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-53221]
+  - vulnerability: CVE-2026-53221
+  ### CVE-2026-53224
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-53224]
+  - vulnerability: CVE-2026-53224
+  ### CVE-2026-53225
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-53225]
+  - vulnerability: CVE-2026-53225
+  ### CVE-2026-53228
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-53228]
+  - vulnerability: CVE-2026-53228
+  ### CVE-2026-53246
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-53246]
+  - vulnerability: CVE-2026-53246
+  ### CVE-2026-53247
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-53247]
+  - vulnerability: CVE-2026-53247
+  ### CVE-2026-53309
+  # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-53309]
+  - vulnerability: CVE-2026-53309
+  ### CVE-2026-53355
+  # FIXME: Vulnerable, no fix 2026-07-23 [https://ubuntu.com/security/CVE-2026-53355]
+  - vulnerability: CVE-2026-53355
+  ### CVE-2026-53384
+  # FIXME: Vulnerable, no fix 2026-08-05 [https://ubuntu.com/security/CVE-2026-53384]
+  - vulnerability: CVE-2026-53384
+  ### CVE-2026-53398
+  # FIXME: Vulnerable, no fix 2026-08-05 [https://ubuntu.com/security/CVE-2026-53398]
+  - vulnerability: CVE-2026-53398
+  ### CVE-2026-53399
+  # FIXME: Vulnerable, no fix 2026-08-05 [https://ubuntu.com/security/CVE-2026-53399]
+  - vulnerability: CVE-2026-53399
+  ### CVE-2026-63795
+  # FIXME: Vulnerable, no fix 2026-08-05 [https://ubuntu.com/security/CVE-2026-63795]
+  - vulnerability: CVE-2026-63795
+  ### CVE-2026-63800
+  # FIXME: Vulnerable, no fix 2026-08-05 [https://ubuntu.com/security/CVE-2026-63800]
+  - vulnerability: CVE-2026-63800

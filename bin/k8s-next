@@ -92,7 +92,7 @@ path = repo_root / ".github" / "builds.yaml"
 with path.open() as fh:
     builds = yaml.load(fh)
 
-builds.append(yaml.load(BUILD_TEMPLATE.format(distro="jammy", major=latest_version.major, minor=latest_version.minor)))
+builds.append(yaml.load(BUILD_TEMPLATE.format(distro="noble", major=latest_version.major, minor=latest_version.minor)))
 
 with path.open("w") as fh:
     yaml.dump(builds, fh)

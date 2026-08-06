@@ -5,13 +5,13 @@
 - name: Add Kubic repository signing key
   ansible.builtin.apt_key:
     # yamllint disable-line rule:line-length
-    url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ ansible_distribution_version }}/Release.key"
+    url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ ansible_facts['distribution_version'] }}/Release.key"
     state: present
 
 - name: Install Kubic repository
   ansible.builtin.apt_repository:
     # yamllint disable-line rule:line-length
-    repo: "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ ansible_distribution_version }}/ /"
+    repo: "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ ansible_facts['distribution_version'] }}/ /"
     state: present
     filename: devel:kubic:libcontainers:stable.list
 
