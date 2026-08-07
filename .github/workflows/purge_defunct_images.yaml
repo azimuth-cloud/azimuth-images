@@ -20,6 +20,21 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Wait if other workflows are in_progress
+        run: |
+          # Filter out our run_id, then jq exits 0 if there are
+          # other runs in progress, and 4 if it receives an empty
+          # list. Sleep while jq is exiting 0 because there are
+          # in_progress jobs, and leave this step when there are
+          # none
+          while gh run list --json name,status,startedAt,headBranch,databaseId --status in_progress |\
+                     jq -e -r ".[] | select(.databaseId != ${RUN_ID})"; do
+            sleep 60
+          done
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
+
       - name: Install script dependencies
         run: pip install -r ./requirements.txt
 
