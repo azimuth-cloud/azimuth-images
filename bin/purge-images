@@ -16,5 +16,7 @@ EOF
 
 manifest="$(s3cmd get --no-progress "s3://$S3_BUCKET/$1" -)"
 for name in $(jq -r '.[] | .name' <<<"$manifest"); do
-  openstack image delete "$name"
+  if openstack image show -f value -c name "${name}"; then
+    openstack image delete "${name}"
+  fi
 done
