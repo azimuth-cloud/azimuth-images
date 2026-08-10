@@ -1,0 +1,35 @@
+---
+- name: Add the root user to the render and video groups
+  ansible.builtin.user:
+    name: root
+    groups: render,video
+    append: true
+
+- name: Install the .deb for AMDGPU-Install
+  ansible.builtin.apt:
+    # yamllint disable rule:line-length
+    deb: https://repo.radeon.com/amdgpu-install/{{ linux_amdgpu_version }}/ubuntu/{{ ansible_facts['distribution_release'] }}/amdgpu-install_{{ linux_amdgpu_deb_version }}_all.deb
+    # yamllint enable rule:line-length
+
+- name: Perform a cache update
+  ansible.builtin.apt:
+    force_apt_get: true
+    update_cache: true
+  register: apt_lock_status
+  until: apt_lock_status is not failed
+  retries: 5
+  delay: 10
+
+- name: Install packages required for AMD driver installation
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - linux-headers-{{ ansible_facts['kernel'] }}
+      - build-essential
+      - dkms
+      - rocminfo
+      - clinfo
+
+- name: Install amdgpu-dkms package
+  ansible.builtin.apt:
+    name: amdgpu-dkms
