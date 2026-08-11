@@ -19,11 +19,6 @@
     # yamllint disable-line rule:line-length
     - "{{ role_path }}/vars/{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_version'] }}.yml"
 
-- name: Add apptainer repository
-  ansible.builtin.apt_repository:
-    repo: "ppa:apptainer/ppa"
-    update_cache: true
-
 - name: Install apptainer
   ansible.builtin.apt:
     name: apptainer

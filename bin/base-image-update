@@ -15,7 +15,7 @@ import requests
 parser = argparse.ArgumentParser(description="Updates an Ubuntu base image to the latest release.")
 parser.add_argument(
     "distro",
-    choices=["focal", "jammy", "noble"],
+    choices=["focal", "jammy", "noble", "resolute"],
     help="The name of the distro to update.",
 )
 args = parser.parse_args()
@@ -27,6 +27,7 @@ PRODUCT_KEYS = {
     "focal": "com.ubuntu.cloud:server:20.04:amd64",
     "jammy": "com.ubuntu.cloud:server:22.04:amd64",
     "noble": "com.ubuntu.cloud:server:24.04:amd64",
+    "resolute": "com.ubuntu.cloud:server:26.04:amd64",
 }
 
 # Get the repository root
