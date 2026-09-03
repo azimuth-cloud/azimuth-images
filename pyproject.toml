@@ -1,2 +1,30 @@
+[project]
+name = "azimuth-images"
+dynamic = ["version"]
+
+[dependency-groups]
+dev = [
+    "ansible-core<2.19",
+    "boto3>=1.43.87",
+    "easysemver>=0.2.0",
+    "passlib>=1.7.4",
+    "python-openstackclient>=10.3.0",
+    "pywinrm>=0.5.0",
+    "requests>=2.34.2",
+    "ruamel-yaml>=0.19.1",
+]
+
+[tool.uv]
+# we are not actually building a python package here
+package = false
+
 [tool.ruff]
 line-length = 88
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+fallback-version = "0.0.1+unknown"

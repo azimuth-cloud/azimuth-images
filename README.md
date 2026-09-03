@@ -33,14 +33,12 @@ the required providers installed:
 packer init ./config.pkr.hcl
 ```
 
-Next, create a [Python virtual environment](https://docs.python.org/3/library/venv.html)
-to use and install the Python and Ansible dependencies:
+Next, install [uv](https://docs.astral.sh/uv/) and use it to create a virtual
+environment and install the Python and Ansible dependencies:
 
 ```sh
-python -m venv .venv
+uv sync
 source .venv/bin/activate
-
-pip install -r ./requirements.txt
 
 ansible-galaxy install -f -r requirements.yml
 ```

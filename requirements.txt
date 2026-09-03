@@ -1,8 +1,0 @@
-ansible-core<2.19
-boto3
-easysemver
-passlib
-python-openstackclient
-pywinrm
-requests
-ruamel.yaml
