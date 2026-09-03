@@ -11,6 +11,7 @@ on:  # yamllint disable-line rule:truthy
       - main
     paths-ignore:
       - "vars/flatcar/**"
+      - "flatcar/**"
       - "bin/flatcar-*"
       - ".github/workflows/flatcar-*.yml"
 

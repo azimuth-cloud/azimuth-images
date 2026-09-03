@@ -1,0 +1,79 @@
+---
+name: Update Flatcar sysexts
+
+on: # yamllint disable-line rule:truthy
+  # Allow manual executions
+  workflow_dispatch:
+    inputs:
+      force-refresh:
+        description: "Re-publish all artifacts even if their version hasn't changed"
+        type: boolean
+        default: false
+  # Run nightly
+  schedule:
+    - cron: "0 1 * * *"
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # required to get an OIDC token for cosign signing
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Setup UV
+        uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+
+      - name: Install script dependencies
+        run: |
+          uv sync --locked
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+
+      - name: Install squashfs-tools
+        run: sudo apt-get update -y && sudo apt-get install -y squashfs-tools
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@398d4b0eeef1380460a10c8013a76f728fb906ac # v3.9.1
+
+      - name: Install syft
+        uses: anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
+
+      - name: Check for updated Flatcar/sysext versions and publish
+        id: update
+        run: ./bin/flatcar-sysext-update
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FORCE_REFRESH: ${{ inputs.force-refresh }}
+          S3_HOST: ${{ vars.CLOUDFLARE_S3_HOST }}
+          S3_HOST_PUBLIC_PATH: ${{ vars.CLOUDFLARE_S3_HOST_PUBLIC_PATH }}
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+          S3_ACCESS_KEY: ${{ secrets.CLOUDFLARE_S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.CLOUDFLARE_S3_SECRET_KEY }}
+
+      - name: Generate app token for PR
+        if: steps.update.outputs.pr
+        uses: azimuth-cloud/github-actions/generate-app-token@master
+        id: generate-app-token
+        with:
+          repository: ${{ github.repository }}
+          app-id: ${{ secrets.AUTOMATION_APP_ID }}
+          app-private-key: ${{ secrets.AUTOMATION_APP_PRIVATE_KEY }}
+
+      - name: Propose changes via PR if required
+        if: steps.update.outputs.pr
+        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
+        with:
+          token: ${{ steps.generate-app-token.outputs.token }}
+          commit-message: ${{ fromJson(steps.update.outputs.pr).title }}
+          branch: update/flatcar-sysext-versions
+          delete-branch: true
+          title: ${{ fromJson(steps.update.outputs.pr).title }}
+          body: ${{ fromJson(steps.update.outputs.pr).body }}
+          labels: |
+            automation
+            flatcar

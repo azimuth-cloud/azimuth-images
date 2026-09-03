@@ -59,10 +59,10 @@ jobs:
           files=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}/files" \
             --jq '[.[].filename]')
           flatcar_changed=$(echo "$files" | jq '
-            any(.[]; test("^(vars/flatcar/|bin/flatcar-|\\.github/workflows/flatcar-)"))
+            any(.[]; test("^(vars/flatcar/|flatcar/|bin/flatcar-|\\.github/workflows/flatcar-)"))
           ')
           ubuntu_changed=$(echo "$files" | jq '
-            any(.[]; test("^(vars/flatcar/|bin/flatcar-|\\.github/workflows/flatcar-)") | not)
+            any(.[]; test("^(vars/flatcar/|flatcar/|bin/flatcar-|\\.github/workflows/flatcar-)") | not)
           ')
           echo "flatcar_changed=${flatcar_changed}" >> "$GITHUB_OUTPUT"
           echo "ubuntu_changed=${ubuntu_changed}" >> "$GITHUB_OUTPUT"

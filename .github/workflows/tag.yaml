@@ -57,7 +57,7 @@ jobs:
             gh release create "$TAG_NAME" \
               --title "$TAG_NAME" \
               --generate-notes \
-              manifest.json
+              manifest.json flatcar-sysext-manifest.json
           fi
         env:
           TAG_NAME: ${{ github.ref_name }}
