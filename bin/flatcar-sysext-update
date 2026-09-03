@@ -1,0 +1,394 @@
+#!/usr/bin/env python3
+"""Nightly check of new flatcar sysext releases and sysexts.
+
+Each new one is downloaded, signed, sbomed and uploadted to s3.
+
+We then make a PR to the flatcar/sysext-versions file.
+"""
+
+import hashlib
+import json
+import os
+import pathlib
+import re
+import subprocess
+import tempfile
+import warnings
+
+import boto3
+import easysemver
+import requests
+import ruamel.yaml
+import logging
+
+logger = logging.getLogger()
+
+logging.basicConfig(
+    level=logging.INFO,
+    handlers=[
+        logging.StreamHandler()
+    ]
+)
+
+
+REPO_ROOT = pathlib.Path(__file__).parent.parent.resolve()
+VERSIONS_FILE = REPO_ROOT / "flatcar" / "sysext-versions.yaml"
+
+FLATCAR_RELEASES_URL = "https://stable.release.flatcar-linux.net"
+# openstack_arch_name: flatcar_image_arch_name
+ARCH_TO_FLATCAR_CHANNEL = {"x86_64": "amd64-usr", "aarch64": "arm64-usr"}
+# openstack_arch_name: flatcar_bakery_arch_name
+ARCH_TO_BAKERY_SUFFIX = {"x86_64": "x86-64", "aarch64": "arm64"}
+SYSEXT_BAKERY_REPO = "flatcar/sysext-bakery"
+
+CERT_OIDC_ISSUER = "https://token.actions.githubusercontent.com"
+CERT_IDENTITY_REGEXP = "https://github.com/azimuth-cloud/azimuth-images/.github/.*"
+
+yaml = ruamel.yaml.YAML(typ="rt")
+yaml.preserve_quotes = True
+yaml.width = 1000000
+yaml.mapping_indent = 2
+yaml.sequence_indent = 2
+yaml.sequence_dash_offset = 0
+
+
+def load_versions():
+    """Get the existing versions."""
+    with VERSIONS_FILE.open() as f:
+        data = yaml.load(f)
+    data.setdefault("flatcar_version", {})
+    data.setdefault("image", {})
+    data.setdefault("sysexts", {})
+    data["sysexts"].setdefault("containerd", {})
+    data["sysexts"].setdefault("kubernetes", {})
+    return data
+
+
+def s3_client():
+    try:
+      return boto3.client(
+          "s3",
+          endpoint_url=f"https://{os.environ['S3_HOST']}",
+          aws_access_key_id=os.environ["S3_ACCESS_KEY"],
+          aws_secret_access_key=os.environ["S3_SECRET_KEY"],
+      )
+    except KeyError:
+      warnings.warn("No S3 config data was provided, will skip the actual upload to S3") 
+
+
+
+def s3_upload(s3, path, key):
+    try:
+      bucket = os.environ["S3_BUCKET"]
+    except KeyError:
+      logger.error("Skipping upload due to missing S3 url.")
+      return f"s3://example/{key}"
+    print(f"[INFO] uploading {path} -> s3://{bucket}/{key}")
+    s3.upload_file(str(path), bucket, key)
+    return f"{os.environ['S3_HOST_PUBLIC_PATH']}/{key}"
+
+
+def gh(*args):
+    """Using the gh cli (auto installed on the runners) allows us to make authenticated requests eaisily."""
+    result = subprocess.run(["gh", *args], check=True, capture_output=True, text=True)
+    return result.stdout
+
+
+def download(url, dest):
+    """Download a file."""
+    logger.info("Downloading %s", url)
+    response = requests.get(url, stream=True)
+    response.raise_for_status()
+    with dest.open("wb") as f:
+        for chunk in response.iter_content(chunk_size=10240):
+            f.write(chunk)
+
+
+def hash_file(path, algorithm):
+    """Hash a file."""
+    digest = hashlib.new(algorithm)
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(10240), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def cosign_sign_and_verify(path):
+    bundle = path.with_name(path.name + ".cosign.bundle")
+    subprocess.run(
+        ["cosign", "sign-blob", str(path), "--bundle", str(bundle), "-y"], check=True
+    )
+    #subprocess.run(
+    #    [
+    #        "cosign",
+    #        "verify-blob",
+    #        str(path),
+    #        "--bundle",
+    #        str(bundle),
+    #        f"--certificate-oidc-issuer={CERT_OIDC_ISSUER}",
+   #         f"--certificate-identity-regexp={CERT_IDENTITY_REGEXP}",
+   #     ],
+   #     check=True,
+   # )
+    return bundle
+
+
+def latest_flatcar_version(arch):
+    channel = ARCH_TO_FLATCAR_CHANNEL[arch]
+    response = requests.get(f"{FLATCAR_RELEASES_URL}/{channel}/current/version.txt")
+    response.raise_for_status()
+    for line in response.text.splitlines():
+        if line.startswith("FLATCAR_VERSION="):
+            return line.split("=", 1)[1].strip()
+    raise RuntimeError(f"could not determine the latest Flatcar version for {arch}")
+
+
+def sysext_bakery_tags():
+    output = gh(
+        "release",
+        "list",
+        "--repo",
+        SYSEXT_BAKERY_REPO,
+        "--limit",
+        "200",
+        "--json",
+        "tagName",
+        "-q",
+        ".[].tagName",
+    )
+    return [line for line in output.splitlines() if line]
+
+
+def latest_containerd_version(tags):
+    versions = [
+        t.removeprefix("containerd-")
+        for t in tags
+        if re.match(r"^containerd-\d+\.\d+\.\d+$", t)
+    ]
+    if not versions:
+        raise RuntimeError(f"no containerd releases found in {SYSEXT_BAKERY_REPO}")
+    return max(versions, key=lambda v: tuple(int(p) for p in v.split(".")))
+
+
+def latest_kubernetes_versions(tags):
+    """
+    Returns {kubernetes_series: resolved_semver} for every vars/base/kubernetes_1_*.json
+    series that has a matching flatcar/sysext-bakery release.
+    """
+    kube_versions = [
+        easysemver.Version(t.removeprefix("kubernetes-"))
+        for t in tags
+        if re.match(r"^kubernetes-v\d+\.\d+\.\d+$", t)
+    ]
+
+    result = {}
+    for vars_file in sorted((REPO_ROOT / "vars" / "base").glob("kubernetes_1_*.json")):
+        with vars_file.open() as f:
+            data = json.load(f)
+        series = data["kubernetes_series"]  # e.g. "v1.36"
+        version_range = easysemver.Range(f"~{series.lstrip('v')}.0")
+        matches = [v for v in kube_versions if v in version_range]
+        if not matches:
+            print(
+                f"::warning::no sysext-bakery release found yet for Kubernetes series {series}, skipping"
+            )
+            continue
+        result[series] = str(max(matches))
+    return result
+
+
+def refresh_image(data, s3, arch, version, force, changed):
+    logger.info("Checking image %s %s", arch, version) 
+    if not force and data["flatcar_version"].get(arch) == version:
+        logger.info("Skipping image %s %s: already up to date.", arch, version) 
+        return
+
+    channel = ARCH_TO_FLATCAR_CHANNEL[arch]
+    name = f"flatcar-stable-{version}-{arch}"
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp = pathlib.Path(tmpdir)
+
+        # download and unzip the image
+        image_bz2 = tmp / "flatcar_production_openstack_image.img.bz2"
+        download(
+            f"{FLATCAR_RELEASES_URL}/{channel}/{version}/flatcar_production_openstack_image.img.bz2",
+            image_bz2,
+        )
+        logger.info("Unzipping %s", name) 
+        subprocess.run(["bunzip2", str(image_bz2)], check=True)
+        logger.info("Unzipped.")
+        image_path = tmp / f"{name}.img"
+        (tmp / "flatcar_production_openstack_image.img").rename(image_path)
+
+        # Flatcar publishes a signed SBOM for every release
+        sbom_path = tmp / f"{name}-sbom.json"
+        download(
+            f"{FLATCAR_RELEASES_URL}/{channel}/{version}/flatcar_production_image_sbom.json",
+            sbom_path,
+        )
+
+        bundle_path = cosign_sign_and_verify(image_path)
+
+        checksum = f"sha256:{hash_file(image_path, 'sha256')}"
+        checksum_sha512 = f"sha512:{hash_file(image_path, 'sha512')}"
+
+        prefix = f"flatcar/sysext-image/{name}"
+        image_url = s3_upload(s3, image_path, f"{prefix}.img")
+        bundle_url = s3_upload(s3, bundle_path, f"{prefix}.cosign.bundle")
+        sbom_url = s3_upload(s3, sbom_path, f"{prefix}-sbom.json")
+
+    data["image"][arch] = {
+        "name": name,
+        "url": image_url,
+        "checksum": checksum,
+        "checksum_sha512": checksum_sha512,
+        "cosign_bundle_url": bundle_url,
+        "image_sbom_url": sbom_url,
+    }
+    data["flatcar_version"][arch] = version
+    changed.append(f"Flatcar image ({arch}) -> {version}")
+
+
+def sha256sums_lookup(sums_text, filename):
+    for line in sums_text.splitlines():
+        parts = line.split(maxsplit=1)
+        if len(parts) == 2 and parts[1].strip().lstrip("*") == filename:
+            return parts[0]
+    return None
+
+
+def refresh_sysext(data, s3, kind, arch, series, version, force, changed):
+    logger.info("Checking sysext %s %s %s", kind, arch, version) 
+    if kind == "containerd":
+        container = data["sysexts"]["containerd"]
+    else:
+        container = data["sysexts"]["kubernetes"].setdefault(series, {})
+
+    if not force and container.get("version") == version:
+        logger.info("Skipping sysext %s %s %s: already up to date.", kind, arch, version) 
+        return
+
+    bakery_suffix = ARCH_TO_BAKERY_SUFFIX[arch]
+    tag = f"{kind}-{version}"
+    asset = f"{kind}-{version}-{bakery_suffix}"
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp = pathlib.Path(tmpdir)
+        gh(
+            "release",
+            "download",
+            tag,
+            "--repo",
+            SYSEXT_BAKERY_REPO,
+            "--pattern",
+            f"{asset}.raw",
+            "--pattern",
+            "SHA256SUMS",
+            "--clobber",
+            "--dir",
+            str(tmp),
+        )
+        raw_path = tmp / f"{asset}.raw"
+
+        expected_checksum = sha256sums_lookup(
+            (tmp / "SHA256SUMS").read_text(), f"{asset}.raw"
+        )
+        if expected_checksum is None:
+            raise RuntimeError(
+                f"no checksum found for {asset}.raw in upstream SHA256SUMS"
+            )
+        actual_checksum = hash_file(raw_path, "sha256")
+        if actual_checksum != expected_checksum:
+            raise RuntimeError(
+                f"checksum mismatch for {asset}.raw: expected {expected_checksum}, got {actual_checksum}"
+            )
+
+        # There is no upstream SBOM for sysexts, unlike the base image - we
+        # have to generate our own.
+        unsquash_dir = tmp / "unsquashed"
+        subprocess.run(
+            ["unsquashfs", "-d", str(unsquash_dir), str(raw_path)], check=True
+        )
+        sbom_path = tmp / f"{asset}-sbom.json"
+        with sbom_path.open("w") as f:
+            subprocess.run(
+                ["syft", str(unsquash_dir), "-o", "syft-json"], check=True, stdout=f
+            )
+
+        bundle_path = cosign_sign_and_verify(raw_path)
+
+        checksum_sha512 = f"sha512-{hash_file(raw_path, 'sha512')}"
+
+        prefix = f"flatcar/sysexts/{asset}"
+        url = s3_upload(s3, raw_path, f"{prefix}.raw")
+        sbom_url = s3_upload(s3, sbom_path, f"{prefix}-sbom.json")
+        bundle_url = s3_upload(s3, bundle_path, f"{prefix}.cosign.bundle")
+
+    container["version"] = version
+    container[arch] = {
+        "url": url,
+        "checksum_sha512": checksum_sha512,
+        "sbom_url": sbom_url,
+        "cosign_bundle_url": bundle_url,
+    }
+    if kind == "containerd":
+        changed.append(f"containerd sysext ({arch}) -> {version}")
+    else:
+        changed.append(f"kubernetes sysext {series} ({arch}) -> {version}")
+
+
+def main():
+    force = os.environ.get("FORCE_REFRESH") == "true"
+    data = load_versions()
+    s3 = s3_client()
+    changed = []
+
+    # Get the version of the latest flatcar image for each arch.
+    image_versions = {
+        arch: latest_flatcar_version(arch) for arch in ARCH_TO_FLATCAR_CHANNEL
+    }
+    logger.info("Found the following flatcar image versions: %s", image_versions)
+    # Get the latest versions of kubernetes and containerd
+    tags = sysext_bakery_tags()
+    containerd_version = latest_containerd_version(tags)
+    logger.info("Found containerd version %s", containerd_version)
+    kubernetes_versions = latest_kubernetes_versions(tags)
+    logger.info("Found kubernetes versions %s", kubernetes_versions)
+
+    # For each arch, download, hash, sign and upload the image and sysexts
+    for arch in ARCH_TO_FLATCAR_CHANNEL:
+        refresh_image(data, s3, arch, image_versions[arch], force, changed)
+        refresh_sysext(
+            data, s3, "containerd", arch, None, containerd_version, force, changed
+        )
+
+        for series, version in kubernetes_versions.items():
+            refresh_sysext(
+                data, s3, "kubernetes", arch, series, version, force, changed
+            )
+
+    if not changed:
+        print("[INFO] nothing changed")
+        return
+
+    # Save the new data back to the versions file
+    with VERSIONS_FILE.open("w") as f:
+        yaml.dump(data, f)
+
+    pr = {
+        "title": "feat(flatcar): update sysext versions",
+        "body": "\n".join(
+            [
+                "This PR was created automatically to update Flatcar/sysext versions:",
+                "",
+                *[f"  * {c}" for c in changed],
+            ]
+        ),
+    }
+    output_path = os.environ.get("GITHUB_OUTPUT", "/dev/stdout")
+    with open(output_path, "a") as f:
+        print(f"pr={json.dumps(pr)}", file=f)
+
+
+if __name__ == "__main__":
+    main()

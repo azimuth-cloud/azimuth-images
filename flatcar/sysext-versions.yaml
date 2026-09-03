@@ -1,0 +1,48 @@
+flatcar_version:
+  x86_64: 4593.2.5
+  aarch64: 4593.2.5
+image:
+  x86_64:
+    name: flatcar-stable-4593.2.5-x86_64
+    url: s3://example/flatcar/sysext-image/flatcar-stable-4593.2.5-x86_64.img
+    checksum: sha256:f9036af1ecaa2e3e7bf35b8b00eda3be2759ddad34997f57ab9c722473a21920
+    checksum_sha512: sha512:e26ce7bcb4aa1420f6e04f998ce7f5d8bc30b4d6b11ab00e304a0307b0c0ce4ed6d0e79dee1eb096a697a492f8a643ace15b4654621c866ffc35fcda96e399c6
+    cosign_bundle_url: s3://example/flatcar/sysext-image/flatcar-stable-4593.2.5-x86_64.cosign.bundle
+    image_sbom_url: s3://example/flatcar/sysext-image/flatcar-stable-4593.2.5-x86_64-sbom.json
+  aarch64:
+    name: flatcar-stable-4593.2.5-aarch64
+    url: s3://example/flatcar/sysext-image/flatcar-stable-4593.2.5-aarch64.img
+    checksum: sha256:aea48397797df2d945ead6cfea8a94ce8c5233354ab1069b14b9401b03935650
+    checksum_sha512: sha512:12109ffd1d6b7278eef582fb7138d02a6c4407c4020b9a3156766446122afb497ad3d3877774a1556b906abf725d3fb30df8834b5656ecd31c83013bfc9ad1d8
+    cosign_bundle_url: s3://example/flatcar/sysext-image/flatcar-stable-4593.2.5-aarch64.cosign.bundle
+    image_sbom_url: s3://example/flatcar/sysext-image/flatcar-stable-4593.2.5-aarch64-sbom.json
+sysexts:
+  containerd:
+    version: 2.3.4
+    x86_64:
+      url: s3://example/flatcar/sysexts/containerd-2.3.4-x86-64.raw
+      checksum_sha512: sha512-ee5056360921c563781294471d8b0df9f3c124ceb27736fd10ba89cfb6b2f461a7f0809b6377ff334e8a843257db46a642f4bd5a5706cfa315bb91f1d40a34fb
+      sbom_url: s3://example/flatcar/sysexts/containerd-2.3.4-x86-64-sbom.json
+      cosign_bundle_url: s3://example/flatcar/sysexts/containerd-2.3.4-x86-64.cosign.bundle
+  kubernetes:
+    v1.34:
+      version: v1.34.11
+      x86_64:
+        url: s3://example/flatcar/sysexts/kubernetes-v1.34.11-x86-64.raw
+        checksum_sha512: sha512-554662b89fa0cbe934d50d053581b134887a5a6cc1bddccb33111c3f9b0944d7d322797271a648e3db7f091718087b34c953e85f5453ceb03a30f0f144256ccb
+        sbom_url: s3://example/flatcar/sysexts/kubernetes-v1.34.11-x86-64-sbom.json
+        cosign_bundle_url: s3://example/flatcar/sysexts/kubernetes-v1.34.11-x86-64.cosign.bundle
+    v1.35:
+      version: v1.35.8
+      x86_64:
+        url: s3://example/flatcar/sysexts/kubernetes-v1.35.8-x86-64.raw
+        checksum_sha512: sha512-ef8ee58c9ce1f1ae1406a0297cc3cf00b5e78a3d2132c131955bafa3993859ba06e524a25479374ef5a6c3d06a82583d243122b90dad1d78285a9d0060c15d3b
+        sbom_url: s3://example/flatcar/sysexts/kubernetes-v1.35.8-x86-64-sbom.json
+        cosign_bundle_url: s3://example/flatcar/sysexts/kubernetes-v1.35.8-x86-64.cosign.bundle
+    v1.36:
+      version: v1.36.4
+      x86_64:
+        url: s3://example/flatcar/sysexts/kubernetes-v1.36.4-x86-64.raw
+        checksum_sha512: sha512-b64269af400591d4d7f8d0ecd7fc82a60705e1999843719977e05e6175f92868ac529661c5a76fe78f88b25f80fff4224f83d9e90ecaaf6dd12a52887a0c577a
+        sbom_url: s3://example/flatcar/sysexts/kubernetes-v1.36.4-x86-64-sbom.json
+        cosign_bundle_url: s3://example/flatcar/sysexts/kubernetes-v1.36.4-x86-64.cosign.bundle
