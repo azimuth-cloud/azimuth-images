@@ -23,12 +23,7 @@ import logging
 
 logger = logging.getLogger()
 
-logging.basicConfig(
-    level=logging.INFO,
-    handlers=[
-        logging.StreamHandler()
-    ]
-)
+logging.basicConfig(level=logging.INFO, handlers=[logging.StreamHandler()])
 
 
 REPO_ROOT = pathlib.Path(__file__).parent.parent.resolve()
@@ -56,7 +51,6 @@ def load_versions():
     """Get the existing versions."""
     with VERSIONS_FILE.open() as f:
         data = yaml.load(f)
-    data.setdefault("flatcar_version", {})
     data.setdefault("image", {})
     data.setdefault("sysexts", {})
     data["sysexts"].setdefault("containerd", {})
@@ -65,27 +59,32 @@ def load_versions():
 
 
 def s3_client():
-    try:
-      return boto3.client(
-          "s3",
-          endpoint_url=f"https://{os.environ['S3_HOST']}",
-          aws_access_key_id=os.environ["S3_ACCESS_KEY"],
-          aws_secret_access_key=os.environ["S3_SECRET_KEY"],
-      )
-    except KeyError:
-      warnings.warn("No S3 config data was provided, will skip the actual upload to S3") 
-
+    """Create a s3 client."""
+    if not all(
+        os.environ.get(v) for v in ("S3_HOST", "S3_ACCESS_KEY", "S3_SECRET_KEY")
+    ):
+        warnings.warn(
+            "No S3 config data was provided, will skip the actual upload to S3"
+        )
+        return None
+    return boto3.client(
+        "s3",
+        endpoint_url=f"https://{os.environ['S3_HOST']}",
+        aws_access_key_id=os.environ["S3_ACCESS_KEY"],
+        aws_secret_access_key=os.environ["S3_SECRET_KEY"],
+    )
 
 
 def s3_upload(s3, path, key):
-    try:
-      bucket = os.environ["S3_BUCKET"]
-    except KeyError:
-      logger.error("Skipping upload due to missing S3 url.")
-      return f"s3://example/{key}"
+    """Upload an object to s3."""
+    bucket = os.environ.get("S3_BUCKET")
+    public_path = os.environ.get("S3_HOST_PUBLIC_PATH")
+    if s3 is None or not bucket or not public_path:
+        logger.error("Skipping upload due to missing S3 configuration.")
+        return f"s3://example/{key}"
     print(f"[INFO] uploading {path} -> s3://{bucket}/{key}")
     s3.upload_file(str(path), bucket, key)
-    return f"{os.environ['S3_HOST_PUBLIC_PATH']}/{key}"
+    return f"{public_path}/{key}"
 
 
 def gh(*args):
@@ -114,26 +113,30 @@ def hash_file(path, algorithm):
 
 
 def cosign_sign_and_verify(path):
+    """Sign an asset and verify the signature matches the github identity."""
     bundle = path.with_name(path.name + ".cosign.bundle")
     subprocess.run(
         ["cosign", "sign-blob", str(path), "--bundle", str(bundle), "-y"], check=True
     )
-    #subprocess.run(
-    #    [
-    #        "cosign",
-    #        "verify-blob",
-    #        str(path),
-    #        "--bundle",
-    #        str(bundle),
-    #        f"--certificate-oidc-issuer={CERT_OIDC_ISSUER}",
-   #         f"--certificate-identity-regexp={CERT_IDENTITY_REGEXP}",
-   #     ],
-   #     check=True,
-   # )
+    # Verification does not pass when running locally.
+    if os.environ.get("COSIGN_VERIFY") != "false":
+        subprocess.run(
+            [
+                "cosign",
+                "verify-blob",
+                str(path),
+                "--bundle",
+                str(bundle),
+                f"--certificate-oidc-issuer={CERT_OIDC_ISSUER}",
+                f"--certificate-identity-regexp={CERT_IDENTITY_REGEXP}",
+            ],
+            check=True,
+        )
     return bundle
 
 
 def latest_flatcar_version(arch):
+    """Get the latest flatcar version."""
     channel = ARCH_TO_FLATCAR_CHANNEL[arch]
     response = requests.get(f"{FLATCAR_RELEASES_URL}/{channel}/current/version.txt")
     response.raise_for_status()
@@ -144,6 +147,9 @@ def latest_flatcar_version(arch):
 
 
 def sysext_bakery_tags():
+    """Get recent tags from the sysext bakery.
+
+    This is where the versions of containerd and kubernetes come from."""
     output = gh(
         "release",
         "list",
@@ -160,6 +166,7 @@ def sysext_bakery_tags():
 
 
 def latest_containerd_version(tags):
+    """Parse the tags to find the latest version of containerd."""
     versions = [
         t.removeprefix("containerd-")
         for t in tags
@@ -172,8 +179,9 @@ def latest_containerd_version(tags):
 
 def latest_kubernetes_versions(tags):
     """
-    Returns {kubernetes_series: resolved_semver} for every vars/base/kubernetes_1_*.json
-    series that has a matching flatcar/sysext-bakery release.
+    Find {kubernetes_series: resolved_semver} for every vars/base/kubernetes_1_*.json
+
+    This is the minor version available in flatcar.
     """
     kube_versions = [
         easysemver.Version(t.removeprefix("kubernetes-"))
@@ -197,10 +205,22 @@ def latest_kubernetes_versions(tags):
     return result
 
 
+def sha256sums_lookup(sums_text, filename):
+    """Lookup the checksum from the file provided by flatcar."""
+    for line in sums_text.splitlines():
+        parts = line.split(maxsplit=1)
+        if len(parts) == 2 and parts[1].strip().lstrip("*") == filename:
+            return parts[0]
+    return None
+
+
 def refresh_image(data, s3, arch, version, force, changed):
-    logger.info("Checking image %s %s", arch, version) 
-    if not force and data["flatcar_version"].get(arch) == version:
-        logger.info("Skipping image %s %s: already up to date.", arch, version) 
+    """Check the flatcar image version.
+
+    If it is outdated, download the new image, signing it and upload it to s3."""
+    logger.info("Checking image %s %s", arch, version)
+    if not force and data["image"].get(arch, {}).get("version") == version:
+        logger.info("Skipping image %s %s: already up to date.", arch, version)
         return
 
     channel = ARCH_TO_FLATCAR_CHANNEL[arch]
@@ -214,7 +234,7 @@ def refresh_image(data, s3, arch, version, force, changed):
             f"{FLATCAR_RELEASES_URL}/{channel}/{version}/flatcar_production_openstack_image.img.bz2",
             image_bz2,
         )
-        logger.info("Unzipping %s", name) 
+        logger.info("Unzipping %s", name)
         subprocess.run(["bunzip2", str(image_bz2)], check=True)
         logger.info("Unzipped.")
         image_path = tmp / f"{name}.img"
@@ -230,6 +250,7 @@ def refresh_image(data, s3, arch, version, force, changed):
         bundle_path = cosign_sign_and_verify(image_path)
 
         checksum = f"sha256:{hash_file(image_path, 'sha256')}"
+        # Colon-separated "algo:hexdigest" format to match comminity-images upload format.
         checksum_sha512 = f"sha512:{hash_file(image_path, 'sha512')}"
 
         prefix = f"flatcar/sysext-image/{name}"
@@ -238,6 +259,7 @@ def refresh_image(data, s3, arch, version, force, changed):
         sbom_url = s3_upload(s3, sbom_path, f"{prefix}-sbom.json")
 
     data["image"][arch] = {
+        "version": version,
         "name": name,
         "url": image_url,
         "checksum": checksum,
@@ -245,27 +267,25 @@ def refresh_image(data, s3, arch, version, force, changed):
         "cosign_bundle_url": bundle_url,
         "image_sbom_url": sbom_url,
     }
-    data["flatcar_version"][arch] = version
     changed.append(f"Flatcar image ({arch}) -> {version}")
 
 
-def sha256sums_lookup(sums_text, filename):
-    for line in sums_text.splitlines():
-        parts = line.split(maxsplit=1)
-        if len(parts) == 2 and parts[1].strip().lstrip("*") == filename:
-            return parts[0]
-    return None
-
-
 def refresh_sysext(data, s3, kind, arch, series, version, force, changed):
-    logger.info("Checking sysext %s %s %s", kind, arch, version) 
+    """Check the version of a sysext.
+
+    If it is outdated, download the new one, signing it and upload it to s3.
+    """
+
+    logger.info("Checking sysext %s %s %s", kind, arch, version)
     if kind == "containerd":
         container = data["sysexts"]["containerd"]
     else:
         container = data["sysexts"]["kubernetes"].setdefault(series, {})
 
-    if not force and container.get("version") == version:
-        logger.info("Skipping sysext %s %s %s: already up to date.", kind, arch, version) 
+    if not force and arch in container and container.get("version") == version:
+        logger.info(
+            "Skipping sysext %s %s %s: already up to date.", kind, arch, version
+        )
         return
 
     bakery_suffix = ARCH_TO_BAKERY_SUFFIX[arch]
@@ -317,6 +337,7 @@ def refresh_sysext(data, s3, kind, arch, series, version, force, changed):
 
         bundle_path = cosign_sign_and_verify(raw_path)
 
+        # Hyphen-separated "algo-hexdigest" - required by Ignition's verification
         checksum_sha512 = f"sha512-{hash_file(raw_path, 'sha512')}"
 
         prefix = f"flatcar/sysexts/{asset}"
@@ -354,6 +375,12 @@ def main():
     logger.info("Found containerd version %s", containerd_version)
     kubernetes_versions = latest_kubernetes_versions(tags)
     logger.info("Found kubernetes versions %s", kubernetes_versions)
+
+    # Prune sysext data for Kubernetes series that are no longer in the vars
+    stale_series = sorted(set(data["sysexts"]["kubernetes"]) - set(kubernetes_versions))
+    for series in stale_series:
+        del data["sysexts"]["kubernetes"][series]
+        changed.append(f"Removed retired kubernetes sysext series {series}")
 
     # For each arch, download, hash, sign and upload the image and sysexts
     for arch in ARCH_TO_FLATCAR_CHANNEL:

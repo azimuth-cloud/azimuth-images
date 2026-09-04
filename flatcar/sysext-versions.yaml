@@ -1,8 +1,6 @@
-flatcar_version:
-  x86_64: 4593.2.5
-  aarch64: 4593.2.5
 image:
   x86_64:
+    version: 4593.2.5
     name: flatcar-stable-4593.2.5-x86_64
     url: s3://example/flatcar/sysext-image/flatcar-stable-4593.2.5-x86_64.img
     checksum: sha256:f9036af1ecaa2e3e7bf35b8b00eda3be2759ddad34997f57ab9c722473a21920
@@ -10,6 +8,7 @@ image:
     cosign_bundle_url: s3://example/flatcar/sysext-image/flatcar-stable-4593.2.5-x86_64.cosign.bundle
     image_sbom_url: s3://example/flatcar/sysext-image/flatcar-stable-4593.2.5-x86_64-sbom.json
   aarch64:
+    version: 4593.2.5
     name: flatcar-stable-4593.2.5-aarch64
     url: s3://example/flatcar/sysext-image/flatcar-stable-4593.2.5-aarch64.img
     checksum: sha256:aea48397797df2d945ead6cfea8a94ce8c5233354ab1069b14b9401b03935650
@@ -24,6 +23,11 @@ sysexts:
       checksum_sha512: sha512-ee5056360921c563781294471d8b0df9f3c124ceb27736fd10ba89cfb6b2f461a7f0809b6377ff334e8a843257db46a642f4bd5a5706cfa315bb91f1d40a34fb
       sbom_url: s3://example/flatcar/sysexts/containerd-2.3.4-x86-64-sbom.json
       cosign_bundle_url: s3://example/flatcar/sysexts/containerd-2.3.4-x86-64.cosign.bundle
+    aarch64:
+      url: s3://example/flatcar/sysexts/containerd-2.3.4-arm64.raw
+      checksum_sha512: sha512-0cec904d6ed5ec9cdef90c8965586d4cbbf7ba23fbb1d6402ae6c3e3a31d5b7f2033a0e91daa781968b51fd179ff40f27a1bb01ad7ec0735d4e6962707c99632
+      sbom_url: s3://example/flatcar/sysexts/containerd-2.3.4-arm64-sbom.json
+      cosign_bundle_url: s3://example/flatcar/sysexts/containerd-2.3.4-arm64.cosign.bundle
   kubernetes:
     v1.34:
       version: v1.34.11
@@ -32,6 +36,11 @@ sysexts:
         checksum_sha512: sha512-554662b89fa0cbe934d50d053581b134887a5a6cc1bddccb33111c3f9b0944d7d322797271a648e3db7f091718087b34c953e85f5453ceb03a30f0f144256ccb
         sbom_url: s3://example/flatcar/sysexts/kubernetes-v1.34.11-x86-64-sbom.json
         cosign_bundle_url: s3://example/flatcar/sysexts/kubernetes-v1.34.11-x86-64.cosign.bundle
+      aarch64:
+        url: s3://example/flatcar/sysexts/kubernetes-v1.34.11-arm64.raw
+        checksum_sha512: sha512-087b3f119819b398a69686d1fd18f6ef516872fe6b61ace7559ce95b676ee3e94bb21d1e845a944414e9b9434ebb480f7ad2e1928f28d3af7a3e52ab27a17111
+        sbom_url: s3://example/flatcar/sysexts/kubernetes-v1.34.11-arm64-sbom.json
+        cosign_bundle_url: s3://example/flatcar/sysexts/kubernetes-v1.34.11-arm64.cosign.bundle
     v1.35:
       version: v1.35.8
       x86_64:
@@ -39,6 +48,11 @@ sysexts:
         checksum_sha512: sha512-ef8ee58c9ce1f1ae1406a0297cc3cf00b5e78a3d2132c131955bafa3993859ba06e524a25479374ef5a6c3d06a82583d243122b90dad1d78285a9d0060c15d3b
         sbom_url: s3://example/flatcar/sysexts/kubernetes-v1.35.8-x86-64-sbom.json
         cosign_bundle_url: s3://example/flatcar/sysexts/kubernetes-v1.35.8-x86-64.cosign.bundle
+      aarch64:
+        url: s3://example/flatcar/sysexts/kubernetes-v1.35.8-arm64.raw
+        checksum_sha512: sha512-09f0f13d1127044291c39f2d78a5aa6288fc9fd6ebbed28bcb86ad1d720a999a769b6a571b6b835a236317f9bba9128664a6df8c3ea7f5f233477f6a963ee3f6
+        sbom_url: s3://example/flatcar/sysexts/kubernetes-v1.35.8-arm64-sbom.json
+        cosign_bundle_url: s3://example/flatcar/sysexts/kubernetes-v1.35.8-arm64.cosign.bundle
     v1.36:
       version: v1.36.4
       x86_64:
@@ -46,3 +60,8 @@ sysexts:
         checksum_sha512: sha512-b64269af400591d4d7f8d0ecd7fc82a60705e1999843719977e05e6175f92868ac529661c5a76fe78f88b25f80fff4224f83d9e90ecaaf6dd12a52887a0c577a
         sbom_url: s3://example/flatcar/sysexts/kubernetes-v1.36.4-x86-64-sbom.json
         cosign_bundle_url: s3://example/flatcar/sysexts/kubernetes-v1.36.4-x86-64.cosign.bundle
+      aarch64:
+        url: s3://example/flatcar/sysexts/kubernetes-v1.36.4-arm64.raw
+        checksum_sha512: sha512-8e53e6d2ba08909f95ab7401e46963bbbb8f2338b703fe384951271a09c26b4b1338607e9accf5b5886e778b3e5dc08fb42add69d3335d3ac19d05f60222016a
+        sbom_url: s3://example/flatcar/sysexts/kubernetes-v1.36.4-arm64-sbom.json
+        cosign_bundle_url: s3://example/flatcar/sysexts/kubernetes-v1.36.4-arm64.cosign.bundle
