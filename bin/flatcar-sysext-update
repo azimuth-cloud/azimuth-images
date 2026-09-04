@@ -8,6 +8,7 @@ We then make a PR to the flatcar/sysext-versions file.
 
 import hashlib
 import json
+import logging
 import os
 import pathlib
 import re
@@ -19,7 +20,6 @@ import boto3
 import easysemver
 import requests
 import ruamel.yaml
-import logging
 
 logger = logging.getLogger()
 
@@ -82,7 +82,7 @@ def s3_upload(s3, path, key):
     if s3 is None or not bucket or not public_path:
         logger.error("Skipping upload due to missing S3 configuration.")
         return f"s3://example/{key}"
-    print(f"[INFO] uploading {path} -> s3://{bucket}/{key}")
+    logger.info(f"uploading {path} -> s3://{bucket}/{key}")
     s3.upload_file(str(path), bucket, key)
     return f"{public_path}/{key}"
 
@@ -197,8 +197,8 @@ def latest_kubernetes_versions(tags):
         version_range = easysemver.Range(f"~{series.lstrip('v')}.0")
         matches = [v for v in kube_versions if v in version_range]
         if not matches:
-            print(
-                f"::warning::no sysext-bakery release found yet for Kubernetes series {series}, skipping"
+            logger.warning(
+                "no sysext-bakery release found yet for Kubernetes series %s, skipping", series
             )
             continue
         result[series] = str(max(matches))
@@ -395,7 +395,7 @@ def main():
             )
 
     if not changed:
-        print("[INFO] nothing changed")
+        logger.info("nothing changed")
         return
 
     # Save the new data back to the versions file

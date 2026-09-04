@@ -35,7 +35,7 @@ for vars_file in sorted((REPO_ROOT / "vars" / "base").glob("kubernetes_1_*.json"
     k8s_node = version_data.get("sysexts", {}).get("kubernetes", {}).get(series)
     if k8s_node is None:
         print(
-            f"::warning::no flatcar sysext published yet for Kubernetes series {series}, omitting from manifest"
+            f"no flatcar sysext published yet for Kubernetes series {series}, omitting from manifest"
         )
         continue
 
@@ -48,7 +48,7 @@ for vars_file in sorted((REPO_ROOT / "vars" / "base").glob("kubernetes_1_*.json"
         k8s_arch = k8s_node.get(arch)
         if not (image and containerd and k8s_arch):
             print(
-                f"::warning::incomplete Flatcar/sysext data for {series}/{arch}, omitting from manifest entry"
+                f"incomplete Flatcar/sysext data for {series}/{arch}, omitting from manifest entry"
             )
             continue
         entry[arch] = {
