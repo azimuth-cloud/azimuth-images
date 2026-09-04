@@ -2,7 +2,7 @@
 # yamllint disable rule:line-length
 name: Build, publish and test Ubuntu images
 
-on:  # yamllint disable-line rule:truthy
+on: # yamllint disable-line rule:truthy
   workflow_call:
     secrets:
       OS_CLOUDS:
@@ -28,8 +28,13 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Setup UV
+        uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+
       - name: Install script dependencies
-        run: pip install -r ./requirements.txt
+        run: |
+          uv sync --locked
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Get builds as JSON
         id: builds-as-json
@@ -49,8 +54,13 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Setup UV
+        uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+
       - name: Install script dependencies
-        run: pip install -r ./requirements.txt
+        run: |
+          uv sync --locked
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Write OpenStack credentials
         run: echo "$OS_CLOUDS" > ./clouds.yaml
@@ -80,8 +90,8 @@ jobs:
       actions: read
       contents: write
       packages: write
-      id-token: write  # required to get an OIDC token for signing
-      security-events: write  # required to upload SARIF files
+      id-token: write # required to get an OIDC token for signing
+      security-events: write # required to upload SARIF files
       checks: write # to write check-runs statuses
     steps:
       - name: Check out the repository
@@ -94,6 +104,9 @@ jobs:
         run: echo "$OS_CLOUDS" > ./clouds.yaml
         env:
           OS_CLOUDS: ${{ secrets.OS_CLOUDS }}
+
+      - name: Setup UV
+        uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
 
       - name: Set up Packer environment
         run: ./bin/setup
@@ -233,8 +246,13 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Setup UV
+        uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+
       - name: Install script dependencies
-        run: pip install -r ./requirements.txt
+        run: |
+          uv sync --locked
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Write OpenStack credentials
         run: echo "$OS_CLOUDS" > ./clouds.yaml
@@ -303,7 +321,6 @@ jobs:
     permissions:
       contents: read
     steps:
-
       # Check out the configuration repository
       - name: Set up Azimuth environment
         uses: azimuth-cloud/azimuth-config/.github/actions/setup@devel
@@ -354,8 +371,13 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y s3cmd
 
+      - name: Setup UV
+        uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+
       - name: Install script dependencies
-        run: pip install -r ./requirements.txt
+        run: |
+          uv sync --locked
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Write OpenStack credentials
         run: echo "$OS_CLOUDS" > ./clouds.yaml

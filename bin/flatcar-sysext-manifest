@@ -1,0 +1,77 @@
+#!/usr/bin/env python3
+"""
+Generate the flatcar-systext release manifest from flatcar/sysext-versions.yaml file.
+"""
+
+import json
+import os
+import pathlib
+
+import ruamel.yaml
+
+REPO_ROOT = pathlib.Path(__file__).parent.parent.resolve()
+
+versions_file = pathlib.Path(
+    os.environ.get("VERSIONS_FILE", REPO_ROOT / "flatcar" / "sysext-versions.yaml")
+)
+manifest_file = pathlib.Path(
+    os.environ.get("MANIFEST_FILE", REPO_ROOT / "flatcar-sysext-manifest.json")
+)
+
+yaml = ruamel.yaml.YAML(typ="safe")
+with versions_file.open() as fh:
+    version_data = yaml.load(fh) or {}
+
+manifest = {}
+
+# Loop through all the kubernetes versions which we ar currently distributing.
+for vars_file in sorted((REPO_ROOT / "vars" / "base").glob("kubernetes_1_*.json")):
+    with vars_file.open() as fh:
+        k8s_data = json.load(fh)
+    series = k8s_data["kubernetes_series"]
+    major, minor = series.lstrip("v").split(".")
+    key = f"kubernetes-{major}-{minor}-flatcar-sysext"
+
+    k8s_node = version_data.get("sysexts", {}).get("kubernetes", {}).get(series)
+    if k8s_node is None:
+        print(
+            f"no flatcar sysext published yet for Kubernetes series {series}, omitting from manifest"
+        )
+        continue
+
+    # We are only matching the version from the kubernetes minor version. Any patch version from the sysext bakery is acceptable.
+    entry = {"kubernetes_version": k8s_node["version"]}
+
+    for arch in ("x86_64", "aarch64"):
+        image = version_data.get("image", {}).get(arch)
+        containerd = version_data.get("sysexts", {}).get("containerd", {}).get(arch)
+        k8s_arch = k8s_node.get(arch)
+        if not (image and containerd and k8s_arch):
+            print(
+                f"incomplete Flatcar/sysext data for {series}/{arch}, omitting from manifest entry"
+            )
+            continue
+        entry[arch] = {
+            "name": image["name"],
+            "url": image["url"],
+            "checksum": image["checksum"],
+            "checksum_sha512": image["checksum_sha512"],
+            "cosign-bundle-url": image["cosign_bundle_url"],
+            "image-sbom-url": image["image_sbom_url"],
+            "sysexts": {
+                "kubernetes": {
+                    "url": k8s_arch["url"],
+                    "checksum_sha512": k8s_arch["checksum_sha512"],
+                },
+                "containerd": {
+                    "url": containerd["url"],
+                    "checksum_sha512": containerd["checksum_sha512"],
+                },
+            },
+        }
+
+    if "x86_64" in entry or "aarch64" in entry:
+        manifest[key] = entry
+
+with manifest_file.open("w") as fh:
+    json.dump(manifest, fh, indent=4)
