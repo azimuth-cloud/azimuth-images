@@ -384,6 +384,10 @@ ignore:
   - vulnerability: CVE-2026-27143
     package:
       location: /usr/libexec/podman/**
+  # Invalid, no vulnerable symbols included in binary [gpx_grafana-opentsdb-datasource_linux_amd64]
+  - vulnerability: CVE-2026-27143
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/**
   # Invalid, no vulnerable symbols included in binary
   - vulnerability: CVE-2026-27143
     package:
@@ -693,6 +697,11 @@ ignore:
   - vulnerability: GHSA-rm3j-f69w-wqmq
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
+  ### CVE-2026-41293
+  # FIXME: Guacamole client image vulnerable 
+  - vulnerability: GHSA-r29c-68gh-xp6x
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-41409
   # Not vulnerable, No LDAP auth used in guacamole-client
   - vulnerability: GHSA-f2wh-grmh-r6jm
@@ -984,9 +993,61 @@ ignore:
   ### CVE-2026-53399
   # FIXME: Vulnerable, no fix 2026-08-05 [https://ubuntu.com/security/CVE-2026-53399]
   - vulnerability: CVE-2026-53399
+  ### CVE-2026-63073
+  # Fix backported by Debian to openssl-3.5.7-1~deb13u2 [nginx]
+  - vulnerability: CVE-2026-63073
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-63795
   # FIXME: Vulnerable, no fix 2026-08-05 [https://ubuntu.com/security/CVE-2026-63795]
   - vulnerability: CVE-2026-63795
   ### CVE-2026-63800
   # FIXME: Vulnerable, no fix 2026-08-05 [https://ubuntu.com/security/CVE-2026-63800]
   - vulnerability: CVE-2026-63800
+  ### CVE-2026-64046
+  # FIXME: Vulnerable, no fix 2026-09-03 [https://ubuntu.com/security/CVE-2026-64046]
+  - vulnerability: CVE-2026-64046
+  ### CVE-2026-64047
+  # FIXME: Vulnerable, no fix 2026-09-03 [https://ubuntu.com/security/CVE-2026-64047]
+  - vulnerability: CVE-2026-64047
+  ### CVE-2026-64055
+  # FIXME: Vulnerable, no fix 2026-09-03 [https://ubuntu.com/security/CVE-2026-64055]
+  - vulnerability: CVE-2026-64055
+  ### CVE-2026-64056
+  # FIXME: Vulnerable, no fix 2026-09-03 [https://ubuntu.com/security/CVE-2026-64056]
+  - vulnerability: CVE-2026-64056
+  ### CVE-2026-64089
+  # FIXME: Vulnerable, no fix 2026-09-02 [https://ubuntu.com/security/CVE-2026-64089]
+  - vulnerability: CVE-2026-64089
+  ### CVE-2026-64091 
+  # FIXME: Vulnerable, no fix 2026-09-02 [https://ubuntu.com/security/CVE-2026-64091]
+  - vulnerability: CVE-2026-64091
+  ### CVE-2026-64102
+  # FIXME: Vulnerable, no fix 2026-09-02 [https://ubuntu.com/security/CVE-2026-64102]
+  - vulnerability: CVE-2026-64102
+  ### CVE-2026-64106
+  # FIXME: Vulnerable, no fix 2026-09-02 [https://ubuntu.com/security/CVE-2026-64106]
+  - vulnerability: CVE-2026-64106
+  ### CVE-2026-64113
+  # FIXME: Vulnerable, no fix 2026-09-02 [https://ubuntu.com/security/CVE-2026-64113]
+  - vulnerability: CVE-2026-64113
+  ### CVE-2026-64125
+  # FIXME: Vulnerable, no fix 2026-09-02 [https://ubuntu.com/security/CVE-2026-64125]
+  - vulnerability: CVE-2026-64125
+  ### CVE-2026-64160
+  # FIXME: Vulnerable, no fix 2026-09-02 [https://ubuntu.com/security/CVE-2026-64160]
+  - vulnerability: CVE-2026-64160
+  ### CVE-2026-64268
+  # FIXME: Vulnerable, no fix 2026-09-02 [https://ubuntu.com/security/CVE-2026-64268]
+  - vulnerability: CVE-2026-64268
+  ### CVE-2026-64269
+  # FIXME: Vulnerable, no fix 2026-09-02 [https://ubuntu.com/security/CVE-2026-64269]
+  - vulnerability: CVE-2026-64269
+  ### CVE-2026-64106
+  # FIXME: Vulnerable, no fix 2026-09-02 [https://ubuntu.com/security/CVE-2026-64106]
+  - vulnerability: CVE-2026-64106
+  ### CVE-2026-75803
+  # Fix backported by Debian to openssl-3.5.7-1~deb13u2 [nginx]
+  - vulnerability: CVE-2026-75803
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/**
