@@ -669,3 +669,33 @@ ignore:
   ### CVE-2026-64106
   # FIXME: Vulnerable, no fix 2026-09-02 [https://ubuntu.com/security/CVE-2026-64106]
   - vulnerability: CVE-2026-64106
+  ### CVE-2026-64303
+  # FIXME: Vulnerable, no fix 2026-09-19 [https://ubuntu.com/security/CVE-2026-64303]
+  - vulnerability: CVE-2026-64303
+  ### CVE-2026-64319
+  # FIXME: Vulnerable, no fix 2026-09-19 [https://ubuntu.com/security/CVE-2026-64319]
+  - vulnerability: CVE-2026-64319
+  ### CVE-2026-64320
+  # FIXME: Vulnerable, no fix 2026-09-19 [https://ubuntu.com/security/CVE-2026-64320]
+  - vulnerability: CVE-2026-64320
+  ### CVE-2026-64355
+  # FIXME: Vulnerable, no fix 2026-09-19 [https://ubuntu.com/security/CVE-2026-64355]
+  - vulnerability: CVE-2026-64355
+  ### CVE-2026-64391
+  # FIXME: Vulnerable, no fix 2026-09-19 [https://ubuntu.com/security/CVE-2026-64391]
+  - vulnerability: CVE-2026-64391
+  ### CVE-2026-64392
+  # FIXME: Vulnerable, no fix 2026-09-19 [https://ubuntu.com/security/CVE-2026-64392]
+  - vulnerability: CVE-2026-64392
+  ### CVE-2026-64393
+  # FIXME: Vulnerable, no fix 2026-09-19 [https://ubuntu.com/security/CVE-2026-64393]
+  - vulnerability: CVE-2026-64393
+  ### CVE-2026-64397
+  # FIXME: Vulnerable, no fix 2026-09-19 [https://ubuntu.com/security/CVE-2026-64397]
+  - vulnerability: CVE-2026-64397
+  ### CVE-2026-64399
+  # FIXME: Vulnerable, no fix 2026-09-19 [https://ubuntu.com/security/CVE-2026-64399]
+  - vulnerability: CVE-2026-64399
+  ### CVE-2026-64450
+  # FIXME: Vulnerable, no fix 2026-09-19 [https://ubuntu.com/security/CVE-2026-64450]
+  - vulnerability: CVE-2026-64450
