@@ -60,12 +60,8 @@ def load_versions():
 
 def s3_client():
     """Create a s3 client."""
-    if not all(
-        os.environ.get(v) for v in ("S3_HOST", "S3_ACCESS_KEY", "S3_SECRET_KEY")
-    ):
-        warnings.warn(
-            "No S3 config data was provided, will skip the actual upload to S3"
-        )
+    if not all(os.environ.get(v) for v in ("S3_HOST", "S3_ACCESS_KEY", "S3_SECRET_KEY")):
+        warnings.warn("No S3 config data was provided, will skip the actual upload to S3")
         return None
     return boto3.client(
         "s3",
@@ -115,9 +111,7 @@ def hash_file(path, algorithm):
 def cosign_sign_and_verify(path):
     """Sign an asset and verify the signature matches the github identity."""
     bundle = path.with_name(path.name + ".cosign.bundle")
-    subprocess.run(
-        ["cosign", "sign-blob", str(path), "--bundle", str(bundle), "-y"], check=True
-    )
+    subprocess.run(["cosign", "sign-blob", str(path), "--bundle", str(bundle), "-y"], check=True)
     # Verification does not pass when running locally.
     if os.environ.get("COSIGN_VERIFY") != "false":
         subprocess.run(
@@ -167,11 +161,7 @@ def sysext_bakery_tags():
 
 def latest_containerd_version(tags):
     """Parse the tags to find the latest version of containerd."""
-    versions = [
-        t.removeprefix("containerd-")
-        for t in tags
-        if re.match(r"^containerd-\d+\.\d+\.\d+$", t)
-    ]
+    versions = [t.removeprefix("containerd-") for t in tags if re.match(r"^containerd-\d+\.\d+\.\d+$", t)]
     if not versions:
         raise RuntimeError(f"no containerd releases found in {SYSEXT_BAKERY_REPO}")
     return max(versions, key=lambda v: tuple(int(p) for p in v.split(".")))
@@ -184,9 +174,7 @@ def latest_kubernetes_versions(tags):
     This is the minor version available in flatcar.
     """
     kube_versions = [
-        easysemver.Version(t.removeprefix("kubernetes-"))
-        for t in tags
-        if re.match(r"^kubernetes-v\d+\.\d+\.\d+$", t)
+        easysemver.Version(t.removeprefix("kubernetes-")) for t in tags if re.match(r"^kubernetes-v\d+\.\d+\.\d+$", t)
     ]
 
     result = {}
@@ -197,9 +185,7 @@ def latest_kubernetes_versions(tags):
         version_range = easysemver.Range(f"~{series.lstrip('v')}.0")
         matches = [v for v in kube_versions if v in version_range]
         if not matches:
-            logger.warning(
-                "no sysext-bakery release found yet for Kubernetes series %s, skipping", series
-            )
+            logger.warning("no sysext-bakery release found yet for Kubernetes series %s, skipping", series)
             continue
         result[series] = str(max(matches))
     return result
@@ -283,9 +269,7 @@ def refresh_sysext(data, s3, kind, arch, series, version, force, changed):
         container = data["sysexts"]["kubernetes"].setdefault(series, {})
 
     if not force and arch in container and container.get("version") == version:
-        logger.info(
-            "Skipping sysext %s %s %s: already up to date.", kind, arch, version
-        )
+        logger.info("Skipping sysext %s %s %s: already up to date.", kind, arch, version)
         return
 
     bakery_suffix = ARCH_TO_BAKERY_SUFFIX[arch]
@@ -310,13 +294,9 @@ def refresh_sysext(data, s3, kind, arch, series, version, force, changed):
         )
         raw_path = tmp / f"{asset}.raw"
 
-        expected_checksum = sha256sums_lookup(
-            (tmp / "SHA256SUMS").read_text(), f"{asset}.raw"
-        )
+        expected_checksum = sha256sums_lookup((tmp / "SHA256SUMS").read_text(), f"{asset}.raw")
         if expected_checksum is None:
-            raise RuntimeError(
-                f"no checksum found for {asset}.raw in upstream SHA256SUMS"
-            )
+            raise RuntimeError(f"no checksum found for {asset}.raw in upstream SHA256SUMS")
         actual_checksum = hash_file(raw_path, "sha256")
         if actual_checksum != expected_checksum:
             raise RuntimeError(
@@ -326,14 +306,10 @@ def refresh_sysext(data, s3, kind, arch, series, version, force, changed):
         # There is no upstream SBOM for sysexts, unlike the base image - we
         # have to generate our own.
         unsquash_dir = tmp / "unsquashed"
-        subprocess.run(
-            ["unsquashfs", "-d", str(unsquash_dir), str(raw_path)], check=True
-        )
+        subprocess.run(["unsquashfs", "-d", str(unsquash_dir), str(raw_path)], check=True)
         sbom_path = tmp / f"{asset}-sbom.json"
         with sbom_path.open("w") as f:
-            subprocess.run(
-                ["syft", str(unsquash_dir), "-o", "syft-json"], check=True, stdout=f
-            )
+            subprocess.run(["syft", str(unsquash_dir), "-o", "syft-json"], check=True, stdout=f)
 
         bundle_path = cosign_sign_and_verify(raw_path)
 
@@ -365,9 +341,7 @@ def main():
     changed = []
 
     # Get the version of the latest flatcar image for each arch.
-    image_versions = {
-        arch: latest_flatcar_version(arch) for arch in ARCH_TO_FLATCAR_CHANNEL
-    }
+    image_versions = {arch: latest_flatcar_version(arch) for arch in ARCH_TO_FLATCAR_CHANNEL}
     logger.info("Found the following flatcar image versions: %s", image_versions)
     # Get the latest versions of kubernetes and containerd
     tags = sysext_bakery_tags()
@@ -385,14 +359,10 @@ def main():
     # For each arch, download, hash, sign and upload the image and sysexts
     for arch in ARCH_TO_FLATCAR_CHANNEL:
         refresh_image(data, s3, arch, image_versions[arch], force, changed)
-        refresh_sysext(
-            data, s3, "containerd", arch, None, containerd_version, force, changed
-        )
+        refresh_sysext(data, s3, "containerd", arch, None, containerd_version, force, changed)
 
         for series, version in kubernetes_versions.items():
-            refresh_sysext(
-                data, s3, "kubernetes", arch, series, version, force, changed
-            )
+            refresh_sysext(data, s3, "kubernetes", arch, series, version, force, changed)
 
     if not changed:
         logger.info("nothing changed")
