@@ -5,15 +5,13 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-on:  # yamllint disable-line rule:truthy
+on: # yamllint disable-line rule:truthy
   push:
     branches:
       - main
-    paths-ignore:
-      - "vars/flatcar/**"
-      - "flatcar/**"
-      - "bin/flatcar-*"
-      - ".github/workflows/flatcar-*.yml"
+    # The image build must run for every commit on main,
+    # otherwise a tag pointing at a "skipped" commit has no manifest
+    # to promote and the release workflow fails.
 
 jobs:
   # Build, publish and test the images
@@ -23,8 +21,8 @@ jobs:
       actions: read
       contents: write
       packages: write
-      id-token: write  # required to get an OIDC token for signing
-      security-events: write  # required to upload SARIF files
+      id-token: write # required to get an OIDC token for signing
+      security-events: write # required to upload SARIF files
       checks: write
     secrets:
       OS_CLOUDS: ${{ secrets.OS_CLOUDS }}
