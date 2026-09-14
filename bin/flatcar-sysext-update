@@ -6,12 +6,14 @@ Each new one is downloaded, signed, sbomed and uploadted to s3.
 We then make a PR to the flatcar/sysext-versions file.
 """
 
+import bz2
 import hashlib
 import json
 import logging
 import os
 import pathlib
 import re
+import shutil
 import subprocess
 import tempfile
 import warnings
@@ -221,10 +223,10 @@ def refresh_image(data, s3, arch, version, force, changed):
             image_bz2,
         )
         logger.info("Unzipping %s", name)
-        subprocess.run(["bunzip2", str(image_bz2)], check=True)
-        logger.info("Unzipped.")
         image_path = tmp / f"{name}.img"
-        (tmp / "flatcar_production_openstack_image.img").rename(image_path)
+        with bz2.open(image_bz2, "rb") as src, image_path.open("wb") as dst:
+            shutil.copyfileobj(src, dst)
+        image_bz2.unlink()
 
         # Flatcar publishes a signed SBOM for every release
         sbom_path = tmp / f"{name}-sbom.json"
