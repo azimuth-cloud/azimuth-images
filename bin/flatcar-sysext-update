@@ -259,7 +259,7 @@ def refresh_image(data, s3, arch, version, force, changed):
 def refresh_sysext(data, s3, kind, arch, series, version, force, changed):
     """Check the version of a sysext.
 
-    If it is outdated, download the new one, signing it and upload it to s3.
+    If it is outdated, download the new one, sign it and upload it to s3.
     """
 
     logger.info("Checking sysext %s %s %s", kind, arch, version)
