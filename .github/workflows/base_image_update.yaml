@@ -9,7 +9,7 @@ permissions:
   security-events: write
   id-token: write
 
-on:  # yamllint disable-line rule:truthy
+on: # yamllint disable-line rule:truthy
   # Allow manual executions
   workflow_dispatch:
   # Run nightly
@@ -30,8 +30,13 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Setup UV
+        uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+
       - name: Install script dependencies
-        run: pip install -r ./requirements.txt
+        run: |
+          uv sync --locked
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Check for base image updates
         id: base-image-update
