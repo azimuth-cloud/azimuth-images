@@ -1,4 +1,7 @@
 {
   "distro_name": "ubuntu-jammy",
-  "ssh_username": "ubuntu"
+  "ssh_username": "ubuntu",
+  "hw_architecture": "x86_64",
+  "os_distro": "ubuntu",
+  "os_version": "22.04"
 }
