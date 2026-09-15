@@ -42,6 +42,18 @@ variable "distro_name" {
   type = string
 }
 
+variable "hw_architecture" {
+  type = string
+}
+
+variable "os_distro" {
+  type = string
+}
+
+variable "os_version" {
+  type = string
+}
+
 variable "ssh_username" {
   type = string
 }
@@ -89,5 +101,11 @@ build {
     ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10"]
   }
 
-  post-processor "manifest" { }
+  post-processor "manifest" {
+    custom_data = {
+      hw_architecture = var.hw_architecture
+      os_distro       = var.os_distro
+      os_version      = var.os_version
+    }
+  }
 }

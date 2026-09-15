@@ -50,6 +50,11 @@ for vars_file in sorted((REPO_ROOT / "vars" / "base").glob("kubernetes_1_*.json"
             "checksum_sha512": image["checksum_sha512"],
             "cosign-bundle-url": image["cosign_bundle_url"],
             "image-sbom-url": image["image_sbom_url"],
+            "properties": [
+                f"hw_architecture={arch}",
+                "os_distro=flatcar",
+                f"os_version={image['version']}",
+            ],
             "sysexts": {
                 "kubernetes": {
                     "url": k8s_arch["url"],
