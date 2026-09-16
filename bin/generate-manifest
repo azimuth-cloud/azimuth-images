@@ -27,15 +27,17 @@ for manifest_key, manifest_value in inverted.items():
     # remove manifest-extra from the content
     manifest_extra_content = manifest_value.pop("manifest-extra", {})
 
-    # Find keys in manifest_extra which are image properties, and remove them
     manifest_extra: dict[str, Any] = {}
     properties: list[str] = []
     for extra_key, extra_value in manifest_extra_content.items():
+        # Find keys in manifest_extra which are image properties, and remove them
         if extra_key in PROPERTY_KEYS:
             properties.append(f"{extra_key}={extra_value}")
+        # Special-case the k8s version to both places
         elif extra_key == "kubernetes_version":
             manifest_extra["kubernetes_version"] = extra_value
             properties.append(f"kube_version={extra_value}")
+        # Pass through all the other keys
         else:
             manifest_extra[extra_key] = extra_value
 
