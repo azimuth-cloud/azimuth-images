@@ -39,6 +39,7 @@ def generate_manifest(tmp_path: Path, build_outputs: dict[str, Any]) -> dict[str
 def test_datastructure_invert(tmp_path: Path) -> None:
     """Test the basic inversion of the data structure"""
     build_outputs = {
+        "name": {"image-a": "image-a", "image-b": "image-b"},
         "source-image": {"image-a": "source-a", "image-b": "source-b"},
         "target-image": {"image-a": "target-a", "image-b": "target-b"},
     }
@@ -46,14 +47,25 @@ def test_datastructure_invert(tmp_path: Path) -> None:
     manifest = generate_manifest(tmp_path, build_outputs)
 
     assert manifest == {
-        "image-a": {"source-image": "source-a", "target-image": "target-a"},
-        "image-b": {"source-image": "source-b", "target-image": "target-b"},
+        "image-a": {
+            "name": "image-a",
+            "source-image": "source-a",
+            "target-image": "target-a",
+            "properties": [],
+        },
+        "image-b": {
+            "name": "image-b",
+            "source-image": "source-b",
+            "target-image": "target-b",
+            "properties": [],
+        },
     }
 
 
 def test_datastructure_invert_2(tmp_path: Path) -> None:
     "Test datastructure invert with multiple keys"
     build_outputs = {
+        "name": {"image-a": "image-a", "image-b": "image-b"},
         "source-image": {"image-a": "source-a", "image-b": "source-b"},
         "manifest-extra": {
             "image-a": {"os_distro": "ubuntu"},
@@ -64,10 +76,12 @@ def test_datastructure_invert_2(tmp_path: Path) -> None:
     manifest = generate_manifest(tmp_path, build_outputs)
 
     assert manifest["image-a"] == {
+        "name": "image-a",
         "source-image": "source-a",
         "properties": ["os_distro=ubuntu"],
     }
     assert manifest["image-b"] == {
+        "name": "image-b",
         "source-image": "source-b",
         "properties": ["os_distro=rocky"],
     }
@@ -76,6 +90,7 @@ def test_datastructure_invert_2(tmp_path: Path) -> None:
 def test_properties_passthrough(tmp_path: Path) -> None:
     """Test that image properties are correctly passed through."""
     build_outputs = {
+        "name": {"image-a": "image-a"},
         "manifest-extra": {
             "image-a": {
                 "hw_architecture": "x86_64",
@@ -99,6 +114,7 @@ def test_manifest_extra_other_keys_are_merged_directly(tmp_path: Path) -> None:
     """Test that other extra keys are passed through directly and not
     merged into properties"""
     build_outputs = {
+        "name": {"image-a": "image-a"},
         "manifest-extra": {
             "image-a": {"hw_architecture": "x86_64", "description": "some image"},
         },
@@ -110,9 +126,25 @@ def test_manifest_extra_other_keys_are_merged_directly(tmp_path: Path) -> None:
     assert manifest["image-a"]["description"] == "some image"
 
 
+def test_kubernetes_version_is_kept_and_added_as_a_property(tmp_path: Path) -> None:
+    """Test that kubernetes_version is passed through directly and added
+    to properties as kube_version."""
+    build_outputs = {
+        "name": {"image-a": "image-a"},
+        "manifest-extra": {
+            "image-a": {"kubernetes_version": "1.30.0"},
+        },
+    }
+
+    manifest = generate_manifest(tmp_path, build_outputs)
+
+    assert manifest["image-a"]["kubernetes_version"] == "1.30.0"
+    assert manifest["image-a"]["properties"] == ["kube_version=1.30.0"]
+
+
 def test_empty_build_outputs_produces_empty_manifest(tmp_path: Path) -> None:
     """Test the no-op case."""
-    manifest = generate_manifest(tmp_path, {})
+    manifest = generate_manifest(tmp_path, {"name": {}})
 
     assert manifest == {}
 
