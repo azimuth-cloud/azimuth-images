@@ -2,24 +2,25 @@
 
 import json
 import os
+from typing import Any
 
 build_outputs_file = os.environ["BUILD_OUTPUTS_FILE"]
 manifest_file = os.environ["MANIFEST_FILE"]
 
 with open(build_outputs_file) as fh:
-    build_outputs = json.load(fh)
+    build_outputs: dict[str, dict[str, Any]] = json.load(fh)
 
 # Packer only allows a flat output in manifest-extra
 # These keys are moved into a "properties" list of "key=value" strings
 PROPERTY_KEYS = {"hw_architecture", "os_distro", "os_version"}
 
 # We just want to invert the keys in the build outputs
-manifest = {}
+manifest: dict[str, dict[str, Any]] = {}
 for key in build_outputs:
     for image, value in build_outputs[key].items():
         if key == "manifest-extra":
             entry = manifest.setdefault(image, {})
-            properties = entry.setdefault("properties", [])
+            properties: list[str] = entry.setdefault("properties", [])
             for prop_key in PROPERTY_KEYS:
                 if prop_key in value:
                     properties.append(f"{prop_key}={value.pop(prop_key)}")
