@@ -17,6 +17,7 @@ import shutil
 import subprocess
 import tempfile
 import warnings
+from typing import Any
 
 import boto3
 import easysemver
@@ -44,12 +45,12 @@ CERT_IDENTITY_REGEXP = "https://github.com/azimuth-cloud/azimuth-images/.github/
 yaml = ruamel.yaml.YAML(typ="rt")
 yaml.preserve_quotes = True
 yaml.width = 1000000
-yaml.mapping_indent = 2
+yaml.map_indent = 2
 yaml.sequence_indent = 2
 yaml.sequence_dash_offset = 0
 
 
-def load_versions():
+def load_versions() -> dict[str, Any]:
     """Get the existing versions."""
     with VERSIONS_FILE.open() as f:
         data = yaml.load(f)
@@ -57,10 +58,10 @@ def load_versions():
     data.setdefault("sysexts", {})
     data["sysexts"].setdefault("containerd", {})
     data["sysexts"].setdefault("kubernetes", {})
-    return data
+    return data  # type: ignore[no-any-return]
 
 
-def s3_client():
+def s3_client() -> Any:
     """Create a s3 client."""
     if not all(os.environ.get(v) for v in ("S3_HOST", "S3_ACCESS_KEY", "S3_SECRET_KEY")):
         warnings.warn("No S3 config data was provided, will skip the actual upload to S3")
@@ -73,7 +74,7 @@ def s3_client():
     )
 
 
-def s3_upload(s3, path, key):
+def s3_upload(s3: Any, path: pathlib.Path, key: str) -> str:
     """Upload an object to s3."""
     bucket = os.environ.get("S3_BUCKET")
     public_path = os.environ.get("S3_HOST_PUBLIC_PATH")
@@ -85,13 +86,13 @@ def s3_upload(s3, path, key):
     return f"{public_path}/{key}"
 
 
-def gh(*args):
+def gh(*args: str) -> str:
     """Using the gh cli (auto installed on the runners) allows us to make authenticated requests eaisily."""
     result = subprocess.run(["gh", *args], check=True, capture_output=True, text=True)
     return result.stdout
 
 
-def download(url, dest):
+def download(url: str, dest: pathlib.Path) -> None:
     """Download a file."""
     logger.info("Downloading %s", url)
     response = requests.get(url, stream=True)
@@ -101,7 +102,7 @@ def download(url, dest):
             f.write(chunk)
 
 
-def hash_file(path, algorithm):
+def hash_file(path: pathlib.Path, algorithm: str) -> str:
     """Hash a file."""
     digest = hashlib.new(algorithm)
     with path.open("rb") as f:
@@ -110,7 +111,7 @@ def hash_file(path, algorithm):
     return digest.hexdigest()
 
 
-def cosign_sign_and_verify(path):
+def cosign_sign_and_verify(path: pathlib.Path) -> pathlib.Path:
     """Sign an asset and verify the signature matches the github identity."""
     bundle = path.with_name(path.name + ".cosign.bundle")
     subprocess.run(["cosign", "sign-blob", str(path), "--bundle", str(bundle), "-y"], check=True)
@@ -131,7 +132,7 @@ def cosign_sign_and_verify(path):
     return bundle
 
 
-def latest_flatcar_version(arch):
+def latest_flatcar_version(arch: str) -> str:
     """Get the latest flatcar version."""
     channel = ARCH_TO_FLATCAR_CHANNEL[arch]
     response = requests.get(f"{FLATCAR_RELEASES_URL}/{channel}/current/version.txt")
@@ -142,7 +143,7 @@ def latest_flatcar_version(arch):
     raise RuntimeError(f"could not determine the latest Flatcar version for {arch}")
 
 
-def sysext_bakery_tags():
+def sysext_bakery_tags() -> list[str]:
     """Get recent tags from the sysext bakery.
 
     This is where the versions of containerd and kubernetes come from."""
@@ -161,7 +162,7 @@ def sysext_bakery_tags():
     return [line for line in output.splitlines() if line]
 
 
-def latest_containerd_version(tags):
+def latest_containerd_version(tags: list[str]) -> str:
     """Parse the tags to find the latest version of containerd."""
     versions = [t.removeprefix("containerd-") for t in tags if re.match(r"^containerd-\d+\.\d+\.\d+$", t)]
     if not versions:
@@ -169,7 +170,7 @@ def latest_containerd_version(tags):
     return max(versions, key=lambda v: tuple(int(p) for p in v.split(".")))
 
 
-def latest_kubernetes_versions(tags):
+def latest_kubernetes_versions(tags: list[str]) -> dict[str, str]:
     """
     Find {kubernetes_series: resolved_semver} for every vars/base/kubernetes_1_*.json
 
@@ -193,7 +194,7 @@ def latest_kubernetes_versions(tags):
     return result
 
 
-def sha256sums_lookup(sums_text, filename):
+def sha256sums_lookup(sums_text: str, filename: str) -> str | None:
     """Lookup the checksum from the file provided by flatcar."""
     for line in sums_text.splitlines():
         parts = line.split(maxsplit=1)
@@ -202,7 +203,7 @@ def sha256sums_lookup(sums_text, filename):
     return None
 
 
-def refresh_image(data, s3, arch, version, force, changed):
+def refresh_image(data: dict[str, Any], s3: Any, arch: str, version: str, force: bool, changed: list[str]) -> None:
     """Check the flatcar image version.
 
     If it is outdated, download the new image, signing it and upload it to s3."""
@@ -258,7 +259,9 @@ def refresh_image(data, s3, arch, version, force, changed):
     changed.append(f"Flatcar image ({arch}) -> {version}")
 
 
-def refresh_sysext(data, s3, kind, arch, series, version, changed):
+def refresh_sysext(
+    data: dict[str, Any], s3: Any, kind: str, arch: str, series: str | None, version: str, changed: list[str]
+) -> None:
     """Check the version of a sysext.
 
     If it is outdated, download the new one, sign it and upload it to s3.
@@ -332,7 +335,7 @@ def refresh_sysext(data, s3, kind, arch, series, version, changed):
         changed.append(f"kubernetes sysext {series} ({arch}) -> {version}")
 
 
-def main():
+def main() -> None:
     force = os.environ.get("FORCE_REFRESH") == "true"
     data = load_versions()
     s3 = s3_client()

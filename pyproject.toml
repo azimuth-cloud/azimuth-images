@@ -28,9 +28,14 @@ line-length = 88
 testpaths = ["bin/tests"]
 
 [tool.mypy]
-files = ["bin/generate-manifest", "bin/tests"]
+files = ["bin/generate-manifest", "bin/flatcar-sysext-update", "bin/tests"]
 strict = true
 disallow_untyped_defs = true
+scripts_are_modules = true
+
+[[tool.mypy.overrides]]
+module = ["boto3", "easysemver"]
+ignore_missing_imports = true
 
 [build-system]
 requires = ["hatchling", "hatch-vcs"]
