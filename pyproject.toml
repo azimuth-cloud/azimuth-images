@@ -15,6 +15,7 @@ dev = [
     "pywinrm>=0.5.0",
     "requests>=2.34.2",
     "ruamel-yaml>=0.19.1",
+    "ruff>=0.16.8",
 ]
 
 [tool.uv]
