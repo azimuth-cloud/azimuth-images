@@ -258,7 +258,7 @@ def refresh_image(data, s3, arch, version, force, changed):
     changed.append(f"Flatcar image ({arch}) -> {version}")
 
 
-def refresh_sysext(data, s3, kind, arch, series, version, force, changed):
+def refresh_sysext(data, s3, kind, arch, series, version, changed):
     """Check the version of a sysext.
 
     If it is outdated, download the new one, sign it and upload it to s3.
@@ -269,10 +269,6 @@ def refresh_sysext(data, s3, kind, arch, series, version, force, changed):
         container = data["sysexts"]["containerd"]
     else:
         container = data["sysexts"]["kubernetes"].setdefault(series, {})
-
-    if not force and arch in container and container.get("version") == version:
-        logger.info("Skipping sysext %s %s %s: already up to date.", kind, arch, version)
-        return
 
     bakery_suffix = ARCH_TO_BAKERY_SUFFIX[arch]
     tag = f"{kind}-{version}"
@@ -358,13 +354,26 @@ def main():
         del data["sysexts"]["kubernetes"][series]
         changed.append(f"Removed retired kubernetes sysext series {series}")
 
+    update_containerd = force or data["sysexts"]["containerd"].get("version") != containerd_version
+    update_kubernetes = {
+        series: force or data["sysexts"]["kubernetes"].get(series, {}).get("version") != version
+        for series, version in kubernetes_versions.items()
+    }
+
     # For each arch, download, hash, sign and upload the image and sysexts
     for arch in ARCH_TO_FLATCAR_CHANNEL:
         refresh_image(data, s3, arch, image_versions[arch], force, changed)
-        refresh_sysext(data, s3, "containerd", arch, None, containerd_version, force, changed)
+
+        if update_containerd:
+            refresh_sysext(data, s3, "containerd", arch, None, containerd_version, changed)
+        else:
+            logger.info("Skipping containerd sysext %s %s: already up to date.", arch, containerd_version)
 
         for series, version in kubernetes_versions.items():
-            refresh_sysext(data, s3, "kubernetes", arch, series, version, force, changed)
+            if update_kubernetes[series]:
+                refresh_sysext(data, s3, "kubernetes", arch, series, version, changed)
+            else:
+                logger.info("Skipping kubernetes sysext %s %s %s: already up to date.", series, arch, version)
 
     if not changed:
         logger.info("nothing changed")
