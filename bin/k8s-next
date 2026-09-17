@@ -3,6 +3,7 @@
 import json
 import os
 import pathlib
+import sys
 
 import easysemver
 import requests
@@ -57,7 +58,7 @@ latest_filename = f"kubernetes_{latest_version.major}_{latest_version.minor}.jso
 latest_vars_file = repo_root / "vars" / "base" / latest_filename
 # If it does, we are done
 if latest_vars_file.exists():
-    exit()
+    sys.exit()
 
 ##
 # If we get to here, it is a new version that we haven't seen before

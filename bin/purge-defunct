@@ -185,7 +185,7 @@ def main():
     print("[INFO ] fetching current S3 keys")
     # Exclude Flatcar artifacts (image + sysexts) — they are managed independently
     # of the Packer build cycle and must not be purged with old build manifests.
-    purge_keys = set(k for k in s3.list_keys() if not k.startswith("flatcar/"))
+    purge_keys = {k for k in s3.list_keys() if not k.startswith("flatcar/")}
     initial_key_count = len(purge_keys)
     print(f"[INFO ]   found {initial_key_count} keys (excluding flatcar/ prefix)")
 
