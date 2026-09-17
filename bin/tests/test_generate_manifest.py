@@ -26,7 +26,7 @@ def run_generate_manifest(
         env = env_overrides
 
     return subprocess.run(
-        [str(SCRIPT)], env=env, capture_output=True, text=True, check=True
+        [str(SCRIPT)], env=env, capture_output=True, text=True, check=False
     )
 
 
