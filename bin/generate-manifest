@@ -2,21 +2,47 @@
 
 import json
 import os
+from typing import Any
 
 build_outputs_file = os.environ["BUILD_OUTPUTS_FILE"]
 manifest_file = os.environ["MANIFEST_FILE"]
 
 with open(build_outputs_file) as fh:
-    build_outputs = json.load(fh)
+    build_outputs: dict[str, dict[str, Any]] = json.load(fh)
 
-# We just want to invert the keys in the build outputs
-manifest = {}
-for key in build_outputs:
-    for image, value in build_outputs[key].items():
-        if key == "manifest-extra":
-            manifest.setdefault(image, {}).update(value)
+# Packer only allows a flat output in manifest-extra
+# These keys are moved into a "properties" list of "key=value" strings
+PROPERTY_KEYS = {"hw_architecture", "os_distro", "os_version"}
+
+# Invert the outputs dict
+# {"checksum": {"simon": "AAAA", "gerald": "BBBB", ...} -->
+# {"simon": {"checksum": "AAAA", ...}, "gerald": {"checksum": "BBBB", ...}}
+inverted: dict[str, dict[str, Any]] = {}
+for name in build_outputs["name"].keys():
+    inverted[name] = {field: values[name] for field, values in build_outputs.items()}
+
+manifest: dict[str, Any] = {}
+# Process the manifest-extra
+for manifest_key, manifest_value in inverted.items():
+    # remove manifest-extra from the content
+    manifest_extra_content = manifest_value.pop("manifest-extra", {})
+
+    manifest_extra: dict[str, Any] = {}
+    properties: list[str] = []
+    for extra_key, extra_value in manifest_extra_content.items():
+        # Find keys in manifest_extra which are image properties, and remove them
+        if extra_key in PROPERTY_KEYS:
+            properties.append(f"{extra_key}={extra_value}")
+        # Special-case the k8s version to both places
+        elif extra_key == "kubernetes_version":
+            manifest_extra["kubernetes_version"] = extra_value
+            properties.append(f"kube_version={extra_value}")
+        # Pass through all the other keys
         else:
-            manifest.setdefault(image, {})[key] = value
+            manifest_extra[extra_key] = extra_value
+
+    manifest_extra["properties"] = properties
+    manifest[manifest_key] = manifest_value | manifest_extra
 
 with open(manifest_file, "w") as fh:
     json.dump(manifest, fh, indent=4)

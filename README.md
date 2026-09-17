@@ -81,3 +81,10 @@ docker run --rm \
 ```sh
 ansible-lint -c .ansible-lint.yml ansible/
 ```
+
+To run the tests and type checks for the Python scripts in `bin/`, use:
+
+```sh
+uv run pytest
+uv run mypy
+```
