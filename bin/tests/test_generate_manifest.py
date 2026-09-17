@@ -25,7 +25,9 @@ def run_generate_manifest(
     if env_overrides is not None:
         env = env_overrides
 
-    return subprocess.run([str(SCRIPT)], env=env, capture_output=True, text=True)
+    return subprocess.run(
+        [str(SCRIPT)], env=env, capture_output=True, text=True, check=False
+    )
 
 
 def generate_manifest(tmp_path: Path, build_outputs: dict[str, Any]) -> dict[str, Any]:
