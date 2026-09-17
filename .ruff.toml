@@ -1,3 +1,0 @@
-# This is needed because otherwise super-linter does not
-# read the config
-extend = "pyproject.toml"

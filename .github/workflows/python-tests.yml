@@ -34,11 +34,17 @@ jobs:
       - name: Setup UV
         uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
 
-      - name: Install script dependencies
+      - name: Install dependencies
         run: uv sync --locked
 
-      - name: Run pytest
+      - name: Ruff Format
+        run: uv run ruff format --check --output-format=github
+
+      - name: Ruff Check
+        run: uv run ruff check --output-format=github
+
+      - name: Pytest
         run: uv run pytest
 
-      - name: Run mypy
+      - name: mypy
         run: uv run mypy

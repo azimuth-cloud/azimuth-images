@@ -52,7 +52,9 @@ for vars_file in vars_files_dir.glob("kubernetes_*.json"):
     try:
         current_version = easysemver.Version(data["kubernetes_semver"])
     except KeyError:
-        print(f"This doesn't look like a Kubernetes vars file, continuing\n {vars_file}")
+        print(
+            f"This doesn't look like a Kubernetes vars file, continuing\n {vars_file}"
+        )
         continue
     # Get the latest version for the series and update the file
     latest_version = k8s_latest_version_for_series(data["kubernetes_series"])
@@ -74,7 +76,9 @@ if not next_versions:
 
 # Output the title and body for the PR as a JSON document
 pr = {
-    "title": "Update Kubernetes patch versions ({})".format(", ".join(str(v) for v in next_versions)),
+    "title": "Update Kubernetes patch versions ({})".format(
+        ", ".join(str(v) for v in next_versions)
+    ),
     "body": "\n".join(
         [
             (

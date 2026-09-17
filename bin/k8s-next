@@ -77,7 +77,9 @@ with latest_vars_file.open("w") as fh:
 # Create the env file
 env_file = (repo_root / "env" / "base" / latest_filename).with_suffix(".env")
 with env_file.open("w") as fh:
-    fh.write(f'PACKER_VAR_FILES="$PACKER_VAR_FILES,{latest_vars_file.relative_to(repo_root)}"\n')
+    fh.write(
+        f'PACKER_VAR_FILES="$PACKER_VAR_FILES,{latest_vars_file.relative_to(repo_root)}"\n'
+    )
 
 # Add the entry to the build file
 yaml = ruamel.yaml.YAML(typ="rt")
@@ -92,7 +94,13 @@ path = repo_root / ".github" / "builds.yaml"
 with path.open() as fh:
     builds = yaml.load(fh)
 
-builds.append(yaml.load(BUILD_TEMPLATE.format(distro="noble", major=latest_version.major, minor=latest_version.minor)))
+builds.append(
+    yaml.load(
+        BUILD_TEMPLATE.format(
+            distro="noble", major=latest_version.major, minor=latest_version.minor
+        )
+    )
+)
 
 with path.open("w") as fh:
     yaml.dump(builds, fh)
