@@ -124,9 +124,24 @@ jobs:
         run: git fetch --tags
         working-directory: ./vendor/image-builder
 
+      - name: Check if latest release is behind current commit
+        id: history
+        run: |
+          if [[ $(git log --pretty=oneline .."${STEPS_NEXT_OUTPUTS_VERSION}" | wc -l) -eq 0 ]]; then
+            # Next tag is behind or is the same as the current commit
+            echo "behind=true" >> "${GITHUB_OUTPUT}"
+          else
+            # Next tag is in front of the current commit
+            echo "behind=false" >> "${GITHUB_OUTPUT}"
+          fi
+        working-directory: ./vendor/image-builder
+        env:
+          STEPS_NEXT_OUTPUTS_VERSION: ${{ steps.next.outputs.version }}
+
       - name: Update image-builder submodule
         run: git checkout "${STEPS_NEXT_OUTPUTS_VERSION}"
         working-directory: ./vendor/image-builder
+        if: ${{ steps.history.outputs.behind == 'false' }}
         env:
           STEPS_NEXT_OUTPUTS_VERSION: ${{ steps.next.outputs.version }}
 
