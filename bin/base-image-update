@@ -12,7 +12,9 @@ import requests
 # This script updates the base images to the latest release
 #####
 
-parser = argparse.ArgumentParser(description="Updates an Ubuntu base image to the latest release.")
+parser = argparse.ArgumentParser(
+    description="Updates an Ubuntu base image to the latest release."
+)
 parser.add_argument(
     "distro",
     choices=["focal", "jammy", "noble"],
@@ -22,7 +24,9 @@ args = parser.parse_args()
 
 
 SERVER_URL = "https://cloud-images.ubuntu.com"
-RELEASES_URL = f"{SERVER_URL}/releases/streams/v1/com.ubuntu.cloud:released:download.json"
+RELEASES_URL = (
+    f"{SERVER_URL}/releases/streams/v1/com.ubuntu.cloud:released:download.json"
+)
 PRODUCT_KEYS = {
     "focal": "com.ubuntu.cloud:server:20.04:amd64",
     "jammy": "com.ubuntu.cloud:server:22.04:amd64",

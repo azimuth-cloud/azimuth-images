@@ -46,7 +46,9 @@ class GitHubClient:
         Returns a tuple of (latest commit, latest commit that built successfully).
         """
         commits_url = f"{self.API_URL}/repos/{self.repo}/commits"
-        default_branch = self._one(f"{self.API_URL}/repos/{self.repo}")["default_branch"]
+        default_branch = self._one(f"{self.API_URL}/repos/{self.repo}")[
+            "default_branch"
+        ]
         latest_commit = None
         latest_successful_commit = None
         for commit in self._iterate(commits_url, params={"sha": default_branch}):
@@ -128,7 +130,9 @@ def argparse_add_argument_with_envvar(parser, arg, envvar, **kwargs):
 
 def main():
     parser = argparse.ArgumentParser(description="Purges defunct images from S3.")
-    argparse_add_argument_with_envvar(parser, "--s3-host", "S3_HOST", help="The S3 host to use.", required=True)
+    argparse_add_argument_with_envvar(
+        parser, "--s3-host", "S3_HOST", help="The S3 host to use.", required=True
+    )
     argparse_add_argument_with_envvar(
         parser,
         "--s3-access-key",
@@ -143,8 +147,12 @@ def main():
         help="The S3 secret key to use.",
         required=True,
     )
-    argparse_add_argument_with_envvar(parser, "--s3-bucket", "S3_BUCKET", help="The S3 bucket to use.", required=True)
-    argparse_add_argument_with_envvar(parser, "--github-token", "GITHUB_TOKEN", help="The GitHub token to use.")
+    argparse_add_argument_with_envvar(
+        parser, "--s3-bucket", "S3_BUCKET", help="The S3 bucket to use.", required=True
+    )
+    argparse_add_argument_with_envvar(
+        parser, "--github-token", "GITHUB_TOKEN", help="The GitHub token to use."
+    )
     argparse_add_argument_with_envvar(
         parser,
         "--github-repository",
@@ -177,7 +185,7 @@ def main():
     print("[INFO ] fetching current S3 keys")
     # Exclude Flatcar artifacts (image + sysexts) — they are managed independently
     # of the Packer build cycle and must not be purged with old build manifests.
-    purge_keys = set(k for k in s3.list_keys() if not k.startswith("flatcar/"))
+    purge_keys = {k for k in s3.list_keys() if not k.startswith("flatcar/")}
     initial_key_count = len(purge_keys)
     print(f"[INFO ]   found {initial_key_count} keys (excluding flatcar/ prefix)")
 
@@ -194,7 +202,9 @@ def main():
             tag = tagged_commits[manifest_commit][0]
             print(f"[INFO ]   manifest corresponds to tag {tag} - keeping")
         else:
-            print("[WARN]   manifest and corresponding images and bundles will be purged")
+            print(
+                "[WARN]   manifest and corresponding images and bundles will be purged"
+            )
             continue
 
         print("[INFO ]   removing manifest files from keys to purge")

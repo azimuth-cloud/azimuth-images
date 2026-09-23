@@ -15,6 +15,7 @@ dev = [
     "pywinrm>=0.5.0",
     "requests>=2.34.2",
     "ruamel-yaml>=0.19.1",
+    "ruff>=0.16.8",
 ]
 
 [tool.uv]
@@ -23,14 +24,27 @@ package = false
 
 [tool.ruff]
 line-length = 88
+include = [
+    "bin/base-image-update",
+    "bin/flatcar-sysext-manifest",
+    "bin/k8s-next",
+    "bin/k8s-update",
+    "bin/purge-defunct",
+    "bin/tests/*",
+    ]
 
 [tool.pytest.ini_options]
 testpaths = ["bin/tests"]
 
 [tool.mypy]
-files = ["bin/generate-manifest", "bin/tests"]
+files = ["bin/generate-manifest", "bin/flatcar-sysext-update", "bin/tests"]
 strict = true
 disallow_untyped_defs = true
+scripts_are_modules = true
+
+[[tool.mypy.overrides]]
+module = ["boto3", "easysemver"]
+ignore_missing_imports = true
 
 [build-system]
 requires = ["hatchling", "hatch-vcs"]
