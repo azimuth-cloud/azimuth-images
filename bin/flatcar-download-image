@@ -11,4 +11,8 @@ curl -fSL \
 bunzip2 flatcar_production_openstack_image.img.bz2
 mv flatcar_production_openstack_image.img "${image_name}.img"
 
+curl -fSL \
+  "https://stable.release.flatcar-linux.net/amd64-usr/${FLATCAR_VERSION}/flatcar_production_image_sbom.json" \
+  -o "${image_name}-sbom.json"
+
 echo "image-name=${image_name}" >>"${GITHUB_OUTPUT:-/dev/stdout}"
