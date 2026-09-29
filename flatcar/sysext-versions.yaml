@@ -17,17 +17,17 @@ image:
     image_sbom_url: https://azimuth-images.stackhpc.cloud/flatcar/sysext-image/flatcar-stable-4757.2.0-aarch64-sbom.json
 sysexts:
   containerd:
-    version: 2.4.0
+    version: 2.4.1
     x86_64:
-      url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/containerd-2.4.0-x86-64.raw
-      checksum_sha512: sha512-e574f4a61ad73a0a959972d0d8426979df77043b0b8e4607ffc034763e3c95bc34533b17178fb686c5c5c92aed5b88a1a7f72b9c9da49c99203308bddd1b77f3
-      sbom_url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/containerd-2.4.0-x86-64-sbom.json
-      cosign_bundle_url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/containerd-2.4.0-x86-64.cosign.bundle
+      url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/containerd-2.4.1-x86-64.raw
+      checksum_sha512: sha512-a21781f42af00cccf956fb3beddbac6cf13959d0709ee19260a55ce6e1973d939ebe5faa908ddcb3dbbbac6ef37568d3afa4772cc3ce495d0dac0d4d4ed939f1
+      sbom_url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/containerd-2.4.1-x86-64-sbom.json
+      cosign_bundle_url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/containerd-2.4.1-x86-64.cosign.bundle
     aarch64:
-      url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/containerd-2.4.0-arm64.raw
-      checksum_sha512: sha512-b73cb97fca74c8a67dbdd7388a406cd614916a902945c1ddbd11cc1885a066709cb7d9ebf0737e241c5640c8170a89eddde18570b96caa45d4f88d3c7b0203a4
-      sbom_url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/containerd-2.4.0-arm64-sbom.json
-      cosign_bundle_url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/containerd-2.4.0-arm64.cosign.bundle
+      url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/containerd-2.4.1-arm64.raw
+      checksum_sha512: sha512-972e78a63e8066cf6eecf538e3a8c280058a5b03f117d9538a5f62de22e4260f4bc3db7612d4a4aeecf2e83a188a6db0138b363450928c45806358f1403c0f6d
+      sbom_url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/containerd-2.4.1-arm64-sbom.json
+      cosign_bundle_url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/containerd-2.4.1-arm64.cosign.bundle
   kubernetes:
     v1.34:
       version: v1.34.11
