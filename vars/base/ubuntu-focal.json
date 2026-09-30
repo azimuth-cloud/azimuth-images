@@ -1,4 +1,7 @@
 {
   "distro_name": "ubuntu-focal",
-  "ssh_username": "ubuntu"
+  "ssh_username": "ubuntu",
+  "hw_architecture": "x86_64",
+  "os_distro": "ubuntu",
+  "os_version": "20.04"
 }

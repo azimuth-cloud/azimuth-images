@@ -55,6 +55,7 @@ jobs:
             version_jsonpath: grafana_version
             component: monitoring
             regex: "\\d+\\.\\d+\\.\\d+"
+            version_suffix: "-distroless"
 
           - key: guacamole
             path: ./ansible/roles/linux-guacamole/defaults/main.yml
@@ -104,7 +105,7 @@ jobs:
         with:
           path: ${{ matrix.path }}
           updates: |
-            ${{ matrix.version_jsonpath }}=${{ steps.next.outputs.version }}
+            ${{ matrix.version_jsonpath }}=${{ steps.next.outputs.version }}${{ matrix.version_suffix || '' }}
 
       - name: Generate app token for PR
         uses: azimuth-cloud/github-actions/generate-app-token@master
@@ -119,14 +120,14 @@ jobs:
         with:
           token: ${{ steps.generate-app-token.outputs.token }}
           commit-message: >-
-            Update ${{ matrix.key }} to ${{ steps.next.outputs.version }}
+            Update ${{ matrix.key }} to ${{ steps.next.outputs.version }}${{ matrix.version_suffix || '' }}
           branch: update-dependency/${{ matrix.key }}
           delete-branch: true
           title: >-
-            Update ${{ matrix.key }} to ${{ steps.next.outputs.version }}
+            Update ${{ matrix.key }} to ${{ steps.next.outputs.version }}${{ matrix.version_suffix || '' }}
           body: >
             This PR was created automatically to update
-            ${{ matrix.key }} to ${{ steps.next.outputs.version }}.
+            ${{ matrix.key }} to ${{ steps.next.outputs.version }}${{ matrix.version_suffix || '' }}.
           labels: |
             automation
             dependency-update

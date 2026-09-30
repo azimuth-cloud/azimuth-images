@@ -40,6 +40,18 @@ variable "distro_name" {
   type = string
 }
 
+variable "hw_architecture" {
+  type = string
+}
+
+variable "os_distro" {
+  type = string
+}
+
+variable "os_version" {
+  type = string
+}
+
 variable "ssh_username" {
   type = string
 }
@@ -109,10 +121,6 @@ variable "containerd_arch" {
 }
 
 variable "containerd_cri_socket" {
-  type = string
-}
-
-variable "containerd_sha256" {
   type = string
 }
 
@@ -480,8 +488,6 @@ build {
       "--extra-vars",
       "containerd_cri_socket=${var.containerd_cri_socket}",
       "--extra-vars",
-      "containerd_sha256=${var.containerd_sha256}",
-      "--extra-vars",
       "containerd_url=${local.containerd_url}",
       "--extra-vars",
       "containerd_service_url=${local.containerd_service_url}",
@@ -614,6 +620,9 @@ build {
   post-processor "manifest" {
     custom_data = {
       kubernetes_version = var.kubernetes_semver
+      hw_architecture    = var.hw_architecture
+      os_distro          = var.os_distro
+      os_version         = var.os_version
     }
   }
 }

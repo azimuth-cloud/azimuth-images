@@ -1,8 +1,8 @@
 ---
 # yamllint disable rule:line-length
-name: Build, publish and test images
+name: Build, publish and test Ubuntu images
 
-on:  # yamllint disable-line rule:truthy
+on: # yamllint disable-line rule:truthy
   workflow_call:
     secrets:
       OS_CLOUDS:
@@ -28,8 +28,13 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Setup UV
+        uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+
       - name: Install script dependencies
-        run: pip install -r ./requirements.txt
+        run: |
+          uv sync --locked
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Get builds as JSON
         id: builds-as-json
@@ -49,8 +54,13 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Setup UV
+        uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+
       - name: Install script dependencies
-        run: pip install -r ./requirements.txt
+        run: |
+          uv sync --locked
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Write OpenStack credentials
         run: echo "$OS_CLOUDS" > ./clouds.yaml
@@ -80,8 +90,9 @@ jobs:
       actions: read
       contents: write
       packages: write
-      id-token: write  # required to get an OIDC token for signing
-      security-events: write  # required to upload SARIF files
+      id-token: write # required to get an OIDC token for signing
+      security-events: write # required to upload SARIF files
+      checks: write # to write check-runs statuses
     steps:
       - name: Check out the repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -93,6 +104,9 @@ jobs:
         run: echo "$OS_CLOUDS" > ./clouds.yaml
         env:
           OS_CLOUDS: ${{ secrets.OS_CLOUDS }}
+
+      - name: Setup UV
+        uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
 
       - name: Set up Packer environment
         run: ./bin/setup
@@ -145,13 +159,39 @@ jobs:
           output-file: "${{ steps.build-image.outputs.image-name }}-sbom.json"
           format: syft-json
 
-      - name: Fail if scan has CRITICAL vulnerabilities
+      - name: Scan sbom with Grype
         uses: anchore/scan-action@e1165082ffb1fe366ebaf02d8526e7c4989ea9d2 # v7.4.0
+        id: scan
         with:
           sbom: "${{ steps.build-image.outputs.image-name }}-sbom.json"
-          output-format: table
-          severity-cutoff: critical
+          severity-cutoff: low
           only-fixed: true
+          output-format: sarif
+          fail-build: false
+
+      - name: Analyse scan and fail workflow if fixed CRITICAL vulnerabilities are not ignored
+        run: |
+          pip install git+https://github.com/stackhpc/grype-analyse@main
+          GRYPE=$(find /tmp -name grype -type f 2>/dev/null | head -1)
+          if [ -z "$GRYPE" ]; then
+            echo "grype binary not found in /tmp"
+            exit 1
+          fi
+          $GRYPE \
+            -c "${GRYPE_CONFIG_FILE}" \
+            --only-fixed \
+            "sbom:${SBOM}" \
+            -o json \
+            --file "${GRYPE_OUTPUT_FILE}"
+          grype-analyse \
+            --config "${GRYPE_CONFIG_FILE}" \
+            --github-checks "${GRYPE_OUTPUT_FILE}"
+        env:
+          SBOM: ${{ steps.build-image.outputs.image-name }}-sbom.json
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GRYPE_ANALYSE_MATRIX: ${{ steps.build-image.outputs.image-name }}
+          GRYPE_OUTPUT_FILE: ${{ steps.build-image.outputs.image-name }}.grype.json
+          GRYPE_CONFIG_FILE: grype-config/${{ matrix.name }}.yaml
 
       - name: Publish image
         id: publish-image
@@ -195,7 +235,6 @@ jobs:
 
   delete_source_image:
     runs-on: ubuntu-latest
-    if: always()
     needs:
       - build_images
       - ensure_source_image
@@ -207,8 +246,13 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Setup UV
+        uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+
       - name: Install script dependencies
-        run: pip install -r ./requirements.txt
+        run: |
+          uv sync --locked
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Write OpenStack credentials
         run: echo "$OS_CLOUDS" > ./clouds.yaml
@@ -277,7 +321,6 @@ jobs:
     permissions:
       contents: read
     steps:
-
       # Check out the configuration repository
       - name: Set up Azimuth environment
         uses: azimuth-cloud/azimuth-config/.github/actions/setup@devel
@@ -328,8 +371,13 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y s3cmd
 
+      - name: Setup UV
+        uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+
       - name: Install script dependencies
-        run: pip install -r ./requirements.txt
+        run: |
+          uv sync --locked
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Write OpenStack credentials
         run: echo "$OS_CLOUDS" > ./clouds.yaml

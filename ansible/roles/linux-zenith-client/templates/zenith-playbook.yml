@@ -58,7 +58,7 @@
           # Connect options
           server_address: {{ zenith_client_sshd_host }}
           server_port: {{ zenith_client_sshd_port }}
-          forward_to_host: {{ ansible_default_ipv4.address if zenith_forward_to_host == 'HOST_IP' else zenith_forward_to_host }}
+          forward_to_host: {{ ansible_facts['default_ipv4']['address'] if zenith_forward_to_host == 'HOST_IP' else zenith_forward_to_host }}
           forward_to_port: {{ zenith_forward_to_port }}
 
           {% if zenith_client_config_extra -%}

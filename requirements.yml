@@ -1,24 +1,24 @@
 ---
 collections:
   - name: ansible.posix
-    version: 2.0.0
+    version: 2.2.2
   # - name: ansible.windows
   #   version: 1.10.0
   # - name: chocolatey.chocolatey
   #   version: 1.2.0
   - name: community.general
-    version: 12.3.0
+    version: 13.4.0
   # - name: community.windows
   #   version: 1.10.0
   - name: containers.podman
-    version: 1.19.1
+    version: 1.20.2
   - name: prometheus.prometheus
-    version: 0.30.0
+    version: 0.30.1
   - name: https://github.com/azimuth-cloud/ansible-collection-image-utils
     type: git
-    version: 0.2.0
+    version: 0.6.0
 
 roles:
   - src: https://github.com/stackhpc/ansible-role-os-manila-mount.git
     name: stackhpc.os-manila-mount
-    version: v24.5.0
+    version: v27.0.0

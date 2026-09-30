@@ -1,22 +1,17 @@
 ---
 name: Build and test main
 
-permissions:
-  contents: read
-  packages: write
-  # To report GitHub Actions status checks
-  statuses: write
-  security-events: write
-  id-token: write
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-on:  # yamllint disable-line rule:truthy
+on: # yamllint disable-line rule:truthy
   push:
     branches:
       - main
+    # The image build must run for every commit on main,
+    # otherwise a tag pointing at a "skipped" commit has no manifest
+    # to promote and the release workflow fails.
 
 jobs:
   # Build, publish and test the images
@@ -26,8 +21,9 @@ jobs:
       actions: read
       contents: write
       packages: write
-      id-token: write  # required to get an OIDC token for signing
-      security-events: write  # required to upload SARIF files
+      id-token: write # required to get an OIDC token for signing
+      security-events: write # required to upload SARIF files
+      checks: write
     secrets:
       OS_CLOUDS: ${{ secrets.OS_CLOUDS }}
       CLOUDFLARE_S3_ACCESS_KEY: ${{ secrets.CLOUDFLARE_S3_ACCESS_KEY }}

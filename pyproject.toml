@@ -1,0 +1,55 @@
+[project]
+name = "azimuth-images"
+dynamic = ["version"]
+requires-python = ">=3.12"
+
+[dependency-groups]
+dev = [
+    "ansible-core<2.19",
+    "boto3>=1.43.87",
+    "easysemver>=0.2.0",
+    "mypy>=2.3.1",
+    "passlib>=1.7.4",
+    "pytest>=9.1.1",
+    "python-openstackclient>=10.3.0",
+    "pywinrm>=0.5.0",
+    "requests>=2.34.2",
+    "ruamel-yaml>=0.19.1",
+    "ruff>=0.16.8",
+]
+
+[tool.uv]
+# we are not actually building a python package here
+package = false
+
+[tool.ruff]
+line-length = 88
+include = [
+    "bin/base-image-update",
+    "bin/flatcar-sysext-manifest",
+    "bin/k8s-next",
+    "bin/k8s-update",
+    "bin/purge-defunct",
+    "bin/tests/*",
+    ]
+
+[tool.pytest.ini_options]
+testpaths = ["bin/tests"]
+
+[tool.mypy]
+files = ["bin/generate-manifest", "bin/flatcar-sysext-update", "bin/tests"]
+strict = true
+disallow_untyped_defs = true
+scripts_are_modules = true
+
+[[tool.mypy.overrides]]
+module = ["boto3", "easysemver"]
+ignore_missing_imports = true
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+fallback-version = "0.0.1+unknown"

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -euxo pipefail
+
+cat <<EOF >~/.s3cfg
+host_base = ${S3_HOST}
+host_bucket = ${S3_HOST}
+access_key = ${S3_ACCESS_KEY}
+secret_key = ${S3_SECRET_KEY}
+use_https = True
+signurl_use_https = True
+EOF
+
+cosign sign-blob "${IMAGE_NAME}.img" --bundle "${IMAGE_NAME}.cosign.bundle" -y
+
+cosign verify-blob "${IMAGE_NAME}.img" --bundle "${IMAGE_NAME}.cosign.bundle" \
+  --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
+  --certificate-identity-regexp="https://github.com/azimuth-cloud/azimuth-images/.github/.*"
+
+s3cmd put "${IMAGE_NAME}.img" "s3://${S3_BUCKET}/flatcar/${IMAGE_NAME}.img"
+s3cmd put "${IMAGE_NAME}.cosign.bundle" "s3://${S3_BUCKET}/flatcar/${IMAGE_NAME}.cosign.bundle"
+s3cmd put "${IMAGE_NAME}-sbom.json" "s3://${S3_BUCKET}/flatcar/${IMAGE_NAME}-sbom.json"
+
+IMAGE_URL="${S3_HOST_PUBLIC_PATH}/flatcar/${IMAGE_NAME}.img"
+COSIGN_BUNDLE_URL="${S3_HOST_PUBLIC_PATH}/flatcar/${IMAGE_NAME}.cosign.bundle"
+IMAGE_SBOM_URL="${S3_HOST_PUBLIC_PATH}/flatcar/${IMAGE_NAME}-sbom.json"
+
+{
+  echo "image-url=${IMAGE_URL}"
+  echo "image-sbom-url=${IMAGE_SBOM_URL}"
+  echo "cosign-bundle-url=${COSIGN_BUNDLE_URL}"
+} >>"${GITHUB_OUTPUT:-/dev/stdout}"
