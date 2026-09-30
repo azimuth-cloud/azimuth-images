@@ -72,7 +72,11 @@ jobs:
       - name: Mount Flatcar image
         run: |
           sudo mkdir -p flatcar-mount
-          sudo guestmount -a "${IMAGE_NAME}.img" -i --ro -o allow_other flatcar-mount
+          sudo virt-filesystems --partitions --long -a "${IMAGE_NAME}.img"
+          sudo guestmount -a "${IMAGE_NAME}.img" --ro -o allow_other \
+            -m /dev/sda9:/ \
+            -m /dev/sda3:/usr \
+            flatcar-mount
         env:
           IMAGE_NAME: ${{ steps.download_image.outputs.image-name }}
 
