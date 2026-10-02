@@ -31,7 +31,6 @@ jobs:
     uses: ./.github/workflows/lint.yml
     permissions:
       contents: read
-      packages: write
       statuses: write
     needs:
       - fail_on_remote

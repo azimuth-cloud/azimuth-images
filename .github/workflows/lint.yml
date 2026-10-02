@@ -6,7 +6,6 @@ on: # yamllint disable-line rule:truthy
 
 permissions:
   contents: read
-  packages: write
   # To report GitHub Actions status checks
   statuses: write
 
@@ -16,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: read
       # To report GitHub Actions status checks
       statuses: write
 
