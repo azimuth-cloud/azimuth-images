@@ -171,7 +171,7 @@ jobs:
 
       - name: Analyse scan and fail workflow if fixed CRITICAL vulnerabilities are not ignored
         run: |
-          pip install git+https://github.com/stackhpc/grype-analyse@main
+          uv pip install git+https://github.com/stackhpc/grype-analyse@main
           GRYPE=$(find /tmp -name grype -type f 2>/dev/null | head -1)
           if [ -z "$GRYPE" ]; then
             echo "grype binary not found in /tmp"
