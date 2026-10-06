@@ -21,7 +21,6 @@ updates:
     allow:
       - dependency-name: "actions/*"
       - dependency-name: "azimuth-cloud/github-actions/*"
-      - dependency-name: "astral-sh/setup-uv@*"
 
     cooldown:
       default-days: 7
