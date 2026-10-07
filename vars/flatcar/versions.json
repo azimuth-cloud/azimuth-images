@@ -1,7 +1,7 @@
 {
-  "flatcar_version": "4593.2.3",
-  "flatcar_image_url": "",
-  "flatcar_image_sbom_url": "",
-  "flatcar_cosign_bundle_url": "",
+  "flatcar_version": "4757.2.1",
+  "flatcar_image_url": "https://azimuth-images.stackhpc.cloud/flatcar/flatcar-stable-4757.2.1.img",
+  "flatcar_image_sbom_url": "https://azimuth-images.stackhpc.cloud/flatcar/flatcar-stable-4757.2.1-sbom.json",
+  "flatcar_cosign_bundle_url": "https://azimuth-images.stackhpc.cloud/flatcar/flatcar-stable-4757.2.1.cosign.bundle",
   "containerd_version": "2.3.2"
 }
