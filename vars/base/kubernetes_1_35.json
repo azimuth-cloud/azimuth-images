@@ -2,5 +2,6 @@
   "kubernetes_deb_version": "1.35.8-*",
   "kubernetes_rpm_version": "1.35.8",
   "kubernetes_semver": "v1.35.8",
-  "kubernetes_series": "v1.35"
+  "kubernetes_series": "v1.35",
+  "crictl_version": "1.35.0"
 }
