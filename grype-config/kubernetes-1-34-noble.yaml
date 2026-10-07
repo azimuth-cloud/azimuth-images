@@ -73,6 +73,10 @@ ignore:
   - vulnerability: CVE-2025-22871
     package:
       location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  # FIXME: Vulnerable symbols found but version fixed by Kubernetes version
+  - vulnerability: CVE-2025-22871
+    package:
+      location: /usr/local/bin/crictl
   # FIXME: Vulnerable symbols found but no updated Ubuntu package
   - vulnerability: GO-2025-3563
     package:
@@ -85,6 +89,10 @@ ignore:
   - vulnerability: GO-2025-3563
     package:
       location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  # FIXME: Vulnerable symbols found but version fixed by Kubernetes version
+  - vulnerability: GO-2025-3563
+    package:
+      location: /usr/local/bin/crictl
   ### CVE-2025-39682
   # Fixed in 6.8.0-86.87 [https://ubuntu.com/security/CVE-2025-39682]
   - vulnerability: CVE-2025-39682
@@ -105,6 +113,10 @@ ignore:
   - vulnerability: CVE-2025-68121
     package:
       location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  # FIXME: Vulnerable but version is fixed by Kubernetes version
+  - vulnerability: CVE-2025-68121
+    package:
+      location: /usr/local/bin/crictl
   # FIXME: Vulnerable symbols found but no updated Ubuntu package
   - vulnerability: GO-2026-4337
     package:

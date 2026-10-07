@@ -105,6 +105,10 @@ ignore:
   - vulnerability: CVE-2025-68121
     package:
       location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  # FIXME: Vulnerable but version is fixed by Kubernetes version
+  - vulnerability: CVE-2025-68121
+    package:
+      location: /usr/local/bin/crictl
   # FIXME: Vulnerable symbols found but no updated Ubuntu package
   - vulnerability: GO-2026-4337
     package:
