@@ -70,6 +70,7 @@ data = {
     "kubernetes_rpm_version": f"{latest_version.format(prefix=False)}",
     "kubernetes_semver": str(latest_version),
     "kubernetes_series": f"{latest_version.prefix}{latest_version.major}.{latest_version.minor}",
+    "crictl_version": f"{latest_version.major}.{latest_version.minor}.0",
 }
 with latest_vars_file.open("w") as fh:
     json.dump(data, fh, indent=2)
