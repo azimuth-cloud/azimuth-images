@@ -769,6 +769,9 @@ ignore:
   ### CVE-2026-63994
   # Fixed in 6.8.0-146.146 [https://ubuntu.com/security/CVE-2026-63994]
   - vulnerability: CVE-2026-63994
+  ### CVE-2026-64000
+  # Fixed in 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-64000]
+  - vulnerability: CVE-2026-64000
   ### CVE-2026-64046
   # Fixed in 6.8.0-139.139 [https://ubuntu.com/security/CVE-2026-64046]
   - vulnerability: CVE-2026-64046
