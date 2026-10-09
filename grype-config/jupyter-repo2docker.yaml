@@ -745,9 +745,15 @@ ignore:
   - vulnerability: CVE-2026-9079
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
+  ### CVE-2026-63992
+  # Fixed in 6.8.0-146.146 [https://ubuntu.com/security/CVE-2026-63992]
+  - vulnerability: CVE-2026-63992
   ### CVE-2026-63993
   # Fixed in 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63993]
   - vulnerability: CVE-2026-63993
+  ### CVE-2026-63994
+  # Fixed in 6.8.0-146.146 [https://ubuntu.com/security/CVE-2026-63994]
+  - vulnerability: CVE-2026-63994
   ### GHSA-r277-6w6q-xmqw
   # Fixed in 13.1.2 [Grafana]
   - vulnerability: GHSA-r277-6w6q-xmqw
