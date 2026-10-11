@@ -65,3 +65,15 @@ sysexts:
         checksum_sha512: sha512-343e28927813429446e4ef508ac1e564d8d24ebbecde68cf3410206e4986d65ecf0d9cc1c37325938da8a64c4f9370598e52b2eba6bd9bded5846cb261893366
         sbom_url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/kubernetes-v1.36.5-arm64-sbom.json
         cosign_bundle_url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/kubernetes-v1.36.5-arm64.cosign.bundle
+    v1.37:
+      version: v1.37.1
+      x86_64:
+        url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/kubernetes-v1.37.1-x86-64.raw
+        checksum_sha512: sha512-e2cfbe5c4edbe917d41cfe59575217a276c717932874b35e9e03b77f5b563586030f1491d9b2758b7b2f456d474805da707ef92fd04a70cea9a0ebf4ea9879c9
+        sbom_url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/kubernetes-v1.37.1-x86-64-sbom.json
+        cosign_bundle_url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/kubernetes-v1.37.1-x86-64.cosign.bundle
+      aarch64:
+        url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/kubernetes-v1.37.1-arm64.raw
+        checksum_sha512: sha512-0c513206988cadcd55471d2858643b9f3e6a3e4868bad82be425f9f3ad3379fce9b7a26659797d358b238dc76d108da2221bfa8933ce1bf4a433daaebd3ab18b
+        sbom_url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/kubernetes-v1.37.1-arm64-sbom.json
+        cosign_bundle_url: https://azimuth-images.stackhpc.cloud/flatcar/sysexts/kubernetes-v1.37.1-arm64.cosign.bundle
