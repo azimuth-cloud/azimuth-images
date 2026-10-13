@@ -1,0 +1,81 @@
+#!/usr/bin/env python3
+
+import argparse
+import sys
+from io import StringIO
+
+from ruamel.yaml import YAML
+from ruamel.yaml.error import YAMLError
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Subtract a YAML list from the 'ignore' key of a base YAML file, preserving all comments and document markers.")
+    parser.add_argument("base_file", help="The primary YAML file to modify in-place.")
+    parser.add_argument("sub_file", help="The secondary YAML file containing the list of items to subtract.")
+
+    args = parser.parse_args()
+
+    yaml = YAML()
+    yaml.preserve_quotes = True
+    yaml.indent(mapping=2, sequence=4, offset=2)
+
+    try:
+        # 1. Read the base file
+        with open(args.base_file, 'r') as f1:
+            base_lines = f1.readlines()
+
+        preamble = []
+        yaml_lines = base_lines
+
+        # 2. Extract the header comments and the '---' marker safely
+        for i, line in enumerate(base_lines):
+            if line.rstrip() == '---':
+                preamble = base_lines[:i+1]
+                yaml_lines = base_lines[i+1:]
+                break
+
+        # 3. Parse only the YAML content (ignoring the preamble)
+        base_data = yaml.load("".join(yaml_lines)) or {}
+
+        with open(args.sub_file, 'r') as f2:
+            sub_list = yaml.load(f2) or []
+
+        if 'ignore' not in base_data:
+            print(f"Error: '{args.base_file}' does not contain an 'ignore' key.", file=sys.stderr)
+            sys.exit(1)
+
+        ignore_list = base_data['ignore']
+
+        if not isinstance(ignore_list, list) or not isinstance(sub_list, list):
+            print("Error: The 'ignore' key in the base file and the root of the sub file must both be lists.", file=sys.stderr)
+            sys.exit(1)
+
+        # 4. Iterate backwards and delete matches to preserve remaining order and attached comments
+        for i in range(len(ignore_list) - 1, -1, -1):
+            if ignore_list[i] in sub_list:
+                del ignore_list[i]
+
+        # 5. Dump the modified data to a string stream
+        out_stream = StringIO()
+        yaml.dump(base_data, out_stream)
+        dumped_yaml = out_stream.getvalue()
+
+        # 6. Overwrite the original base file: original preamble + updated YAML
+        with open(args.base_file, 'w') as f_out:
+            f_out.write("".join(preamble))
+            f_out.write(dumped_yaml)
+
+        print(f"Successfully updated '{args.base_file}' in place.")
+
+    except FileNotFoundError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+    except YAMLError as e:
+        print(f"Error parsing YAML: {e}", file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}", file=sys.stderr)
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
