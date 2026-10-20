@@ -28,7 +28,7 @@ jobs:
           persist-credentials: false
 
       - name: Run ansible-lint
-        uses: ansible/ansible-lint@5fac056c45595896c973fbde871f01f6cb14d74c # v26.4.0
+        uses: ansible/ansible-lint@9bce2bfb8f4a984e6b13767bc0d6bf0a49492164 # v26.10.1
         env:
           # Playbooks olnly support old versions of ansible, but the linter can't understand this.
           # Once we support the latest ansible, or the promethus dependency is updated, this can go away.
