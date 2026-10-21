@@ -993,6 +993,9 @@ ignore:
   - vulnerability: CVE-2026-9079
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
+  ### CVE-2026-15176
+  # Not vulnerable: NGINX only listening on localhost
+  - vulnerability: CVE-2026-15176
   ### CVE-2026-18924
   # Not vulnerable - cURL vulnerability inside nginx baseimage
   - vulnerability: CVE-2026-18924
@@ -1136,6 +1139,12 @@ ignore:
   ### CVE-2026-78663
   # FIXME: Golang standard libary resouce consumption vuln which is pervasive in go packages.
   - vulnerability: GO-2026-6612
+  ### CVE-2026-93479
+  # Not vulnerable: NGINX only listening on localhost
+  - vulnerability: CVE-2026-93479
+  ### CVE-2026-97205
+  # Not vulnerable: NGINX only listening on localhost
+  - vulnerability: CVE-2026-97205
   ### CVE-2026-100075
   # FIXME: Vulnerable, no fix 2026-10-06 [https://ubuntu.com/security/CVE-2026-100075]
   - vulnerability: CVE-2026-100075
