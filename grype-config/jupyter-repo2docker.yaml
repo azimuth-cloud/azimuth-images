@@ -745,6 +745,9 @@ ignore:
   - vulnerability: CVE-2026-9079
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
+  ### CVE-2026-56857
+  # Vulnerability is on Windows only.
+  - vulnerability: GO-2026-6604
   ### CVE-2026-63992
   # Fixed in 6.8.0-146.146 [https://ubuntu.com/security/CVE-2026-63992]
   - vulnerability: CVE-2026-63992
@@ -757,6 +760,21 @@ ignore:
   ### CVE-2026-64000
   # Fixed in 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-64000]
   - vulnerability: CVE-2026-64000
+  ### CVE-2026-64007
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-64007]
+  - vulnerability: CVE-2026-64007
+  ### CVE-2026-64018
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-139.139 [https://ubuntu.com/security/CVE-2026-64018]
+  - vulnerability: CVE-2026-64018
+  ### CVE-2026-64025
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-139.139 [https://ubuntu.com/security/CVE-2026-64025]
+  - vulnerability: CVE-2026-64025
+  ### CVE-2026-64033
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-139.139 [https://ubuntu.com/security/CVE-2026-64033]
+  - vulnerability: CVE-2026-64033
+  ### CVE-2026-64034
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-139.139 [https://ubuntu.com/security/CVE-2026-64034]
+  - vulnerability: CVE-2026-64034
   ### GHSA-r277-6w6q-xmqw
   # Fixed in 13.1.2 [Grafana]
   - vulnerability: GHSA-r277-6w6q-xmqw
@@ -834,6 +852,9 @@ ignore:
   ### CVE-2026-64450
   # FIXME: Vulnerable, no fix 2026-09-19 [https://ubuntu.com/security/CVE-2026-64450]
   - vulnerability: CVE-2026-64450
+  ### CVE-2026-78663
+  # FIXME: Golang standard libary resouce consumption vuln which is pervasive in go packages.
+  - vulnerability: GO-2026-6612
   ### CVE-2026-100075
   # FIXME: Vulnerable, no fix 2026-10-06 [https://ubuntu.com/security/CVE-2026-100075]
   - vulnerability: CVE-2026-100075
