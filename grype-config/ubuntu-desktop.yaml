@@ -767,7 +767,7 @@ ignore:
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-41293
-  # FIXME: Guacamole client image vulnerable 
+  # FIXME: Guacamole client image vulnerable
   - vulnerability: GHSA-r29c-68gh-xp6x
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
@@ -813,13 +813,13 @@ ignore:
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-42778
-  # FIXME: No update available for Guacamole client 2026-07-22, 
+  # FIXME: No update available for Guacamole client 2026-07-22,
   #        but limited exposure because it only listens on localhost
   #        [guacamole-client]
   - vulnerability: GHSA-995c-6rp3-4m4x
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
-  # FIXME: No update available for Guacamole client 2026-07-22, 
+  # FIXME: No update available for Guacamole client 2026-07-22,
   #        but limited exposure because it only listens on localhost
   #        [guacamole-client]
   - vulnerability: GHSA-vf5j-865m-mq7c
@@ -1021,32 +1021,32 @@ ignore:
   # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-53309]
   - vulnerability: CVE-2026-53309
   ### CVE-2026-8924
-  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image] 
-  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image] 
+  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image]
+  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image]
   - vulnerability: CVE-2026-8924
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-8925
-  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image] 
-  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image] 
+  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image]
+  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image]
   - vulnerability: CVE-2026-8925
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-8926
-  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image] 
-  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image] 
+  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image]
+  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image]
   - vulnerability: CVE-2026-8926
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-8927
-  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image] 
-  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image] 
+  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image]
+  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image]
   - vulnerability: CVE-2026-8927
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-9079
-  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image] 
-  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image] 
+  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image]
+  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image]
   - vulnerability: CVE-2026-9079
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
@@ -1132,7 +1132,7 @@ ignore:
   ### CVE-2026-64089
   # Fixed in 6.8.0-139.139 [https://ubuntu.com/security/CVE-2026-64089]
   - vulnerability: CVE-2026-64089
-  ### CVE-2026-64091 
+  ### CVE-2026-64091
   # FIXME: Vulnerable, no fix 2026-09-02 [https://ubuntu.com/security/CVE-2026-64091]
   - vulnerability: CVE-2026-64091
   ### CVE-2026-64102
@@ -1207,3 +1207,12 @@ ignore:
   ### CVE-2026-100075
   # FIXME: Vulnerable, no fix 2026-10-06 [https://ubuntu.com/security/CVE-2026-100075]
   - vulnerability: CVE-2026-100075
+  ### GHSA-6q48-6c7w-9gw2
+  # False positive: dev lockfile bundled with ansible collection is never installed
+  - vulnerability: GHSA-6q48-6c7w-9gw2
+    package:
+      location: /usr/lib/ansible-init/lib/python3.12/site-packages/ansible_collections/cisco/meraki/Pipfile.lock
+  # False positive: dev lockfile bundled with ansible collection is never installed
+  - vulnerability: GHSA-6q48-6c7w-9gw2
+    package:
+      location: /usr/lib/ansible-init/lib/python3.12/site-packages/ansible_collections/netbox/netbox/poetry.lock

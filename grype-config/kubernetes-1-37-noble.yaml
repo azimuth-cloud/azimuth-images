@@ -1,6 +1,5 @@
 # yamllint disable-file
 ---
-
 ignore:
   ### CVE-2024-24790
   # FIXME: Vulnerable symbols found but no updated Ubuntu package
@@ -167,7 +166,7 @@ ignore:
   - vulnerability: CVE-2026-27143
     package:
       location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
-   ### CVE-2026-31405
+    ### CVE-2026-31405
   # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-31405]
   - vulnerability: CVE-2026-31405
   ### CVE-2026-31414
@@ -218,7 +217,7 @@ ignore:
   ### CVE-2026-31705
   # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-31705]
   - vulnerability: CVE-2026-31705
- ### CVE-2026-33186
+  ### CVE-2026-33186
   # Not vulnerable, doesn't contain affected symbols
   - vulnerability: GHSA-p77j-4mvh-x3m3
     package:
@@ -235,7 +234,7 @@ ignore:
   - vulnerability: GHSA-p77j-4mvh-x3m3
     package:
       location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
- ### CVE-2026-39830
+  ### CVE-2026-39830
   # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
   - vulnerability: GHSA-vgwf-h737-ff37
     package:
@@ -318,7 +317,7 @@ ignore:
   - vulnerability: CVE-2026-39831
     package:
       location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
-### CVE-2026-39832
+  ### CVE-2026-39832
   # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
   - vulnerability: GHSA-f5wc-c3c7-36mc
     package:
@@ -730,7 +729,7 @@ ignore:
   ### CVE-2026-64089
   # Fixed in 6.8.0-139.139 [https://ubuntu.com/security/CVE-2026-64089]
   - vulnerability: CVE-2026-64089
-  ### CVE-2026-64091 
+  ### CVE-2026-64091
   # FIXME: Vulnerable, no fix 2026-09-02 [https://ubuntu.com/security/CVE-2026-64091]
   - vulnerability: CVE-2026-64091
   ### CVE-2026-64102
@@ -794,3 +793,12 @@ ignore:
   ### CVE-2026-100075
   # FIXME: Vulnerable, no fix 2026-10-06 [https://ubuntu.com/security/CVE-2026-100075]
   - vulnerability: CVE-2026-100075
+  ### GHSA-6q48-6c7w-9gw2
+  # False positive: dev lockfile bundled with ansible collection is never installed
+  - vulnerability: GHSA-6q48-6c7w-9gw2
+    package:
+      location: /usr/lib/ansible-init/lib/python3.12/site-packages/ansible_collections/cisco/meraki/Pipfile.lock
+  # False positive: dev lockfile bundled with ansible collection is never installed
+  - vulnerability: GHSA-6q48-6c7w-9gw2
+    package:
+      location: /usr/lib/ansible-init/lib/python3.12/site-packages/ansible_collections/netbox/netbox/poetry.lock

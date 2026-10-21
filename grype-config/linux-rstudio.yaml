@@ -1,6 +1,5 @@
 # yamllint disable-file
 ---
-
 ignore:
   ### CVE-2024-24790
   # FIXME: Vulnerable symbols found but no updated Ubuntu package
@@ -845,7 +844,7 @@ ignore:
   ### CVE-2026-64089
   # Fixed in 6.8.0-139.139 [https://ubuntu.com/security/CVE-2026-64089]
   - vulnerability: CVE-2026-64089
-  ### CVE-2026-64091 
+  ### CVE-2026-64091
   # FIXME: Vulnerable, no fix 2026-09-02 [https://ubuntu.com/security/CVE-2026-64091]
   - vulnerability: CVE-2026-64091
   ### CVE-2026-64102
@@ -909,3 +908,12 @@ ignore:
   ### CVE-2026-100075
   # FIXME: Vulnerable, no fix 2026-10-06 [https://ubuntu.com/security/CVE-2026-100075]
   - vulnerability: CVE-2026-100075
+  ### GHSA-6q48-6c7w-9gw2
+  # False positive: dev lockfile bundled with ansible collection is never installed
+  - vulnerability: GHSA-6q48-6c7w-9gw2
+    package:
+      location: /usr/lib/ansible-init/lib/python3.12/site-packages/ansible_collections/cisco/meraki/Pipfile.lock
+  # False positive: dev lockfile bundled with ansible collection is never installed
+  - vulnerability: GHSA-6q48-6c7w-9gw2
+    package:
+      location: /usr/lib/ansible-init/lib/python3.12/site-packages/ansible_collections/netbox/netbox/poetry.lock

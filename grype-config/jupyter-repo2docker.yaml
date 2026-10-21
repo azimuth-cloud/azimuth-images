@@ -899,3 +899,12 @@ ignore:
   ### CVE-2026-100075
   # FIXME: Vulnerable, no fix 2026-10-06 [https://ubuntu.com/security/CVE-2026-100075]
   - vulnerability: CVE-2026-100075
+  ### GHSA-6q48-6c7w-9gw2
+  # False positive: dev lockfile bundled with ansible collection is never installed
+  - vulnerability: GHSA-6q48-6c7w-9gw2
+    package:
+      location: /usr/lib/ansible-init/lib/python3.12/site-packages/ansible_collections/cisco/meraki/Pipfile.lock
+  # False positive: dev lockfile bundled with ansible collection is never installed
+  - vulnerability: GHSA-6q48-6c7w-9gw2
+    package:
+      location: /usr/lib/ansible-init/lib/python3.12/site-packages/ansible_collections/netbox/netbox/poetry.lock
