@@ -108,8 +108,14 @@ ignore:
   - vulnerability: GO-2024-3321
     package:
       location: /usr/bin/snap
+  - vulnerability: CVE-2024-45337
+    package:
+      location: /usr/bin/snap
   # FIXME: Vulnerable symbols found but no updated Ubuntu package
   - vulnerability: GO-2024-3321
+    package:
+      location: /usr/lib/snapd/**
+  - vulnerability: CVE-2024-45337
     package:
       location: /usr/lib/snapd/**
   ### CVE-2024-47685
@@ -506,9 +512,15 @@ ignore:
   - vulnerability: GO-2026-5019
     package:
       location: /usr/bin/apptainer
+  - vulnerability: CVE-2026-39831
+    package:
+      location: /usr/bin/apptainer
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5019
+    package:
+      location: /usr/bin/snap
+  - vulnerability: CVE-2026-39831
     package:
       location: /usr/bin/snap
   # Vulnerable symbols found but no updated Ubuntu package
@@ -516,14 +528,23 @@ ignore:
   - vulnerability: GO-2026-5019
     package:
       location: /usr/lib/snapd/**
+  - vulnerability: CVE-2026-39831
+    package:
+      location: /usr/lib/snapd/**
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5019
     package:
       location: /usr/libexec/apptainer/bin/**
+  - vulnerability: CVE-2026-39831
+    package:
+      location: /usr/libexec/apptainer/bin/**
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5019
+    package:
+      location: /usr/local/bin/node_exporter
+  - vulnerability: CVE-2026-39831
     package:
       location: /usr/local/bin/node_exporter
   # Vulnerable symbols found but no updated Ubuntu package
@@ -623,9 +644,15 @@ ignore:
   - vulnerability: GO-2026-5005
     package:
       location: /usr/bin/apptainer
+  - vulnerability: CVE-2026-39833
+    package:
+      location: /usr/bin/apptainer
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5005
+    package:
+      location: /usr/bin/snap
+  - vulnerability: CVE-2026-39833
     package:
       location: /usr/bin/snap
   # Vulnerable symbols found but no updated Ubuntu package
@@ -633,9 +660,15 @@ ignore:
   - vulnerability: GO-2026-5005
     package:
       location: /usr/lib/snapd/**
+  - vulnerability: CVE-2026-39833
+    package:
+      location: /usr/lib/snapd/**
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5005
+    package:
+      location: /usr/libexec/apptainer/bin/**
+  - vulnerability: CVE-2026-39833
     package:
       location: /usr/libexec/apptainer/bin/**
   # Vulnerable symbols found but no updated Ubuntu package
@@ -643,9 +676,15 @@ ignore:
   - vulnerability: GO-2026-5005
     package:
       location: /usr/local/bin/node_exporter
+  - vulnerability: CVE-2026-39833
+    package:
+      location: /usr/local/bin/node_exporter
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5005
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/**
+  - vulnerability: CVE-2026-39833
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-39834
@@ -654,9 +693,15 @@ ignore:
   - vulnerability: GO-2026-5020
     package:
       location: /usr/bin/apptainer
+  - vulnerability: CVE-2026-39834
+    package:
+      location: /usr/bin/apptainer
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5020
+    package:
+      location: /usr/bin/snap
+  - vulnerability: CVE-2026-39834
     package:
       location: /usr/bin/snap
   # Vulnerable symbols found but no updated Ubuntu package
@@ -664,9 +709,15 @@ ignore:
   - vulnerability: GO-2026-5020
     package:
       location: /usr/lib/snapd/**
+  - vulnerability: CVE-2026-39834
+    package:
+      location: /usr/lib/snapd/**
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5020
+    package:
+      location: /usr/libexec/apptainer/bin/**
+  - vulnerability: CVE-2026-39834
     package:
       location: /usr/libexec/apptainer/bin/**
   # Vulnerable symbols found but no updated Ubuntu package
@@ -674,9 +725,15 @@ ignore:
   - vulnerability: GO-2026-5020
     package:
       location: /usr/local/bin/node_exporter
+  - vulnerability: CVE-2026-39834
+    package:
+      location: /usr/local/bin/node_exporter
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5020
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/**
+  - vulnerability: CVE-2026-39834
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
   # Vulnerable symbols found but no updated Ubuntu package
@@ -1021,6 +1078,7 @@ ignore:
   ### CVE-2026-56857
   # Vulnerability is on Windows only.
   - vulnerability: GO-2026-6604
+  - vulnerability: CVE-2026-56857
   ### CVE-2026-63073
   # Fix backported by Debian to openssl-3.5.7-1~deb13u2 [nginx]
   - vulnerability: CVE-2026-63073
@@ -1139,6 +1197,7 @@ ignore:
   ### CVE-2026-78663
   # FIXME: Golang standard library resource consumption vuln which is pervasive in go packages.
   - vulnerability: GO-2026-6612
+  - vulnerability: CVE-2026-78663
   ### CVE-2026-93479
   # Not vulnerable: NGINX only listening on localhost
   - vulnerability: CVE-2026-93479

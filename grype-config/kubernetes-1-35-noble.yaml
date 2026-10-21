@@ -45,8 +45,14 @@ ignore:
   - vulnerability: GO-2024-3321
     package:
       location: /usr/bin/snap
+  - vulnerability: CVE-2024-45337
+    package:
+      location: /usr/bin/snap
   # FIXME: Vulnerable symbols found but no updated Ubuntu package
   - vulnerability: GO-2024-3321
+    package:
+      location: /usr/lib/snapd/**
+  - vulnerability: CVE-2024-45337
     package:
       location: /usr/lib/snapd/**
   # FIXME: Vulnerable symbols found but no updated Ubuntu package
@@ -280,8 +286,14 @@ ignore:
   - vulnerability: GO-2026-5019
     package:
       location: /usr/bin/kubeadm
+  - vulnerability: CVE-2026-39831
+    package:
+      location: /usr/bin/kubeadm
   # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5019
+    package:
+      location: /usr/bin/kubelet
+  - vulnerability: CVE-2026-39831
     package:
       location: /usr/bin/kubelet
   # Vulnerable symbols found but no updated Ubuntu package
@@ -289,13 +301,22 @@ ignore:
   - vulnerability: GO-2026-5019
     package:
       location: /usr/bin/snap
+  - vulnerability: CVE-2026-39831
+    package:
+      location: /usr/bin/snap
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5019
     package:
       location: /usr/lib/snapd/**
+  - vulnerability: CVE-2026-39831
+    package:
+      location: /usr/lib/snapd/**
   # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5019
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  - vulnerability: CVE-2026-39831
     package:
       location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
 ### CVE-2026-39832
@@ -326,8 +347,14 @@ ignore:
   - vulnerability: GO-2026-5005
     package:
       location: /usr/bin/kubeadm
+  - vulnerability: CVE-2026-39833
+    package:
+      location: /usr/bin/kubeadm
   # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5005
+    package:
+      location: /usr/bin/kubelet
+  - vulnerability: CVE-2026-39833
     package:
       location: /usr/bin/kubelet
   # Vulnerable symbols found but no updated Ubuntu package
@@ -335,13 +362,22 @@ ignore:
   - vulnerability: GO-2026-5005
     package:
       location: /usr/bin/snap
+  - vulnerability: CVE-2026-39833
+    package:
+      location: /usr/bin/snap
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5005
     package:
       location: /usr/lib/snapd/**
+  - vulnerability: CVE-2026-39833
+    package:
+      location: /usr/lib/snapd/**
   # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5005
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  - vulnerability: CVE-2026-39833
     package:
       location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
   # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
@@ -393,8 +429,14 @@ ignore:
   - vulnerability: GO-2026-5020
     package:
       location: /usr/bin/kubeadm
+  - vulnerability: CVE-2026-39834
+    package:
+      location: /usr/bin/kubeadm
   # Vulnerable symbols found but SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5020
+    package:
+      location: /usr/bin/kubelet
+  - vulnerability: CVE-2026-39834
     package:
       location: /usr/bin/kubelet
   # Vulnerable symbols found but no updated Ubuntu package
@@ -402,13 +444,22 @@ ignore:
   - vulnerability: GO-2026-5020
     package:
       location: /usr/bin/snap
+  - vulnerability: CVE-2026-39834
+    package:
+      location: /usr/bin/snap
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5020
     package:
       location: /usr/lib/snapd/**
+  - vulnerability: CVE-2026-39834
+    package:
+      location: /usr/lib/snapd/**
   # Vulnerable symbols found but SSH unlikely to be used so limited exploitability [coredns]
   - vulnerability: GO-2026-5020
+    package:
+      location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
+  - vulnerability: CVE-2026-39834
     package:
       location: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/**
   ### CVE-2026-42508
@@ -631,6 +682,7 @@ ignore:
   ### CVE-2026-56857
   # Vulnerability is on Windows only.
   - vulnerability: GO-2026-6604
+  - vulnerability: CVE-2026-56857
   ### CVE-2026-63795
   # FIXME: Vulnerable, no fix 2026-08-05 [https://ubuntu.com/security/CVE-2026-63795]
   - vulnerability: CVE-2026-63795
@@ -739,6 +791,7 @@ ignore:
   ### CVE-2026-78663
   # FIXME: Golang standard library resource consumption vuln which is pervasive in go packages.
   - vulnerability: GO-2026-6612
+  - vulnerability: CVE-2026-78663
   ### CVE-2026-100075
   # FIXME: Vulnerable, no fix 2026-10-06 [https://ubuntu.com/security/CVE-2026-100075]
   - vulnerability: CVE-2026-100075
