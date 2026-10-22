@@ -108,8 +108,14 @@ ignore:
   - vulnerability: GO-2024-3321
     package:
       location: /usr/bin/snap
+  - vulnerability: CVE-2024-45337
+    package:
+      location: /usr/bin/snap
   # FIXME: Vulnerable symbols found but no updated Ubuntu package
   - vulnerability: GO-2024-3321
+    package:
+      location: /usr/lib/snapd/**
+  - vulnerability: CVE-2024-45337
     package:
       location: /usr/lib/snapd/**
   ### CVE-2024-47685
@@ -506,9 +512,15 @@ ignore:
   - vulnerability: GO-2026-5019
     package:
       location: /usr/bin/apptainer
+  - vulnerability: CVE-2026-39831
+    package:
+      location: /usr/bin/apptainer
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5019
+    package:
+      location: /usr/bin/snap
+  - vulnerability: CVE-2026-39831
     package:
       location: /usr/bin/snap
   # Vulnerable symbols found but no updated Ubuntu package
@@ -516,14 +528,23 @@ ignore:
   - vulnerability: GO-2026-5019
     package:
       location: /usr/lib/snapd/**
+  - vulnerability: CVE-2026-39831
+    package:
+      location: /usr/lib/snapd/**
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5019
     package:
       location: /usr/libexec/apptainer/bin/**
+  - vulnerability: CVE-2026-39831
+    package:
+      location: /usr/libexec/apptainer/bin/**
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5019
+    package:
+      location: /usr/local/bin/node_exporter
+  - vulnerability: CVE-2026-39831
     package:
       location: /usr/local/bin/node_exporter
   # Vulnerable symbols found but no updated Ubuntu package
@@ -623,9 +644,15 @@ ignore:
   - vulnerability: GO-2026-5005
     package:
       location: /usr/bin/apptainer
+  - vulnerability: CVE-2026-39833
+    package:
+      location: /usr/bin/apptainer
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5005
+    package:
+      location: /usr/bin/snap
+  - vulnerability: CVE-2026-39833
     package:
       location: /usr/bin/snap
   # Vulnerable symbols found but no updated Ubuntu package
@@ -633,9 +660,15 @@ ignore:
   - vulnerability: GO-2026-5005
     package:
       location: /usr/lib/snapd/**
+  - vulnerability: CVE-2026-39833
+    package:
+      location: /usr/lib/snapd/**
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5005
+    package:
+      location: /usr/libexec/apptainer/bin/**
+  - vulnerability: CVE-2026-39833
     package:
       location: /usr/libexec/apptainer/bin/**
   # Vulnerable symbols found but no updated Ubuntu package
@@ -643,9 +676,15 @@ ignore:
   - vulnerability: GO-2026-5005
     package:
       location: /usr/local/bin/node_exporter
+  - vulnerability: CVE-2026-39833
+    package:
+      location: /usr/local/bin/node_exporter
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5005
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/**
+  - vulnerability: CVE-2026-39833
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-39834
@@ -654,9 +693,15 @@ ignore:
   - vulnerability: GO-2026-5020
     package:
       location: /usr/bin/apptainer
+  - vulnerability: CVE-2026-39834
+    package:
+      location: /usr/bin/apptainer
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5020
+    package:
+      location: /usr/bin/snap
+  - vulnerability: CVE-2026-39834
     package:
       location: /usr/bin/snap
   # Vulnerable symbols found but no updated Ubuntu package
@@ -664,9 +709,15 @@ ignore:
   - vulnerability: GO-2026-5020
     package:
       location: /usr/lib/snapd/**
+  - vulnerability: CVE-2026-39834
+    package:
+      location: /usr/lib/snapd/**
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5020
+    package:
+      location: /usr/libexec/apptainer/bin/**
+  - vulnerability: CVE-2026-39834
     package:
       location: /usr/libexec/apptainer/bin/**
   # Vulnerable symbols found but no updated Ubuntu package
@@ -674,9 +725,15 @@ ignore:
   - vulnerability: GO-2026-5020
     package:
       location: /usr/local/bin/node_exporter
+  - vulnerability: CVE-2026-39834
+    package:
+      location: /usr/local/bin/node_exporter
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5020
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/**
+  - vulnerability: CVE-2026-39834
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
   # Vulnerable symbols found but no updated Ubuntu package
@@ -710,7 +767,7 @@ ignore:
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-41293
-  # FIXME: Guacamole client image vulnerable 
+  # FIXME: Guacamole client image vulnerable
   - vulnerability: GHSA-r29c-68gh-xp6x
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
@@ -756,13 +813,13 @@ ignore:
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-42778
-  # FIXME: No update available for Guacamole client 2026-07-22, 
+  # FIXME: No update available for Guacamole client 2026-07-22,
   #        but limited exposure because it only listens on localhost
   #        [guacamole-client]
   - vulnerability: GHSA-995c-6rp3-4m4x
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
-  # FIXME: No update available for Guacamole client 2026-07-22, 
+  # FIXME: No update available for Guacamole client 2026-07-22,
   #        but limited exposure because it only listens on localhost
   #        [guacamole-client]
   - vulnerability: GHSA-vf5j-865m-mq7c
@@ -964,35 +1021,38 @@ ignore:
   # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-53309]
   - vulnerability: CVE-2026-53309
   ### CVE-2026-8924
-  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image] 
-  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image] 
+  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image]
+  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image]
   - vulnerability: CVE-2026-8924
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-8925
-  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image] 
-  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image] 
+  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image]
+  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image]
   - vulnerability: CVE-2026-8925
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-8926
-  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image] 
-  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image] 
+  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image]
+  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image]
   - vulnerability: CVE-2026-8926
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-8927
-  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image] 
-  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image] 
+  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image]
+  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image]
   - vulnerability: CVE-2026-8927
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-9079
-  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image] 
-  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image] 
+  # Not vulnerable - NGINX only listenig on localhost and no use of cURL [nginx image]
+  # Not vulnerable - Guacamole only listenig on localhost and no use of cURL [guacamole image]
   - vulnerability: CVE-2026-9079
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
+  ### CVE-2026-15176
+  # Not vulnerable: NGINX only listening on localhost
+  - vulnerability: CVE-2026-15176
   ### CVE-2026-18924
   # Not vulnerable - cURL vulnerability inside nginx baseimage
   - vulnerability: CVE-2026-18924
@@ -1015,6 +1075,10 @@ ignore:
   ### CVE-2026-53399
   # FIXME: Vulnerable, no fix 2026-08-05 [https://ubuntu.com/security/CVE-2026-53399]
   - vulnerability: CVE-2026-53399
+  ### CVE-2026-56857
+  # Vulnerability is on Windows only.
+  - vulnerability: GO-2026-6604
+  - vulnerability: CVE-2026-56857
   ### CVE-2026-63073
   # Fix backported by Debian to openssl-3.5.7-1~deb13u2 [nginx]
   - vulnerability: CVE-2026-63073
@@ -1026,6 +1090,9 @@ ignore:
   ### CVE-2026-63800
   # FIXME: Vulnerable, no fix 2026-08-05 [https://ubuntu.com/security/CVE-2026-63800]
   - vulnerability: CVE-2026-63800
+  ### CVE-2026-63940
+  # FIXME: Fixed in 6.8.0-147.147 but not in the image yet 2026-10-22 [https://ubuntu.com/security/CVE-2026-63940]
+  - vulnerability: CVE-2026-63940
   ### CVE-2026-63992
   # Fixed in 6.8.0-146.146 [https://ubuntu.com/security/CVE-2026-63992]
   - vulnerability: CVE-2026-63992
@@ -1038,6 +1105,21 @@ ignore:
   ### CVE-2026-64000
   # Fixed in 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-64000]
   - vulnerability: CVE-2026-64000
+  ### CVE-2026-64007
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-64007]
+  - vulnerability: CVE-2026-64007
+  ### CVE-2026-64018
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-139.139 [https://ubuntu.com/security/CVE-2026-64018]
+  - vulnerability: CVE-2026-64018
+  ### CVE-2026-64025
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-139.139 [https://ubuntu.com/security/CVE-2026-64025]
+  - vulnerability: CVE-2026-64025
+  ### CVE-2026-64033
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-139.139 [https://ubuntu.com/security/CVE-2026-64033]
+  - vulnerability: CVE-2026-64033
+  ### CVE-2026-64034
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-139.139 [https://ubuntu.com/security/CVE-2026-64034]
+  - vulnerability: CVE-2026-64034
   ### CVE-2026-64046
   # Fixed in 6.8.0-139.139 [https://ubuntu.com/security/CVE-2026-64046]
   - vulnerability: CVE-2026-64046
@@ -1053,7 +1135,7 @@ ignore:
   ### CVE-2026-64089
   # Fixed in 6.8.0-139.139 [https://ubuntu.com/security/CVE-2026-64089]
   - vulnerability: CVE-2026-64089
-  ### CVE-2026-64091 
+  ### CVE-2026-64091
   # FIXME: Vulnerable, no fix 2026-09-02 [https://ubuntu.com/security/CVE-2026-64091]
   - vulnerability: CVE-2026-64091
   ### CVE-2026-64102
@@ -1110,11 +1192,45 @@ ignore:
   ### CVE-2026-64450
   # FIXME: Vulnerable, no fix 2026-09-19 [https://ubuntu.com/security/CVE-2026-64450]
   - vulnerability: CVE-2026-64450
+  ### CVE-2026-64535
+  # FIXME: Fixed in 6.8.0-147.147 but not in the image yet 2026-10-22 [https://ubuntu.com/security/CVE-2026-64535]
+  - vulnerability: CVE-2026-64535
+  ### CVE-2026-64564
+  # FIXME: Fixed in 6.8.0-147.147 but not in the image yet 2026-10-22 [https://ubuntu.com/security/CVE-2026-64564]
+  - vulnerability: CVE-2026-64564
+  ### CVE-2026-72399
+  # FIXME: Fixed in 6.8.0-147.147 but not in the image yet 2026-10-22
+  - vulnerability: CVE-2026-72399
+  ### CVE-2026-74345
+  # FIXME: Fixed in 6.8.0-147.147 but not in the image yet 2026-10-22
+  - vulnerability: CVE-2026-74345
+  ### CVE-2026-74394
+  # IXME: Fixed in 6.8.0-147.147 but not in the image yet 2026-10-22
+  - vulnerability: CVE-2026-74394
   ### CVE-2026-75803
   # Fix backported by Debian to openssl-3.5.7-1~deb13u2 [nginx]
   - vulnerability: CVE-2026-75803
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
+  ### CVE-2026-78663
+  # FIXME: Golang standard library resource consumption vuln which is pervasive in go packages.
+  - vulnerability: GO-2026-6612
+  - vulnerability: CVE-2026-78663
+  ### CVE-2026-93479
+  # Not vulnerable: NGINX only listening on localhost
+  - vulnerability: CVE-2026-93479
+  ### CVE-2026-97205
+  # Not vulnerable: NGINX only listening on localhost
+  - vulnerability: CVE-2026-97205
   ### CVE-2026-100075
   # FIXME: Vulnerable, no fix 2026-10-06 [https://ubuntu.com/security/CVE-2026-100075]
   - vulnerability: CVE-2026-100075
+  ### GHSA-6q48-6c7w-9gw2
+  # False positive: dev lockfile bundled with ansible collection is never installed
+  - vulnerability: GHSA-6q48-6c7w-9gw2
+    package:
+      location: /usr/lib/ansible-init/lib/python3.12/site-packages/ansible_collections/cisco/meraki/Pipfile.lock
+  # False positive: dev lockfile bundled with ansible collection is never installed
+  - vulnerability: GHSA-6q48-6c7w-9gw2
+    package:
+      location: /usr/lib/ansible-init/lib/python3.12/site-packages/ansible_collections/netbox/netbox/poetry.lock
