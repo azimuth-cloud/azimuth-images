@@ -788,6 +788,21 @@ ignore:
   # Vulnerability is on Windows only.
   - vulnerability: GO-2026-6604
   - vulnerability: CVE-2026-56857
+  ### CVE-2026-63808
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-147.147 [https://ubuntu.com/security/CVE-2026-63808]
+  - vulnerability: CVE-2026-63808
+  ### CVE-2026-63830
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-147.147 [https://ubuntu.com/security/CVE-2026-63830]
+  - vulnerability: CVE-2026-63830
+  ### CVE-2026-63886
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63886]
+  - vulnerability: CVE-2026-63886
+  ### CVE-2026-63887
+  # Backported fix in 6.8.0.142.142
+  - vulnerability: CVE-2026-63887
+  ### CVE-2026-63924
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63924]
+  - vulnerability: CVE-2026-63924
   ### CVE-2026-63940
   # FIXME: Fixed in 6.8.0-147.147 but not in the image yet 2026-10-22 [https://ubuntu.com/security/CVE-2026-63940]
   - vulnerability: CVE-2026-63940
