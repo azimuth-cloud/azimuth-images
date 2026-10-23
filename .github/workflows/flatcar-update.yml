@@ -1,7 +1,7 @@
 ---
 name: Update Flatcar stable version
 
-on:  # yamllint disable-line rule:truthy
+on: # yamllint disable-line rule:truthy
   # Allow manual executions
   workflow_dispatch:
   # Run nightly
@@ -94,6 +94,7 @@ jobs:
           sbom: "${{ steps.download_image.outputs.image-name }}-sbom.json"
           output-format: table
           severity-cutoff: critical
+          grype-version: v0.121.0
           only-fixed: true
           fail-build: "false"
 
