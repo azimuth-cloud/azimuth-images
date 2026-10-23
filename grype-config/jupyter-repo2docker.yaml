@@ -14,15 +14,7 @@ ignore:
   # FIXME: Vulnerable symbols found but no updated Ubuntu package
   - vulnerability: GO-2024-2887
     package:
-      location: /usr/bin/snap
-  # FIXME: Vulnerable symbols found but no updated Ubuntu package
-  - vulnerability: GO-2024-2887
-    package:
       location: /usr/lib/cni/**
-  # FIXME: Vulnerable symbols found but no updated Ubuntu package
-  - vulnerability: GO-2024-2887
-    package:
-      location: /usr/lib/snapd/**
   # FIXME: Vulnerable symbols found but no updated Ubuntu package
   - vulnerability: GO-2024-2887
     package:
@@ -38,15 +30,7 @@ ignore:
   # FIXME: Vulnerable symbols found but no updated Ubuntu package
   - vulnerability: CVE-2024-24790
     package:
-      location: /usr/bin/snap
-  # FIXME: Vulnerable symbols found but no updated Ubuntu package
-  - vulnerability: CVE-2024-24790
-    package:
       location: /usr/lib/cni/**
-  # FIXME: Vulnerable symbols found but no updated Ubuntu package
-  - vulnerability: CVE-2024-24790
-    package:
-      location: /usr/lib/snapd/**
   # FIXME: Vulnerable symbols found but no updated Ubuntu package
   - vulnerability: CVE-2024-24790
     package:
@@ -72,29 +56,6 @@ ignore:
   ### CVE-2024-39462
   # Fixed in 6.8.0-44.44 [https://ubuntu.com/security/CVE-2024-39462]
   - vulnerability: CVE-2024-39462
-  ### CVE-2024-45337
-  # FIXME: Vulnerable symbols found but no updated Ubuntu package
-  - vulnerability: GHSA-v778-237x-gjrc
-    package:
-      location: /usr/bin/snap
-  # FIXME: Vulnerable symbols found but no updated Ubuntu package
-  - vulnerability: GHSA-v778-237x-gjrc
-    package:
-      location: /usr/lib/snapd/**
-  # FIXME: Vulnerable symbols found but no updated Ubuntu package
-  - vulnerability: GO-2024-3321
-    package:
-      location: /usr/bin/snap
-  - vulnerability: CVE-2024-45337
-    package:
-      location: /usr/bin/snap
-  # FIXME: Vulnerable symbols found but no updated Ubuntu package
-  - vulnerability: GO-2024-3321
-    package:
-      location: /usr/lib/snapd/**
-  - vulnerability: CVE-2024-45337
-    package:
-      location: /usr/lib/snapd/**
   ### CVE-2024-47685
   # Fixed in 6.8.0-54.56 [https://ubuntu.com/security/CVE-2024-47685]
   - vulnerability: CVE-2024-47685
@@ -107,10 +68,6 @@ ignore:
   - vulnerability: GO-2025-3563
     package:
       location: /usr/bin/podman
-  # FIXME: Vulnerable symbols found but no updated Ubuntu package
-  - vulnerability: GO-2025-3563
-    package:
-      location: /usr/bin/snap
   # FIXME: Vulnerable symbols found but no updated Ubuntu package
   - vulnerability: GO-2025-3563
     package:
@@ -131,10 +88,6 @@ ignore:
   - vulnerability: CVE-2025-22871
     package:
       location: /usr/bin/podman
-  # FIXME: Vulnerable symbols found but no updated Ubuntu package
-  - vulnerability: CVE-2025-22871
-    package:
-      location: /usr/bin/snap
   # FIXME: Vulnerable symbols found but no updated Ubuntu package
   - vulnerability: CVE-2025-22871
     package:
@@ -182,10 +135,6 @@ ignore:
   # FIXME: Vulnerable symbols found but no updated Ubuntu package
   - vulnerability: GO-2026-4337
     package:
-      location: /usr/bin/snap
-  # FIXME: Vulnerable symbols found but no updated Ubuntu package
-  - vulnerability: GO-2026-4337
-    package:
       location: /usr/lib/cni/**
   # FIXME: Vulnerable symbols found but no updated Ubuntu package
   - vulnerability: GO-2026-4337
@@ -227,10 +176,6 @@ ignore:
   - vulnerability: CVE-2025-68121
     package:
       location: /usr/bin/runc
-  # FIXME: Vulnerable symbols found but no updated Ubuntu package
-  - vulnerability: CVE-2025-68121
-    package:
-      location: /usr/bin/snap
   # FIXME: Vulnerable symbols found but no updated Ubuntu package
   - vulnerability: CVE-2025-68121
     package:
@@ -259,63 +204,6 @@ ignore:
   ### CVE-2026-23455
   # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-23455]
   - vulnerability: CVE-2026-23455
-  ### CVE-2026-27143
-  # Invalid, no vulnerable symbols included in binary
-  - vulnerability: CVE-2026-27143
-    package:
-      location: /usr/bin/buildah
-  # Invalid, no vulnerable symbols included in binary
-  - vulnerability: CVE-2026-27143
-    package:
-      location: /usr/bin/fs-idmap
-  # Invalid, no vulnerable symbols included in binary
-  - vulnerability: CVE-2026-27143
-    package:
-      location: /usr/bin/memfd-bind
-  # Invalid, no vulnerable symbols included in binary
-  - vulnerability: CVE-2026-27143
-    package:
-      location: /usr/bin/pidfd-kill
-  # Invalid, no vulnerable symbols included in binary
-  - vulnerability: CVE-2026-27143
-    package:
-      location: /usr/bin/podman
-  # Invalid, no vulnerable symbols included in binary
-  - vulnerability: CVE-2026-27143
-    package:
-      location: /usr/bin/remap-rootfs
-  # Invalid, no vulnerable symbols included in binary
-  - vulnerability: CVE-2026-27143
-    package:
-      location: /usr/bin/runc
-  # Invalid, no vulnerable symbols included in binary
-  - vulnerability: CVE-2026-27143
-    package:
-      location: /usr/bin/snap
-  # Invalid, no vulnerable symbols included in binary
-  - vulnerability: CVE-2026-27143
-    package:
-      location: /usr/lib/cni/**
-  # Invalid, no vulnerable symbols included in binary
-  - vulnerability: CVE-2026-27143
-    package:
-      location: /usr/lib/snapd/**
-  # Invalid, no vulnerable symbols included in binary
-  - vulnerability: CVE-2026-27143
-    package:
-      location: /usr/libexec/podman/**
-  # Invalid, no vulnerable symbols included in binary [gpx_grafana-opentsdb-datasource_linux_amd64]
-  - vulnerability: CVE-2026-27143
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/**
-  # Invalid, no vulnerable symbols included in binary
-  - vulnerability: CVE-2026-27143
-    package:
-      location: /usr/local/bin/node_exporter
-  # Invalid, no vulnerable symbols included in binary
-  - vulnerability: CVE-2026-27143
-    package:
-      location: /usr/sbin/runc
   ### CVE-2026-31405
   # FIXME: Vulnerable, no fix 2026-07-20 [https://ubuntu.com/security/CVE-2026-31405]
   - vulnerability: CVE-2026-31405
@@ -372,11 +260,6 @@ ignore:
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GHSA-vgwf-h737-ff37
     package:
-      location: /usr/bin/snap
-  # Vulnerable symbols found but no updated Ubuntu package
-  # SSH unlikely to be used so limited exploitability
-  - vulnerability: GHSA-vgwf-h737-ff37
-    package:
       location: /usr/lib/snapd/**
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
@@ -388,25 +271,12 @@ ignore:
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GHSA-89gr-r52h-f8rx
     package:
-      location: /usr/bin/snap
-  # Vulnerable symbols found but no updated Ubuntu package
-  # SSH unlikely to be used so limited exploitability
-  - vulnerability: GHSA-89gr-r52h-f8rx
-    package:
       location: /usr/lib/snapd/**
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GHSA-89gr-r52h-f8rx
     package:
       location: /usr/local/bin/node_exporter
-  # Vulnerable symbols found but no updated Ubuntu package
-  # SSH unlikely to be used so limited exploitability
-  - vulnerability: GO-2026-5019
-    package:
-      location: /usr/bin/snap
-  - vulnerability: CVE-2026-39831
-    package:
-      location: /usr/bin/snap
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5019
@@ -428,35 +298,17 @@ ignore:
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GHSA-f5wc-c3c7-36mc
     package:
-      location: /usr/bin/snap
-  # Vulnerable symbols found but no updated Ubuntu package
-  # SSH unlikely to be used so limited exploitability
-  - vulnerability: GHSA-f5wc-c3c7-36mc
-    package:
       location: /usr/lib/snapd/**
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GHSA-f5wc-c3c7-36mc
     package:
       location: /usr/local/bin/node_exporter
-  # Vulnerable symbols found but no updated Ubuntu package
-  # SSH unlikely to be used so limited exploitability
-  - vulnerability: GHSA-f5wc-c3c7-36mc
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-39833
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5005
     package:
-      location: /usr/bin/snap
-  - vulnerability: CVE-2026-39833
-    package:
-      location: /usr/bin/snap
-  # Vulnerable symbols found but no updated Ubuntu package
-  # SSH unlikely to be used so limited exploitability
-  - vulnerability: GO-2026-5005
-    package:
       location: /usr/lib/snapd/**
   - vulnerability: CVE-2026-39833
     package:
@@ -471,19 +323,6 @@ ignore:
       location: /usr/local/bin/node_exporter
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
-  - vulnerability: GO-2026-5005
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/**
-  - vulnerability: CVE-2026-39833
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/**
-  # Vulnerable symbols found but no updated Ubuntu package
-  # SSH unlikely to be used so limited exploitability
-  - vulnerability: GHSA-jppx-rxg9-jmrx
-    package:
-      location: /usr/bin/snap
-  # Vulnerable symbols found but no updated Ubuntu package
-  # SSH unlikely to be used so limited exploitability
   - vulnerability: GHSA-jppx-rxg9-jmrx
     package:
       location: /usr/lib/snapd/**
@@ -492,40 +331,17 @@ ignore:
   - vulnerability: GHSA-jppx-rxg9-jmrx
     package:
       location: /usr/local/bin/node_exporter
-  # Vulnerable symbols found but no updated Ubuntu package
-  # SSH unlikely to be used so limited exploitability
-  - vulnerability: GHSA-jppx-rxg9-jmrx
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-39834
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GHSA-rm3j-f69w-wqmq
     package:
-      location: /usr/bin/snap
-  # Vulnerable symbols found but no updated Ubuntu package
-  # SSH unlikely to be used so limited exploitability
-  - vulnerability: GHSA-rm3j-f69w-wqmq
-    package:
       location: /usr/lib/snapd/**
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GHSA-rm3j-f69w-wqmq
     package:
       location: /usr/local/bin/node_exporter
-  # Vulnerable symbols found but no updated Ubuntu package
-  # SSH unlikely to be used so limited exploitability
-  - vulnerability: GHSA-rm3j-f69w-wqmq
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/**
-  # Vulnerable symbols found but no updated Ubuntu package
-  # SSH unlikely to be used so limited exploitability
-  - vulnerability: GO-2026-5020
-    package:
-      location: /usr/bin/snap
-  - vulnerability: CVE-2026-39834
-    package:
-      location: /usr/bin/snap
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GO-2026-5020
@@ -542,35 +358,17 @@ ignore:
   - vulnerability: CVE-2026-39834
     package:
       location: /usr/local/bin/node_exporter
-  # Vulnerable symbols found but no updated Ubuntu package
-  # SSH unlikely to be used so limited exploitability
-  - vulnerability: GO-2026-5020
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/**
-  - vulnerability: CVE-2026-39834
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-42508
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GHSA-5cgq-3rg8-m6cv
     package:
-      location: /usr/bin/snap
-  # Vulnerable symbols found but no updated Ubuntu package
-  # SSH unlikely to be used so limited exploitability
-  - vulnerability: GHSA-5cgq-3rg8-m6cv
-    package:
       location: /usr/lib/snapd/**
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GHSA-5cgq-3rg8-m6cv
     package:
       location: /usr/local/bin/node_exporter
-  # Vulnerable symbols found but no updated Ubuntu package
-  # SSH unlikely to be used so limited exploitability
-  - vulnerability: GHSA-5cgq-3rg8-m6cv
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-43011
   # Fixed in 6.8.0-134.134 [https://ubuntu.com/security/CVE-2026-43011]
   - vulnerability: CVE-2026-43011
@@ -651,22 +449,12 @@ ignore:
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GHSA-x527-x647-q7gg
     package:
-      location: /usr/bin/snap
-  # Vulnerable symbols found but no updated Ubuntu package
-  # SSH unlikely to be used so limited exploitability
-  - vulnerability: GHSA-x527-x647-q7gg
-    package:
       location: /usr/lib/snapd/**
   # Vulnerable symbols found but no updated Ubuntu package
   # SSH unlikely to be used so limited exploitability
   - vulnerability: GHSA-x527-x647-q7gg
     package:
       location: /usr/local/bin/node_exporter
-  # Vulnerable symbols found but no updated Ubuntu package
-  # SSH unlikely to be used so limited exploitability
-  - vulnerability: GHSA-x527-x647-q7gg
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-52914
   # Fixed in 6.8.0-137.137 [https://ubuntu.com/security/CVE-2026-52914]
   - vulnerability: CVE-2026-52914
@@ -682,9 +470,6 @@ ignore:
   ### CVE-2026-52986
   # Fixed in 6.8.0-136.136 [https://ubuntu.com/security/CVE-2026-52986]
   - vulnerability: CVE-2026-52986
-  ### CVE-2026-52989
-  # Fixed in 6.8.0-136.136 [https://ubuntu.com/security/CVE-2026-52989]
-  - vulnerability: CVE-2026-52989
   ### CVE-2026-52955
   # Fixed in 6.8.0-136.136 [https://ubuntu.com/security/CVE-2026-52989]
   - vulnerability: CVE-2026-52955
@@ -769,28 +554,25 @@ ignore:
   ### CVE-2026-63800
   # FIXME: Vulnerable, no fix 2026-08-05 [https://ubuntu.com/security/CVE-2026-63800]
   - vulnerability: CVE-2026-63800
-  ### CVE-2026-8926
-  # Not vulnerable, no use of cURL .netrc in Grafana OCI image
-  - vulnerability: CVE-2026-8926
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/**
-  ### CVE-2026-8927
-  # Not vulnerable, no use of cURL in Grafana OCI image
-  - vulnerability: CVE-2026-8927
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/**
-  ### CVE-2026-9079
-  # Not vulnerable, no use of cURL in Grafana OCI image
-  - vulnerability: CVE-2026-9079
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-56857
   # Vulnerability is on Windows only.
   - vulnerability: GO-2026-6604
   - vulnerability: CVE-2026-56857
-  ### CVE-2026-63940
-  # FIXME: Fixed in 6.8.0-147.147 but not in the image yet 2026-10-22 [https://ubuntu.com/security/CVE-2026-63940]
-  - vulnerability: CVE-2026-63940
+  ### CVE-2026-63808
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-147.147 [https://ubuntu.com/security/CVE-2026-63808]
+  - vulnerability: CVE-2026-63808
+  ### CVE-2026-63830
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-147.147 [https://ubuntu.com/security/CVE-2026-63830]
+  - vulnerability: CVE-2026-63830
+  ### CVE-2026-63886
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63886]
+  - vulnerability: CVE-2026-63886
+  ### CVE-2026-63887
+  # Backported fix in 6.8.0.142.142
+  - vulnerability: CVE-2026-63887
+  ### CVE-2026-63924
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63924]
+  - vulnerability: CVE-2026-63924
   ### CVE-2026-63992
   # Fixed in 6.8.0-146.146 [https://ubuntu.com/security/CVE-2026-63992]
   - vulnerability: CVE-2026-63992
@@ -818,11 +600,6 @@ ignore:
   ### CVE-2026-64034
   # Not vulnerable: fix backported in Ubuntu linux 6.8.0-139.139 [https://ubuntu.com/security/CVE-2026-64034]
   - vulnerability: CVE-2026-64034
-  ### GHSA-r277-6w6q-xmqw
-  # Fixed in 13.1.2 [Grafana]
-  - vulnerability: GHSA-r277-6w6q-xmqw
-    package:
-      location: /var/lib/podman/.local/share/containers/storage/overlay/**
   ### CVE-2026-64046
   # Fixed in 6.8.0-139.139 [https://ubuntu.com/security/CVE-2026-64046]
   - vulnerability: CVE-2026-64046
@@ -895,21 +672,6 @@ ignore:
   ### CVE-2026-64450
   # FIXME: Vulnerable, no fix 2026-09-19 [https://ubuntu.com/security/CVE-2026-64450]
   - vulnerability: CVE-2026-64450
-  ### CVE-2026-64535
-  # FIXME: Fixed in 6.8.0-147.147 but not in the image yet 2026-10-22 [https://ubuntu.com/security/CVE-2026-64535]
-  - vulnerability: CVE-2026-64535
-  ### CVE-2026-64564
-  # FIXME: Fixed in 6.8.0-147.147 but not in the image yet 2026-10-22 [https://ubuntu.com/security/CVE-2026-64564]
-  - vulnerability: CVE-2026-64564
-  ### CVE-2026-72399
-  # FIXME: Fixed in 6.8.0-147.147 but not in the image yet 2026-10-22
-  - vulnerability: CVE-2026-72399
-  ### CVE-2026-74345
-  # FIXME: Fixed in 6.8.0-147.147 but not in the image yet 2026-10-22
-  - vulnerability: CVE-2026-74345
-  ### CVE-2026-74394
-  # IXME: Fixed in 6.8.0-147.147 but not in the image yet 2026-10-22
-  - vulnerability: CVE-2026-74394
   ### CVE-2026-78663
   # FIXME: Golang standard library resource consumption vuln which is pervasive in go packages.
   - vulnerability: GO-2026-6612
