@@ -153,6 +153,8 @@ jobs:
       - name: Generate sbom
         uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
         id: generate-sbom
+        env:
+          SYFT_GOLANG_CAPTURE_SYMBOLS: all
         with:
           path: "${{ steps.build-image.outputs.image-name }}"
           artifact-name: "${{ steps.build-image.outputs.image-name }}-sbom.json"
