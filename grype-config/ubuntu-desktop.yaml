@@ -1000,6 +1000,21 @@ ignore:
   # FIXME: Golang standard library resource consumption vuln which is pervasive in go packages.
   - vulnerability: GO-2026-6612
   - vulnerability: CVE-2026-78663
+  ### CVE-2026-86414
+  # Curl in nginx image not used.
+  - vulnerability: CVE-2026-86414
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/95dc95bf49b04855a36e73f86f266114ecf96aa83602b07159393bb2e3b9705f/diff/usr/bin/curl
+  ### CVE-2026-87866
+  # Only relevant when curl is built with wolfssh
+  - vulnerability: CVE-2026-87866
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/95dc95bf49b04855a36e73f86f266114ecf96aa83602b07159393bb2e3b9705f/diff/usr/bin/curl
+  ### CVE-2026-92388
+  # Curl in nginx image is not used.
+  - vulnerability: CVE-2026-92388
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/95dc95bf49b04855a36e73f86f266114ecf96aa83602b07159393bb2e3b9705f/diff/usr/bin/curl
   ### CVE-2026-93479
   # Not vulnerable: NGINX only listening on localhost
   - vulnerability: CVE-2026-93479
