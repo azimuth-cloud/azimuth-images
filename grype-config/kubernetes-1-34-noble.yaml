@@ -471,9 +471,21 @@ ignore:
   ### CVE-2026-63887
   # Backported fix in 6.8.0.142.142
   - vulnerability: CVE-2026-63887
+  ### CVE-2026-63888
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63888]
+  - vulnerability: CVE-2026-63888
+  ### CVE-2026-63912
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63912]
+  - vulnerability: CVE-2026-63912
+  ### CVE-2026-63922
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63922]
+  - vulnerability: CVE-2026-63922
   ### CVE-2026-63924
   # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63924]
   - vulnerability: CVE-2026-63924
+  ### CVE-2026-63940
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-147.147 [https://ubuntu.com/security/CVE-2026-63940]
+  - vulnerability: CVE-2026-63940
   ### CVE-2026-63992
   # Fixed in 6.8.0-146.146 [https://ubuntu.com/security/CVE-2026-63992]
   - vulnerability: CVE-2026-63992

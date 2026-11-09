@@ -838,6 +838,18 @@ ignore:
   ### CVE-2026-53399
   # FIXME: Vulnerable, no fix 2026-08-05 [https://ubuntu.com/security/CVE-2026-53399]
   - vulnerability: CVE-2026-53399
+  ### CVE-2026-53434
+  # Tomcat CRLs not used by Azimuth
+  - vulnerability: GHSA-4x29-79gh-6v8q
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/d6775a049f5767c73a159f74339d226d10db2a062aa8a009d1c5375378c90515/diff/usr/local/tomcat/lib/tomcat-util.jar
+  - vulnerability: CVE-2026-53434
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/d6775a049f5767c73a159f74339d226d10db2a062aa8a009d1c5375378c90515/diff/usr/local/tomcat/lib/tomcat-util.jar
+  ### CVE-2026-55276
+  # CVE is an error with logging and catagorised by Apache as low. https://lists.apache.org/thread/jy09xjlzn6r2qwvqoph8vcmf959yq68v
+  - vulnerability: GHSA-mqg3-r7h5-24x4
+  - vulnerability: CVE-2026-55276
   ### CVE-2026-56857
   # Vulnerability is on Windows only.
   - vulnerability: GO-2026-6604
@@ -865,9 +877,21 @@ ignore:
   ### CVE-2026-63887
   # Backported fix in 6.8.0.142.142
   - vulnerability: CVE-2026-63887
+  ### CVE-2026-63888
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63888]
+  - vulnerability: CVE-2026-63888
+  ### CVE-2026-63912
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63912]
+  - vulnerability: CVE-2026-63912
+  ### CVE-2026-63922
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63922]
+  - vulnerability: CVE-2026-63922
   ### CVE-2026-63924
   # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63924]
   - vulnerability: CVE-2026-63924
+  ### CVE-2026-63940
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-147.147 [https://ubuntu.com/security/CVE-2026-63940]
+  - vulnerability: CVE-2026-63940
   ### CVE-2026-63992
   # Fixed in 6.8.0-146.146 [https://ubuntu.com/security/CVE-2026-63992]
   - vulnerability: CVE-2026-63992
