@@ -167,7 +167,7 @@ jobs:
         with:
           sbom: "${{ steps.build-image.outputs.image-name }}-sbom.json"
           severity-cutoff: low
-          grype-version: v0.121.0
+          grype-version: v0.121.2
           only-fixed: true
           output-format: sarif
           fail-build: false
