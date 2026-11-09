@@ -688,9 +688,34 @@ ignore:
   # FIXME: Golang standard library resource consumption vuln which is pervasive in go packages.
   - vulnerability: GO-2026-6612
   - vulnerability: CVE-2026-78663
+  ### CVE-2026-98432
+  # Fixed in kernel 6.8.0-149.149 but Ubuntu database has not been updated.
+  - vulnerability: CVE-2026-98432
   ### CVE-2026-100075
   # FIXME: Vulnerable, no fix 2026-10-06 [https://ubuntu.com/security/CVE-2026-100075]
   - vulnerability: CVE-2026-100075
+  ### CVE-2026-111497
+  # Exists only in prometheus plugin, which makes internal requests
+  - vulnerability: GO-2026-6888
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/a49855733b43027ff4c89bbaa47d318d69ecd482c5315cd6853a81b85f432f8f/diff/usr/share/grafana/data/plugins-bundled/jaeger/gpx_grafana-jaeger-datasource_linux_amd64
+  - vulnerability: CVE-2026-111497
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/a49855733b43027ff4c89bbaa47d318d69ecd482c5315cd6853a81b85f432f8f/diff/usr/share/grafana/data/plugins-bundled/jaeger/gpx_grafana-jaeger-datasource_linux_amd64
+  # Exists only in prometheus plugin, which makes internal requests
+  - vulnerability: GO-2026-6888
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/a49855733b43027ff4c89bbaa47d318d69ecd482c5315cd6853a81b85f432f8f/diff/usr/share/grafana/data/plugins-bundled/prometheus/gpx_grafana-prometheus-datasource_linux_amd64
+  - vulnerability: CVE-2026-111497
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/a49855733b43027ff4c89bbaa47d318d69ecd482c5315cd6853a81b85f432f8f/diff/usr/share/grafana/data/plugins-bundled/prometheus/gpx_grafana-prometheus-datasource_linux_amd64
+  # Exists only in prometheus plugin, which makes internal requests
+  - vulnerability: GO-2026-6888
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/a49855733b43027ff4c89bbaa47d318d69ecd482c5315cd6853a81b85f432f8f/diff/usr/share/grafana/data/plugins-bundled/stackdriver/gpx_grafana_cloudmonitoring_datasource_linux_amd64
+  - vulnerability: CVE-2026-111497
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/a49855733b43027ff4c89bbaa47d318d69ecd482c5315cd6853a81b85f432f8f/diff/usr/share/grafana/data/plugins-bundled/stackdriver/gpx_grafana_cloudmonitoring_datasource_linux_amd64
   ### GHSA-6q48-6c7w-9gw2
   # False positive: dev lockfile bundled with ansible collection is never installed
   - vulnerability: GHSA-6q48-6c7w-9gw2

@@ -537,6 +537,9 @@ ignore:
   # FIXME: Golang standard library resource consumption vuln which is pervasive in go packages.
   - vulnerability: GO-2026-6612
   - vulnerability: CVE-2026-78663
+  ### CVE-2026-98432
+  # Fixed in kernel 6.8.0-149.149 but Ubuntu database has not been updated.
+  - vulnerability: CVE-2026-98432
   ### CVE-2026-100075
   # FIXME: Vulnerable, no fix 2026-10-06 [https://ubuntu.com/security/CVE-2026-100075]
   - vulnerability: CVE-2026-100075
