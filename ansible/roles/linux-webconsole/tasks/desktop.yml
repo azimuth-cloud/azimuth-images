@@ -17,6 +17,13 @@
   ansible.builtin.command: netplan apply
   changed_when: true
 
+- name: Reset SSH connection after network reconfiguration
+  ansible.builtin.meta: reset_connection
+
+- name: Wait for the host to be reachable after network reconfiguration
+  ansible.builtin.wait_for_connection:
+    timeout: 300
+
 - name: Install graphical environment
   ansible.builtin.package:
     name: "{{ desktop_environment_package }}"
