@@ -6,6 +6,17 @@
 # https://github.com/exosphere-project/exosphere/
 ###
 
+# Install of desktop environment sets NetworkManager to default.
+# This messes up the networking and breaks the build. This prevents it becoming default.
+- name: Keep networkd as the default netplan renderer
+  ansible.builtin.copy:
+    dest: /etc/netplan/00-network-manager-all.yaml
+    content: |
+      network:
+        version: 2
+        renderer: networkd
+    mode: "0600"
+
 # Installing network-manager before installing the desktop seems
 # to preserve networking
 - name: Install network-manager
