@@ -498,3 +498,8 @@ ignore:
   - vulnerability: GHSA-6q48-6c7w-9gw2
     package:
       location: /usr/lib/ansible-init/lib/python3.12/site-packages/ansible_collections/netbox/netbox/poetry.lock
+  ### CVE-2026-39892
+  # False positive: dev lockfile bundled with ansible collection is never installed
+  - vulnerability: CVE-2026-39892
+    package:
+      location: /usr/lib/ansible-init/lib/python3.12/site-packages/ansible_collections/grafana/grafana/Pipfile.lock

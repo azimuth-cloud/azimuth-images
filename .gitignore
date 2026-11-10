@@ -7,3 +7,4 @@ venv
 **/.DS_Store
 .ansible
 __pycache__/
+local_build_output/
