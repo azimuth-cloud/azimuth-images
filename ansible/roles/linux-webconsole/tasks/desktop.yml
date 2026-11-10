@@ -24,6 +24,51 @@
   ansible.builtin.wait_for_connection:
     timeout: 300
 
+# The ubuntu firefox deb is a stub to the snap store.
+# This was stalling on download and making the build fail.
+# Instead install firefox from Mozilla directly.
+- name: Install Firefox from Mozilla's APT repository
+  block:
+    - name: Download Mozilla APT repository signing key
+      ansible.builtin.get_url:
+        url: https://packages.mozilla.org/apt/repo-signing-key.gpg
+        dest: /etc/apt/keyrings/packages.mozilla.org.asc
+        mode: "0644"
+
+    - name: Read Mozilla APT repository signing key fingerprint
+      ansible.builtin.command: >-
+        gpg --show-keys --with-colons /etc/apt/keyrings/packages.mozilla.org.asc
+      register: linux_webconsole_mozilla_key
+      changed_when: false
+
+    - name: Verify Mozilla APT repository signing key fingerprint
+      ansible.builtin.assert:
+        that:
+          - "'fpr:::::::::35BAA0B33E9EB396F59CA838C0BA5CE6DC6315A3:' in linux_webconsole_mozilla_key.stdout"
+        fail_msg: Mozilla APT repository signing key does not have the expected fingerprint
+
+    - name: Add Mozilla APT repository
+      ansible.builtin.apt_repository:
+        repo: deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main
+        filename: mozilla
+        state: present
+
+    # Override the ubuntu stub's expoch (1:1snap1)
+    - name: Prefer packages from Mozilla's APT repository
+      ansible.builtin.copy:
+        dest: /etc/apt/preferences.d/mozilla
+        content: |
+          Package: *
+          Pin: origin packages.mozilla.org
+          Pin-Priority: 1000
+        mode: "0644"
+
+    - name: Install Firefox
+      ansible.builtin.apt:
+        name: firefox
+        state: present
+        update_cache: true
+
 - name: Install graphical environment
   ansible.builtin.package:
     name: "{{ desktop_environment_package }}"
