@@ -53,7 +53,7 @@
         filename: mozilla
         state: present
 
-    # Override the ubuntu stub's expoch (1:1snap1)
+    # Override the ubuntu stub's epoch (1:1snap1)
     - name: Prefer packages from Mozilla's APT repository
       ansible.builtin.copy:
         dest: /etc/apt/preferences.d/mozilla

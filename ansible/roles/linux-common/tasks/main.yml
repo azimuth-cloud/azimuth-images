@@ -99,7 +99,7 @@
   environment:
     DEBIAN_FRONTEND: noninteractive
   register: linux_common_autoremove
-  changed_when: "'0 to remove' not in linux_common_autoremove.stdout"
+  changed_when: "' 0 to remove' not in linux_common_autoremove.stdout"
 
 - name: Clean up after ourselves
   ansible.builtin.apt:
