@@ -557,6 +557,10 @@ ignore:
   - vulnerability: GHSA-r29c-68gh-xp6x
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
+  # Apache rate this vulnerability as low
+  - vulnerability: CVE-2026-41293
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/d6775a049f5767c73a159f74339d226d10db2a062aa8a009d1c5375378c90515/diff/usr/local/tomcat/lib/tomcat-coyote.jar
   ### CVE-2026-41409
   # Not vulnerable, No LDAP auth used in guacamole-client
   - vulnerability: GHSA-f2wh-grmh-r6jm
@@ -1041,3 +1045,11 @@ ignore:
   - vulnerability: CVE-2026-39892
     package:
       location: /usr/lib/ansible-init/lib/python3.12/site-packages/ansible_collections/grafana/grafana/Pipfile.lock
+  ### CVE-2026-111497
+  # Stackdrive plugin for grafana not used.
+  - vulnerability: GO-2026-6888
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/8fed09c0d5cfd48e01e49c081a1c13bc3019691f7a4d95cf5a3796618f32cdda/diff/usr/share/grafana/data/plugins-bundled/stackdriver/gpx_grafana_cloudmonitoring_datasource_linux_amd64
+  - vulnerability: CVE-2026-111497
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/8fed09c0d5cfd48e01e49c081a1c13bc3019691f7a4d95cf5a3796618f32cdda/diff/usr/share/grafana/data/plugins-bundled/stackdriver/gpx_grafana_cloudmonitoring_datasource_linux_amd64
