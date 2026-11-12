@@ -1,20 +1,20 @@
 image:
   x86_64:
-    version: 4757.2.1
-    name: flatcar-stable-4757.2.1-x86_64
-    url: https://azimuth-images.stackhpc.cloud/flatcar/sysext-image/flatcar-stable-4757.2.1-x86_64.img
-    checksum: sha256:5ed764aae7344ca62f094d31be8cf8ee79b9c6f8c5f631215333f0e67b258d6f
-    checksum_sha512: sha512:1e35408a2c77af90a0e14f048fae9aaf350663d53d13ffd661d33c986de334f0aad67971229bec10ad36dd9101336c6f9e39db5ebbb46f765950800e8f237500
-    cosign_bundle_url: https://azimuth-images.stackhpc.cloud/flatcar/sysext-image/flatcar-stable-4757.2.1-x86_64.cosign.bundle
-    image_sbom_url: https://azimuth-images.stackhpc.cloud/flatcar/sysext-image/flatcar-stable-4757.2.1-x86_64-sbom.json
+    version: 4757.2.3
+    name: flatcar-stable-4757.2.3-x86_64
+    url: https://azimuth-images.stackhpc.cloud/flatcar/sysext-image/flatcar-stable-4757.2.3-x86_64.img
+    checksum: sha256:c334fe175ba80bfca47b0d3a96ebb441604e6b0fde7ea19afdaf7fd814a3c288
+    checksum_sha512: sha512:86d8a22f9435043113d379d06997b7cc8b21792c54c381538d870693cbc9063b44cb6ef1ee433e89e8d7006f2ae51ca1f727190c9a7325ba3604fbb107100280
+    cosign_bundle_url: https://azimuth-images.stackhpc.cloud/flatcar/sysext-image/flatcar-stable-4757.2.3-x86_64.cosign.bundle
+    image_sbom_url: https://azimuth-images.stackhpc.cloud/flatcar/sysext-image/flatcar-stable-4757.2.3-x86_64-sbom.json
   aarch64:
-    version: 4757.2.1
-    name: flatcar-stable-4757.2.1-aarch64
-    url: https://azimuth-images.stackhpc.cloud/flatcar/sysext-image/flatcar-stable-4757.2.1-aarch64.img
-    checksum: sha256:77e674d16055d54c37c68d5d772577178dc8d9e095c9a5437b6fb1f30cdbefde
-    checksum_sha512: sha512:b4dbe64a0a48e244a1c2c11eceaca629dd4078ecc08e472d4fa3652bc8725f3ca471de585dba43b0f4d46e3737058f91c99ece9df1de2e14647aee4ff8eae913
-    cosign_bundle_url: https://azimuth-images.stackhpc.cloud/flatcar/sysext-image/flatcar-stable-4757.2.1-aarch64.cosign.bundle
-    image_sbom_url: https://azimuth-images.stackhpc.cloud/flatcar/sysext-image/flatcar-stable-4757.2.1-aarch64-sbom.json
+    version: 4757.2.3
+    name: flatcar-stable-4757.2.3-aarch64
+    url: https://azimuth-images.stackhpc.cloud/flatcar/sysext-image/flatcar-stable-4757.2.3-aarch64.img
+    checksum: sha256:6bc0280543ce89f66fd5e7ea7b633d2c99ffbfa20567cb1dafdfbeeb280cb233
+    checksum_sha512: sha512:5d50eb5f108e9a923832dc0116e2be0fb067a77daee2f509a99bdbb491390c8ff199a60aa1dee07ec43617ddc136a7175a6c4e4cc02a14fd6ea5d34b5be65427
+    cosign_bundle_url: https://azimuth-images.stackhpc.cloud/flatcar/sysext-image/flatcar-stable-4757.2.3-aarch64.cosign.bundle
+    image_sbom_url: https://azimuth-images.stackhpc.cloud/flatcar/sysext-image/flatcar-stable-4757.2.3-aarch64-sbom.json
 sysexts:
   containerd:
     version: 2.4.2

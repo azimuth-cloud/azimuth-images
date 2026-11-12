@@ -42,6 +42,8 @@ jobs:
 
       - name: Install syft
         uses: anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
+        env:
+          SYFT_GOLANG_CAPTURE_SYMBOLS: all
 
       - name: Check for updated Flatcar/sysext versions and publish
         id: update
