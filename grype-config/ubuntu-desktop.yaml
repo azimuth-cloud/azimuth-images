@@ -1045,6 +1045,9 @@ ignore:
   - vulnerability: CVE-2026-39892
     package:
       location: /usr/lib/ansible-init/lib/python3.12/site-packages/ansible_collections/grafana/grafana/Pipfile.lock
+  ### CVE-2026-76183
+  # Guacamole only listening on localhost
+  - vulnerability: CVE-2026-76183
   ### CVE-2026-111497
   # Stackdrive plugin for grafana not used.
   - vulnerability: GO-2026-6888
