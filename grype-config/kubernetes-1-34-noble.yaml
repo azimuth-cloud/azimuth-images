@@ -471,9 +471,21 @@ ignore:
   ### CVE-2026-63887
   # Backported fix in 6.8.0.142.142
   - vulnerability: CVE-2026-63887
+  ### CVE-2026-63888
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63888]
+  - vulnerability: CVE-2026-63888
+  ### CVE-2026-63912
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63912]
+  - vulnerability: CVE-2026-63912
+  ### CVE-2026-63922
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63922]
+  - vulnerability: CVE-2026-63922
   ### CVE-2026-63924
   # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63924]
   - vulnerability: CVE-2026-63924
+  ### CVE-2026-63940
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-147.147 [https://ubuntu.com/security/CVE-2026-63940]
+  - vulnerability: CVE-2026-63940
   ### CVE-2026-63992
   # Fixed in 6.8.0-146.146 [https://ubuntu.com/security/CVE-2026-63992]
   - vulnerability: CVE-2026-63992
@@ -577,6 +589,9 @@ ignore:
   # FIXME: Golang standard library resource consumption vuln which is pervasive in go packages.
   - vulnerability: GO-2026-6612
   - vulnerability: CVE-2026-78663
+  ### CVE-2026-98432
+  # Fixed in kernel 6.8.0-149.149 but Ubuntu database has not been updated.
+  - vulnerability: CVE-2026-98432
   ### CVE-2026-100075
   # FIXME: Vulnerable, no fix 2026-10-06 [https://ubuntu.com/security/CVE-2026-100075]
   - vulnerability: CVE-2026-100075
@@ -589,3 +604,8 @@ ignore:
   - vulnerability: GHSA-6q48-6c7w-9gw2
     package:
       location: /usr/lib/ansible-init/lib/python3.12/site-packages/ansible_collections/netbox/netbox/poetry.lock
+  ### CVE-2026-39892
+  # False positive: dev lockfile bundled with ansible collection is never installed
+  - vulnerability: CVE-2026-39892
+    package:
+      location: /usr/lib/ansible-init/lib/python3.12/site-packages/ansible_collections/grafana/grafana/Pipfile.lock
