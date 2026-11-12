@@ -10,13 +10,27 @@
 # ACL Required for become to an unprivileged user to work
 # Ensure up-to-date CA certificates
 # Use linux-generic to track linux-modules-extra (IB)
-- name: Install common packages  # noqa package-latest
+- name: Install common packages # noqa package-latest
   ansible.builtin.apt:
     pkg:
       - acl
       - ca-certificates
       - linux-generic
     state: latest
+
+# Boot into any newly-installed kernel so that the old one can be removed
+- name: Check whether a reboot is required
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+  register: linux_common_reboot_required
+
+- name: Reboot into the new kernel
+  ansible.builtin.reboot:
+  when: linux_common_reboot_required.stat.exists
+
+- name: Refresh facts after reboot
+  ansible.builtin.setup:
+  when: linux_common_reboot_required.stat.exists
 
 # Enables the ansible-init system, but does not install any default playbooks
 - name: Ensure ansible-init is configured
@@ -75,6 +89,17 @@
     value: "{{ item.value }}"
     sysctl_file: "{{ item.conf_file }}"
   loop: "{{ sysctl_options_default + sysctl_options_extra }}"
+
+# By default apt keeps the booted kernel and one other.
+# grype detects the old kernel and fails, so we must remove it.
+- name: Remove old kernels and other unneeded packages # noqa command-instead-of-module
+  ansible.builtin.command: >-
+    apt-get autoremove --purge -y
+    -o APT::Protect-Kernels=false
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+  register: linux_common_autoremove
+  changed_when: "' 0 to remove' not in linux_common_autoremove.stdout"
 
 - name: Clean up after ourselves
   ansible.builtin.apt:

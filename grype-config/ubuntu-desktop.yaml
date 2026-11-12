@@ -557,6 +557,10 @@ ignore:
   - vulnerability: GHSA-r29c-68gh-xp6x
     package:
       location: /var/lib/podman/.local/share/containers/storage/overlay/**
+  # Apache rate this vulnerability as low
+  - vulnerability: CVE-2026-41293
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/d6775a049f5767c73a159f74339d226d10db2a062aa8a009d1c5375378c90515/diff/usr/local/tomcat/lib/tomcat-coyote.jar
   ### CVE-2026-41409
   # Not vulnerable, No LDAP auth used in guacamole-client
   - vulnerability: GHSA-f2wh-grmh-r6jm
@@ -838,6 +842,18 @@ ignore:
   ### CVE-2026-53399
   # FIXME: Vulnerable, no fix 2026-08-05 [https://ubuntu.com/security/CVE-2026-53399]
   - vulnerability: CVE-2026-53399
+  ### CVE-2026-53434
+  # Tomcat CRLs not used by Azimuth
+  - vulnerability: GHSA-4x29-79gh-6v8q
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/d6775a049f5767c73a159f74339d226d10db2a062aa8a009d1c5375378c90515/diff/usr/local/tomcat/lib/tomcat-util.jar
+  - vulnerability: CVE-2026-53434
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/d6775a049f5767c73a159f74339d226d10db2a062aa8a009d1c5375378c90515/diff/usr/local/tomcat/lib/tomcat-util.jar
+  ### CVE-2026-55276
+  # CVE is an error with logging and catagorised by Apache as low. https://lists.apache.org/thread/jy09xjlzn6r2qwvqoph8vcmf959yq68v
+  - vulnerability: GHSA-mqg3-r7h5-24x4
+  - vulnerability: CVE-2026-55276
   ### CVE-2026-56857
   # Vulnerability is on Windows only.
   - vulnerability: GO-2026-6604
@@ -865,9 +881,21 @@ ignore:
   ### CVE-2026-63887
   # Backported fix in 6.8.0.142.142
   - vulnerability: CVE-2026-63887
+  ### CVE-2026-63888
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63888]
+  - vulnerability: CVE-2026-63888
+  ### CVE-2026-63912
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63912]
+  - vulnerability: CVE-2026-63912
+  ### CVE-2026-63922
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63922]
+  - vulnerability: CVE-2026-63922
   ### CVE-2026-63924
   # Not vulnerable: fix backported in Ubuntu linux 6.8.0-142.142 [https://ubuntu.com/security/CVE-2026-63924]
   - vulnerability: CVE-2026-63924
+  ### CVE-2026-63940
+  # Not vulnerable: fix backported in Ubuntu linux 6.8.0-147.147 [https://ubuntu.com/security/CVE-2026-63940]
+  - vulnerability: CVE-2026-63940
   ### CVE-2026-63992
   # Fixed in 6.8.0-146.146 [https://ubuntu.com/security/CVE-2026-63992]
   - vulnerability: CVE-2026-63992
@@ -976,12 +1004,30 @@ ignore:
   # FIXME: Golang standard library resource consumption vuln which is pervasive in go packages.
   - vulnerability: GO-2026-6612
   - vulnerability: CVE-2026-78663
+  ### CVE-2026-86414
+  # Curl in nginx image not used.
+  - vulnerability: CVE-2026-86414
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/95dc95bf49b04855a36e73f86f266114ecf96aa83602b07159393bb2e3b9705f/diff/usr/bin/curl
+  ### CVE-2026-87866
+  # Only relevant when curl is built with wolfssh
+  - vulnerability: CVE-2026-87866
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/95dc95bf49b04855a36e73f86f266114ecf96aa83602b07159393bb2e3b9705f/diff/usr/bin/curl
+  ### CVE-2026-92388
+  # Curl in nginx image is not used.
+  - vulnerability: CVE-2026-92388
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/95dc95bf49b04855a36e73f86f266114ecf96aa83602b07159393bb2e3b9705f/diff/usr/bin/curl
   ### CVE-2026-93479
   # Not vulnerable: NGINX only listening on localhost
   - vulnerability: CVE-2026-93479
   ### CVE-2026-97205
   # Not vulnerable: NGINX only listening on localhost
   - vulnerability: CVE-2026-97205
+  ### CVE-2026-98432
+  # Fixed in kernel 6.8.0-149.149 but Ubuntu database has not been updated.
+  - vulnerability: CVE-2026-98432
   ### CVE-2026-100075
   # FIXME: Vulnerable, no fix 2026-10-06 [https://ubuntu.com/security/CVE-2026-100075]
   - vulnerability: CVE-2026-100075
@@ -994,3 +1040,16 @@ ignore:
   - vulnerability: GHSA-6q48-6c7w-9gw2
     package:
       location: /usr/lib/ansible-init/lib/python3.12/site-packages/ansible_collections/netbox/netbox/poetry.lock
+  ### CVE-2026-39892
+  # False positive: dev lockfile bundled with ansible collection is never installed
+  - vulnerability: CVE-2026-39892
+    package:
+      location: /usr/lib/ansible-init/lib/python3.12/site-packages/ansible_collections/grafana/grafana/Pipfile.lock
+  ### CVE-2026-111497
+  # Stackdrive plugin for grafana not used.
+  - vulnerability: GO-2026-6888
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/8fed09c0d5cfd48e01e49c081a1c13bc3019691f7a4d95cf5a3796618f32cdda/diff/usr/share/grafana/data/plugins-bundled/stackdriver/gpx_grafana_cloudmonitoring_datasource_linux_amd64
+  - vulnerability: CVE-2026-111497
+    package:
+      location: /var/lib/podman/.local/share/containers/storage/overlay/8fed09c0d5cfd48e01e49c081a1c13bc3019691f7a4d95cf5a3796618f32cdda/diff/usr/share/grafana/data/plugins-bundled/stackdriver/gpx_grafana_cloudmonitoring_datasource_linux_amd64
