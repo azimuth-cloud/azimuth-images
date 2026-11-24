@@ -21,3 +21,12 @@
         name: amdgpu
         persistent: present
         state: absent
+
+- name: Build the LVM volume
+  hosts: all
+  become: true
+  tasks:
+    - name: Include LVM layout role
+      ansible.builtin.include_role:
+        name: linux-lvm
+      when: lvm_volume_id | default('') | length > 0

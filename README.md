@@ -66,6 +66,8 @@ ENV_VAR_FILES=common,kvm,linux,ubuntu-jammy \
 
 This will result in a private image being created in the target OpenStack project.
 
+To build a Kubernetes image with an LVM disk layout, see [LVM images](./docs/lvm-images.md).
+
 ## Developing locally
 
 To run the GitHub Actions linters locally, use:

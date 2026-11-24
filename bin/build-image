@@ -20,12 +20,30 @@ fi
 
 set -x
 
+# Wait until an OpenStack volume or image has the given status
+wait_for_status() {
+  local kind="$1" id="$2" status="$3" tries=120
+  until [ "$(openstack "$kind" show -f value -c status "$id")" = "$status" ]; do
+    tries=$((tries - 1))
+    if [ "$tries" -le 0 ]; then
+      echo "$kind $id did not become $status" >&2
+      return 1
+    fi
+    sleep 10
+  done
+}
+
 cleanup() {
   # We want all the cleanup commands to run even if there is an error
   set +e
   # If a floating IP has been allocated, release it
   if [ -n "$PKR_VAR_floating_ip" ]; then
     openstack floating ip delete "$PKR_VAR_floating_ip"
+  fi
+  # If an LVM volume has been created, delete it once it is detached
+  if [ -n "$PKR_VAR_lvm_volume_id" ]; then
+    wait_for_status volume "$PKR_VAR_lvm_volume_id" available
+    openstack volume delete "$PKR_VAR_lvm_volume_id"
   fi
   if [[ "${SKIP_SOURCE_IMAGE}" != "true" ]]; then
     "$REPO_ROOT"/bin/cleanup-source-image
@@ -45,7 +63,21 @@ if [[ "${SKIP_SOURCE_IMAGE}" != "true" ]]; then
   source "$REPO_ROOT"/bin/ensure-source-image
 fi
 
-export PACKER_LOG=1 PKR_VAR_floating_ip PKR_VAR_source_image_name
+# LVM builds (see docs/lvm-images.md): an empty volume that becomes the image
+PKR_VAR_lvm_volume_id=
+if [ -n "$LVM_DISK_SIZE_GB" ]; then
+  LVM_VOLUME_ARGS=(--size "$LVM_DISK_SIZE_GB")
+  if [ -n "$LVM_VOLUME_TYPE" ]; then
+    LVM_VOLUME_ARGS+=(--type "$LVM_VOLUME_TYPE")
+  fi
+  PKR_VAR_lvm_volume_id="$(
+    openstack volume create -f value -c id "${LVM_VOLUME_ARGS[@]}" \
+      "packer-lvm-$(uuidgen | tr '[:upper:]' '[:lower:]')"
+  )"
+  wait_for_status volume "$PKR_VAR_lvm_volume_id" available
+fi
+
+export PACKER_LOG=1 PKR_VAR_floating_ip PKR_VAR_source_image_name PKR_VAR_lvm_volume_id
 PACKER_ARGS=("${PACKER_VAR_FILES_ARGS[@]}" "${PACKER_EXTRA_ARGS[@]}")
 packer build \
   --on-error=cleanup \
@@ -56,6 +88,19 @@ if [ -f "./packer-manifest.json" ]; then
   # Download the image that we built and remove it from OpenStack
   IMAGE_ID="$(jq -r '.builds[-1].artifact_id' ./packer-manifest.json)"
   IMAGE_NAME="$(openstack image show -f value -c name "$IMAGE_ID")"
+  # For LVM builds, Packer's image is the build server's own disk. Replace it
+  # with an image of the LVM volume, under the same name.
+  if [ -n "$PKR_VAR_lvm_volume_id" ]; then
+    openstack image delete "$IMAGE_ID"
+    IMAGE_ID="$(
+      openstack image create -f value -c image_id \
+        --volume "$PKR_VAR_lvm_volume_id" \
+        --disk-format raw \
+        --container-format bare \
+        "$IMAGE_NAME"
+    )"
+    wait_for_status image "$IMAGE_ID" active
+  fi
   IMAGE_DISK_FORMAT="$(openstack image show -f value -c disk_format "$IMAGE_ID")"
   IMAGE_SOURCE_FILE="${IMAGE_NAME}.source.${IMAGE_DISK_FORMAT}"
   openstack image save --file "$IMAGE_SOURCE_FILE" "$IMAGE_ID"

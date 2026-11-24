@@ -1,0 +1,29 @@
+{
+  "extra_debs": "nfs-common lvm2 parted rsync dosfstools grub-pc-bin",
+  "lvm_vg_name": "vg0",
+  "lvm_esp_size_mib": 512,
+  "lvm_boot_size_mib": 1024,
+  "lvm_volumes": [
+    {
+      "name": "root",
+      "size": "5G",
+      "mount": "/",
+      "fstype": "ext4",
+      "options": "defaults"
+    },
+    {
+      "name": "var",
+      "size": "5G",
+      "mount": "/var",
+      "fstype": "ext4",
+      "options": "defaults,nodev,nosuid"
+    },
+    {
+      "name": "containerd",
+      "size": "8G",
+      "mount": "/var/lib/containerd",
+      "fstype": "ext4",
+      "options": "defaults,nodev"
+    }
+  ]
+}

@@ -29,3 +29,10 @@
 - name: kubernetes-1-37-noble
   template: kubernetes
   var-files: common,kvm,linux,ubuntu-noble,kubernetes,kubernetes_1_37
+
+# Same as kubernetes-1-37-noble, with an LVM disk layout (docs/lvm-images.md)
+# Disabled until azimuth-ops can give LVM images a distinct image key and
+# ClusterTemplate name; today it would collide with kubernetes-1-37-noble
+# - name: kubernetes-1-37-noble-lvm
+#   template: kubernetes
+#   var-files: common,kvm,linux,ubuntu-noble,kubernetes,kubernetes_1_37,lvm
