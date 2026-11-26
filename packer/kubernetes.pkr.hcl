@@ -385,6 +385,39 @@ variable "ubuntu_security_repo" {
   type = string
 }
 
+# LVM variables, see docs
+
+variable "lvm_volume_id" {
+  type    = string
+  default = ""
+}
+
+variable "lvm_vg_name" {
+  type    = string
+  default = "vg0"
+}
+
+variable "lvm_esp_size_mib" {
+  type    = number
+  default = 512
+}
+
+variable "lvm_boot_size_mib" {
+  type    = number
+  default = 1024
+}
+
+variable "lvm_volumes" {
+  type = list(object({
+    name    = string
+    size    = string
+    mount   = string
+    fstype  = string
+    options = string
+  }))
+  default = []
+}
+
 #####
 # Locals
 #####
@@ -434,7 +467,7 @@ source "openstack" "kubernetes" {
   # Allow image creation to be skipped for build tests
   skip_create_image = var.skip_create_image
 
-  image_name = "${var.distro_name}-kube-${var.kubernetes_semver}-${local.build_timestamp}"
+  image_name = "${var.distro_name}-kube-${var.kubernetes_semver}${var.lvm_volume_id == "" ? "" : "-lvm"}-${local.build_timestamp}"
   image_visibility = "private"
   image_disk_format = var.disk_format
 
@@ -454,6 +487,15 @@ source "openstack" "kubernetes" {
 
 build {
   source "source.openstack.kubernetes" { }
+
+  # LVM builds only: attach the empty volume that the linux-lvm role turns into the image
+  provisioner "shell-local" {
+    inline = var.lvm_volume_id == "" ? ["true"] : [
+      "openstack server add volume ${build.ID} ${var.lvm_volume_id}",
+      # Wait up to 5 minutes; fail fast on an error state and report the last status
+      "i=0; while :; do st=$(openstack volume show -f value -c status ${var.lvm_volume_id} 2>&1) || st=\"api-error: $st\"; [ \"$st\" = in-use ] && break; case \"$st\" in error*) echo \"volume ${var.lvm_volume_id} entered state: $st\" >&2; exit 1;; esac; i=$((i+1)); [ $i -ge 60 ] && { echo \"timed out waiting for volume ${var.lvm_volume_id} to be in-use, last status: $st\" >&2; exit 1; }; sleep 5; done",
+    ]
+  }
 
   provisioner "ansible" {
     galaxy_file = "${path.root}/../requirements.yml"
@@ -605,6 +647,15 @@ build {
       "ubuntu_repo=${var.ubuntu_repo}",
       "--extra-vars",
       "ubuntu_security_repo=${var.ubuntu_security_repo}",
+      # JSON, because lvm_volumes is a list and key=value can only pass strings
+      "--extra-vars",
+      jsonencode({
+        lvm_volume_id     = var.lvm_volume_id
+        lvm_vg_name       = var.lvm_vg_name
+        lvm_esp_size_mib  = var.lvm_esp_size_mib
+        lvm_boot_size_mib = var.lvm_boot_size_mib
+        lvm_volumes       = var.lvm_volumes
+      }),
     ]
     ansible_env_vars = ["ANSIBLE_SSH_RETRIES=10"]
     ansible_ssh_extra_args = [
@@ -614,6 +665,15 @@ build {
       "-o", "ServerAliveInterval=60",
       "-o", "ServerAliveCountMax=30",
       "-o", "TCPKeepAlive=yes"
+    ]
+  }
+
+  # LVM builds only: detach the volume (the role has deactivated its volume group)
+  provisioner "shell-local" {
+    inline = var.lvm_volume_id == "" ? ["true"] : [
+      "openstack server remove volume ${build.ID} ${var.lvm_volume_id}",
+      # Wait up to 5 minutes; fail fast on an error state and report the last status
+      "i=0; while :; do st=$(openstack volume show -f value -c status ${var.lvm_volume_id} 2>&1) || st=\"api-error: $st\"; [ \"$st\" = available ] && break; case \"$st\" in error*) echo \"volume ${var.lvm_volume_id} entered state: $st\" >&2; exit 1;; esac; i=$((i+1)); [ $i -ge 60 ] && { echo \"timed out waiting for volume ${var.lvm_volume_id} to be available, last status: $st\" >&2; exit 1; }; sleep 5; done",
     ]
   }
 

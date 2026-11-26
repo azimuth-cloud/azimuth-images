@@ -1,0 +1,290 @@
+---
+# Copies the finished node onto the empty volume that bin/build-image created
+# and Packer attached, with an LVM layout. That volume becomes the image.
+
+- name: Look for the disk of the LVM volume
+  ansible.builtin.stat:
+    path: /dev/disk/by-id/{{ item }}
+  loop:
+    # The same names the Cinder CSI driver looks for
+    - virtio-{{ lvm_volume_id[:20] }}
+    - virtio-{{ lvm_volume_id }}
+    - scsi-0QEMU_QEMU_HARDDISK_{{ lvm_volume_id[:20] }}
+    - scsi-0QEMU_QEMU_HARDDISK_{{ lvm_volume_id }}
+  register: lvm_candidates
+
+- name: Check the volume is attached and exactly one volume is /
+  ansible.builtin.assert:
+    that:
+      - lvm_candidates.results | selectattr('stat.exists') | list | length > 0
+      - lvm_volumes | selectattr('mount', 'equalto', '/') | list | length == 1
+
+- name: Set the disk
+  ansible.builtin.set_fact:
+    lvm_disk: "{{ (lvm_candidates.results | selectattr('stat.exists') | first).stat.lnk_source }}"
+
+- name: Set the layout
+  ansible.builtin.set_fact:
+    lvm_staging: /mnt/lvm
+    # sdb -> sdb1, nvme1n1 -> nvme1n1p1
+    lvm_part: "{{ lvm_disk }}{{ 'p' if lvm_disk is search('[0-9]$') else '' }}"
+    lvm_esp_end: '{{ 5 + lvm_esp_size_mib | int }}'
+    lvm_boot_end: '{{ 5 + lvm_esp_size_mib | int + lvm_boot_size_mib | int }}'
+    lvm_root_lv: "{{ (lvm_volumes | selectattr('mount', 'equalto', '/') | first).name }}"
+
+- name: Set the mounts, parents first
+  ansible.builtin.set_fact:
+    lvm_mounts: >-
+      {{ (lvm_volumes | map('combine', {'dev': none})
+          + [{'mount': '/boot', 'fstype': 'ext4', 'dev': lvm_part ~ '3'},
+             {'mount': '/boot/efi', 'fstype': 'vfat', 'dev': lvm_part ~ '2'}])
+         | sort(attribute='mount') }}
+
+- name: Check the disk is unused
+  ansible.builtin.assert:
+    that:
+      - ansible_facts.mounts | selectattr('device', 'match', lvm_disk) | list | length == 0
+
+- name: Stop the services that write while the system is copied
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: stopped
+  loop:
+    - kubelet.service
+    - containerd.service
+
+- name: Wipe the disk
+  ansible.builtin.command: wipefs --all --force {{ lvm_disk }}
+  changed_when: true
+
+- name: Partition the disk
+  community.general.parted:
+    device: '{{ lvm_disk }}'
+    label: gpt
+    number: '{{ item.number }}'
+    part_start: '{{ item.start }}'
+    part_end: '{{ item.end }}'
+    flags: '{{ item.flags }}'
+    state: present
+  loop:
+    # BIOS boot partition, for GRUB on clouds that boot with BIOS (the default)
+    - number: 1
+      start: 1MiB
+      end: 5MiB
+      flags:
+        - bios_grub
+    - number: 2
+      start: 5MiB
+      end: '{{ lvm_esp_end }}MiB'
+      flags:
+        - esp
+    - number: 3
+      start: '{{ lvm_esp_end }}MiB'
+      end: '{{ lvm_boot_end }}MiB'
+      flags: []
+    - number: 4
+      start: '{{ lvm_boot_end }}MiB'
+      end: 100%
+      flags:
+        - lvm
+
+- name: Create the ESP and /boot filesystems
+  community.general.filesystem:
+    dev: '{{ item.dev }}'
+    fstype: '{{ item.fstype }}'
+    opts: '{{ item.opts }}'
+    force: true
+  loop:
+    - { dev: '{{ lvm_part }}2', fstype: vfat, opts: -F 32 -n UEFI }
+    - { dev: '{{ lvm_part }}3', fstype: ext4, opts: -L BOOT }
+
+- name: Create the volume group
+  community.general.lvg:
+    vg: '{{ lvm_vg_name }}'
+    pvs: '{{ lvm_part }}4'
+    force: true
+
+- name: Create the logical volumes
+  community.general.lvol:
+    vg: '{{ lvm_vg_name }}'
+    lv: '{{ item.name }}'
+    size: '{{ item.size }}'
+  loop: '{{ lvm_volumes }}'
+
+- name: Create the logical volume filesystems
+  community.general.filesystem:
+    dev: /dev/{{ lvm_vg_name }}/{{ item.name }}
+    fstype: '{{ item.fstype }}'
+    force: true
+  loop: '{{ lvm_volumes }}'
+
+- name: Mount everything under {{ lvm_staging }}
+  ansible.posix.mount:
+    src: "{{ item.dev or '/dev/' ~ lvm_vg_name ~ '/' ~ item.name }}"
+    path: '{{ lvm_staging }}{{ item.mount }}'
+    fstype: '{{ item.fstype }}'
+    state: ephemeral
+  loop: '{{ lvm_mounts }}'
+
+- name: Copy the system
+  ansible.builtin.command:
+    argv:
+      - rsync
+      - --archive
+      - --hard-links
+      - --acls
+      - --xattrs
+      - --sparse
+      - --numeric-ids
+      - --one-file-system
+      - --exclude=/tmp/*
+      - --exclude=/var/tmp/*
+      - --exclude=/swap.img
+      - /
+      - '{{ lvm_staging }}/'
+  changed_when: true
+
+# The cloud image has /boot and the ESP as separate partitions, which
+# --one-file-system skipped
+- name: Copy /boot and the ESP
+  ansible.builtin.command:
+    argv:
+      - rsync
+      - --archive
+      - --hard-links
+      - --xattrs
+      - --numeric-ids
+      - '{{ item }}/'
+      - '{{ lvm_staging }}{{ item }}/'
+  loop:
+    - /boot
+    - /boot/efi
+  changed_when: true
+
+- name: Get the /boot and ESP UUIDs
+  ansible.builtin.command: blkid -s UUID -o value {{ item }}
+  register: lvm_uuids
+  changed_when: false
+  loop:
+    - '{{ lvm_part }}3'
+    - '{{ lvm_part }}2'
+
+- name: Write the fstab
+  ansible.builtin.template:
+    src: fstab.j2
+    dest: '{{ lvm_staging }}/etc/fstab'
+    owner: root
+    group: root
+    mode: '0644'
+  vars:
+    lvm_boot_uuid: '{{ lvm_uuids.results[0].stdout }}'
+    lvm_esp_uuid: '{{ lvm_uuids.results[1].stdout }}'
+
+- name: Turn off cloud-init growpart, which cannot grow a logical volume
+  ansible.builtin.copy:
+    dest: '{{ lvm_staging }}/etc/cloud/cloud.cfg.d/99-lvm-no-growpart.cfg'
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      # Grow the logical volumes with lvextend instead
+      growpart:
+        mode: "off"
+      resize_rootfs: false
+
+- name: Remove Ansible's temporary files from the copy
+  ansible.builtin.file:
+    path: '{{ lvm_staging }}{{ item }}'
+    state: absent
+  loop:
+    - /root/.ansible
+    - /home/{{ ansible_user | default('ubuntu') }}/.ansible
+
+- name: Bind mount the kernel filesystems into the copy
+  ansible.posix.mount:
+    src: '{{ item }}'
+    path: '{{ lvm_staging }}{{ item }}'
+    fstype: none
+    opts: bind
+    state: ephemeral
+  loop:
+    - /dev
+    - /dev/pts
+    - /proc
+    - /sys
+    - /run
+
+# The cloud image pins GRUB to its own root partition, which this disk does not have
+- name: Remove the cloud image's GRUB root setting
+  ansible.builtin.file:
+    path: '{{ lvm_staging }}/etc/default/grub.d/40-force-partuuid.cfg'
+    state: absent
+
+# GRUB is installed for both BIOS and UEFI, like the Ubuntu cloud image. UEFI is
+# installed twice: EFI/BOOT for firmware with no boot entry, and EFI/ubuntu
+# (copied from the build server, still pointing at its /boot) for shim.
+- name: Install GRUB and rebuild the initramfs
+  ansible.builtin.command: chroot {{ lvm_staging }} {{ item }}
+  loop:
+    - grub-install --target=i386-pc {{ lvm_disk }}
+    - grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=ubuntu --no-nvram --removable
+    - grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=ubuntu --no-nvram
+    - update-grub
+    - update-initramfs -u -k all
+  changed_when: true
+
+- name: List the initramfs contents
+  ansible.builtin.command: lsinitramfs {{ lvm_staging }}/boot/initrd.img-{{ ansible_facts.kernel }}
+  register: lvm_initrd
+  changed_when: false
+
+- name: Read the GRUB configuration
+  ansible.builtin.slurp:
+    src: '{{ lvm_staging }}/boot/grub/grub.cfg'
+  register: lvm_grub_cfg
+
+- name: Read GRUB's first-stage configurations on the ESP
+  ansible.builtin.slurp:
+    src: '{{ lvm_staging }}/boot/efi/EFI/{{ item }}/grub.cfg'
+  register: lvm_esp_cfgs
+  loop:
+    - BOOT
+    - ubuntu
+
+- name: Get the root volume UUID
+  ansible.builtin.command: blkid -s UUID -o value /dev/{{ lvm_vg_name }}/{{ lvm_root_lv }}
+  register: lvm_root_uuid
+  changed_when: false
+
+- name: Look for the bootloaders
+  ansible.builtin.stat:
+    path: '{{ lvm_staging }}{{ item }}'
+  register: lvm_loaders
+  loop:
+    - /boot/efi/EFI/BOOT/BOOTX64.EFI
+    - /boot/grub/i386-pc/core.img
+
+- name: Check the disk can boot
+  ansible.builtin.assert:
+    that:
+      - lvm_loaders.results | map(attribute='stat.exists') | select | list | length == 2
+      - "'lvm' in lvm_initrd.stdout"
+      - lvm_root_uuid.stdout in lvm_grub or ('/dev/mapper/' ~ lvm_vg_name ~ '-' ~ lvm_root_lv) in lvm_grub
+      - "'cloudimg-rootfs' not in lvm_grub"
+      - "'root=PARTUUID=' not in lvm_grub"
+      - >-
+        lvm_esp_cfgs.results | map(attribute='content') | map('b64decode')
+        | select('search', lvm_uuids.results[0].stdout) | list | length == 2
+    fail_msg: >-
+      The LVM disk would not boot: a bootloader is missing, the initramfs has no LVM support,
+      GRUB's root= is wrong or the ESP does not point at the new /boot.
+  vars:
+    lvm_grub: '{{ lvm_grub_cfg.content | b64decode }}'
+
+- name: Unmount the copy
+  ansible.builtin.command: umount --recursive {{ lvm_staging }}
+  changed_when: true
+
+- name: Deactivate the volume group, so that the volume can be detached
+  ansible.builtin.command: vgchange --activate n {{ lvm_vg_name }}
+  changed_when: true
